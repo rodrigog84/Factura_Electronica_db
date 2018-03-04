@@ -1,0 +1,67 @@
+/*
+ *
+ * Main stylesheet for Switchery.
+ * http://abpetkov.github.io/switchery/
+ *
+ */
+
+
+.switchery {
+  background-color: #fff;
+  border: 1px solid #dfdfdf;
+  border-radius: round(2/3*30px);
+  cursor: pointer;
+  display: inline-block;
+  height: 30px;
+  position: relative;
+  vertical-align: middle;
+  width: round(5/3*30px);
+
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+
+  -webkit-background-clip: content-box;
+  background-clip: content-box;
+}
+
+.switchery > small {
+  background: #fff;
+  border-radius: 100%;
+  box-shadow: 0 round(30px/30) round(30px/10) rgba(0, 0, 0, 0.4);
+  height: 30px;
+  position: absolute;
+  top: 0;
+  width: 30px;
+}
+
+
+.switchery.switchery-large {
+  border-radius: round(2/3*46px);
+  height: 46px;
+  width: round(5/3*46px); 
+}
+
+.switchery.switchery-large > small {
+  height: 46px;
+  width: 46px;
+  box-shadow: 0 round(46px/30) round(46px/10) rgba(0, 0, 0, 0.4);   
+}
+
+.switchery.switchery-small {
+  border-radius: round(2/3*20px);
+  height: 20px;
+  width: round(5/3*20px);
+}
+
+.switchery.switchery-small > small {
+  height: 20px;
+  width: 20px;
+  box-shadow: 0 round(20px/30) round(20px/10) rgba(0, 0, 0, 0.4);   
+}

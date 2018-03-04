@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+     	    <meta charset="utf-8">
+        <title>Certificaci&oacute;n Upselling - Grupo Siglo</title>        <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><link href="/css/login.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/images/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon">        
+<!-- Scripts -->
+        <script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript" src="/js/maleta.js?20131121"></script>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<!--[if lt IE 9]><script type="text/javascript" src="/js/html5.js"></script><![endif]-->
+    </head>
+    <body>
+        
+                
+                    <div id="mensaje" style="color:
+            red; 
+            font-weight:bold; margin:20px;">
+                            </div>
+                
+        
+        <div class="container" align="center">
+                      <center>
+             <table width="100%" cellpadding="3" cellspacing="0" border="1" >
+    <tr>
+        <th bgcolor="#C3D2E7">FechaIngreso</th>
+        <th bgcolor="#C3D2E7">CallIngreso IVR</th>
+        <th bgcolor="#C3D2E7">Id</th>
+        <th bgcolor="#C3D2E7">NombreCliente</th>
+        <th bgcolor="#C3D2E7">rutCliente</th>
+        <th bgcolor="#C3D2E7">fonoContacto</th>
+        <th bgcolor="#C3D2E7">tipoAceptacion</th>
+        <th bgcolor="#C3D2E7">nombPlanSolicitado</th>
+        <th bgcolor="#C3D2E7">nombreEstado</th>
+        <th bgcolor="#C3D2E7">nombreMotivo</th>
+                    <th bgcolor="#C3D2E7">Mensaje Transferencia</th>
+                           
+    </tr>        <tr >
+            <td>2015-09-02 09:15:43</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090209154321322</td>
+            <td>HECTOR ZALDANA MUGA</td>
+            <td>8.884.622-2</td>
+            <td>961258681</td>
+            <td>CONTACTO</td>
+            <td>Mega Plan 4 GB</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 09:27:23</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090209272388237</td>
+            <td>ALINA DIAZ ALCOTA</td>
+            <td>10.656.541-4</td>
+            <td>973999190</td>
+            <td>CONTACTO</td>
+            <td>Mega Plan 8 GB </td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 10:13:43</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090210134310249</td>
+            <td>LUIS HERNAN BARAHONA BARAHONA</td>
+            <td>11.673.218-1</td>
+            <td>989827932</td>
+            <td>CONTACTO</td>
+            <td>Mega Plan Control 200 Mb</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 11:12:42</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090211124214679</td>
+            <td>PEDRO SILVA SANCHEZ</td>
+            <td>5.756.841-0</td>
+            <td>985407121</td>
+            <td>CONTACTO</td>
+            <td>Salta Multi M</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 11:27:56</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090211275647171</td>
+            <td>PATRICIA DE LAS M. MORA ARAYA</td>
+            <td>10.760.843-5</td>
+            <td>985271434</td>
+            <td></td>
+            <td>Mega Plan 6 GB (Hab)</td>
+            <td>AGENDADO</td>
+            <td>VOLVER A LLAMAR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 11:33:02</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090211330238099</td>
+            <td>ANA MARIA GALLEGUILLOS LIZANA</td>
+            <td>9.437.618-1</td>
+            <td>992767929</td>
+            <td>CONTACTO</td>
+            <td>Salta Multi L</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 11:48:02</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090211480263648</td>
+            <td>PATRICIA DEL CARMEN ALARCON GAETE</td>
+            <td>11.199.688-1</td>
+            <td>996205941</td>
+            <td>CONTACTO</td>
+            <td>Mega Plan Control 2 Gb (Hab)</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 11:50:09</td>
+            <td>TELEMARK</td>
+            <td style="mso-number-format:'@';">2015090211500972380</td>
+            <td>MYRIAM JARA VIVALLO</td>
+            <td>13.140.446-8</td>
+            <td>988472686</td>
+            <td></td>
+            <td>Mega Plan 2,5 GB</td>
+            <td>AGENDADO</td>
+            <td>VOLVER A LLAMAR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 12:04:58</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090212045852038</td>
+            <td>MARISOL DEL CARMAN CARRASCO BUSTAMANTE</td>
+            <td>11.630.650-6</td>
+            <td>996202882</td>
+            <td></td>
+            <td>Mega Plan Control 1,5 Gb (Hab)</td>
+            <td>AGENDADO</td>
+            <td>INGRESO IVR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 12:29:38</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090212293837482</td>
+            <td>XIMENA ALEJANDRA LOPEZ CORTES</td>
+            <td>11.847.869-K</td>
+            <td>974968420</td>
+            <td>CONTACTO</td>
+            <td>Mega Plan 4 GB</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 12:41:42</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090212414223763</td>
+            <td>RAMON JESUALDO SOBARZO ULLOA</td>
+            <td>15.875.800-8</td>
+            <td>994552401</td>
+            <td></td>
+            <td>Salta Multi L</td>
+            <td>AGENDADO</td>
+            <td>VOLVER A LLAMAR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 14:39:33</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090214393356153</td>
+            <td>MARCELO ENRIQUE ESPINOZA CANCINO</td>
+            <td>12.648.565-4</td>
+            <td>961407858</td>
+            <td>CONTACTO</td>
+            <td>Mega Plan 6 GB (Hab)</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 14:45:47</td>
+            <td>TELEMARK</td>
+            <td style="mso-number-format:'@';">2015090214454785447</td>
+            <td>RITA DEL CARMEN JARA BUSTO</td>
+            <td>9.652.760-8</td>
+            <td>987988815</td>
+            <td></td>
+            <td>Mega Plan Control 1,5 Gb</td>
+            <td>AGENDADO</td>
+            <td>VOLVER A LLAMAR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 15:00:25</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090215002584357</td>
+            <td>JAIR AGUSTIN QUINTANILLA MONTIEL</td>
+            <td>17.229.895-8</td>
+            <td>979453675</td>
+            <td>CONTACTO</td>
+            <td>Mega Plan 4 GB (Hab)</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 15:18:24</td>
+            <td>TELEMARK</td>
+            <td style="mso-number-format:'@';">2015090215182445878</td>
+            <td>JOSE MANUEL PAVEZ HUERTA</td>
+            <td>16.490.926-3</td>
+            <td>992529490</td>
+            <td>CONTACTO</td>
+            <td>Salta Multi L</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 15:19:58</td>
+            <td>TELEMARK</td>
+            <td style="mso-number-format:'@';">2015090215195878858</td>
+            <td>MARIA PINTO SOTO</td>
+            <td>7.862.295-4</td>
+            <td>998688213</td>
+            <td>CONTACTO</td>
+            <td>Mega Plan Control 200 Mb</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 15:34:05</td>
+            <td>TELEMARK</td>
+            <td style="mso-number-format:'@';">2015090215340577622</td>
+            <td>ANA MARIA TOLEDO LOPEZ</td>
+            <td>7.568.334-0</td>
+            <td>997493603</td>
+            <td>CONTACTO</td>
+            <td>Mega Plan Control 2 Gb</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 16:14:12</td>
+            <td>TELEMARK</td>
+            <td style="mso-number-format:'@';">2015090216141295204</td>
+            <td>JESSICA IVONE RODRIGUEZ SILVA</td>
+            <td>8.546.781-6</td>
+            <td>996510648</td>
+            <td></td>
+            <td>Salta Multi L</td>
+            <td>AGENDADO</td>
+            <td>VOLVER A LLAMAR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 16:34:59</td>
+            <td>TELEMARK</td>
+            <td style="mso-number-format:'@';">2015090216345964325</td>
+            <td>SANDRA DIAZ DIAZ</td>
+            <td>10.584.325-9</td>
+            <td>999036652</td>
+            <td>CONTACTO</td>
+            <td>Mega Plan Control 2 Gb</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 16:58:18</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090216581817936</td>
+            <td>INOCENCIO CAMPOS ..................</td>
+            <td>6.453.752-0</td>
+            <td>989853053</td>
+            <td>CONTACTO</td>
+            <td>Mega Plan Control 200 Mb</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 17:23:42</td>
+            <td>TELEMARK</td>
+            <td style="mso-number-format:'@';">2015090217234202153</td>
+            <td>CLAUDIA ALICIA MORA ROJAS</td>
+            <td>15.975.946-6</td>
+            <td>993350639</td>
+            <td></td>
+            <td>Mega Plan 2,5 GB</td>
+            <td>AGENDADO</td>
+            <td>VOLVER A LLAMAR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 17:51:42</td>
+            <td>TELEMARK</td>
+            <td style="mso-number-format:'@';">2015090217514254783</td>
+            <td>MARIA ELIZABETH CERDA PEREZ</td>
+            <td>10.553.891-K</td>
+            <td>989844747</td>
+            <td></td>
+            <td>Mega Plan Control 1,5 Gb</td>
+            <td>AGENDADO</td>
+            <td>INGRESO IVR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 17:58:15</td>
+            <td>TELEMARK</td>
+            <td style="mso-number-format:'@';">2015090217581571120</td>
+            <td>RAUL ULLOA ULLOA</td>
+            <td>9.504.842-0</td>
+            <td>997206806</td>
+            <td></td>
+            <td>Mega Plan 4 GB (Hab)</td>
+            <td>AGENDADO</td>
+            <td>INGRESO IVR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 18:11:48</td>
+            <td>TELEMARK</td>
+            <td style="mso-number-format:'@';">2015090218114819940</td>
+            <td>MIRIAM SUSANA OCAMPO VERA</td>
+            <td>9.646.053-8</td>
+            <td>991835261</td>
+            <td></td>
+            <td>Mega Plan Control 1,5 Gb</td>
+            <td>AGENDADO</td>
+            <td>INGRESO IVR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 18:13:51</td>
+            <td>TELEMARK</td>
+            <td style="mso-number-format:'@';">2015090218135126254</td>
+            <td>PEDRO ANTONIO VILLASENOR JARA</td>
+            <td>5.626.287-3</td>
+            <td>989805208</td>
+            <td></td>
+            <td>Mega Plan Control 1,5 Gb</td>
+            <td>AGENDADO</td>
+            <td>INGRESO IVR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 18:24:14</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090218241453210</td>
+            <td>SERAFIN EMISALDO FERNANDEZ RUBILAR</td>
+            <td>10.186.992-K</td>
+            <td>961255807</td>
+            <td></td>
+            <td>Mega Plan 6 GB</td>
+            <td>AGENDADO</td>
+            <td>INGRESO IVR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 18:36:02</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090218360251143</td>
+            <td>ARMIN RODRIGO SILVA null</td>
+            <td>12.115.457-9</td>
+            <td>995585882</td>
+            <td></td>
+            <td>Mega Plan 4 GB</td>
+            <td>AGENDADO</td>
+            <td>INGRESO IVR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 18:36:08</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090218360841703</td>
+            <td>FANY DEL CARMEN TORO OLIVARES</td>
+            <td>6.907.419-7</td>
+            <td>983282940</td>
+            <td></td>
+            <td>Mega Plan 4 GB (Hab)</td>
+            <td>AGENDADO</td>
+            <td>INGRESO IVR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 18:52:12</td>
+            <td>TELEMARK</td>
+            <td style="mso-number-format:'@';">2015090218521278437</td>
+            <td>DIOGENES VALDIVIA FUENZALIDA</td>
+            <td>17.895.556-K</td>
+            <td>968623763</td>
+            <td>IVR</td>
+            <td>Mega Plan 4 GB</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO IVR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 18:52:44</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090218524493831</td>
+            <td>ROBINSON OBANDO null</td>
+            <td>15.734.882-5</td>
+            <td>997764580</td>
+            <td>IVR</td>
+            <td>Mega Plan 6 GB</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO IVR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 18:53:09</td>
+            <td>TELEMARK</td>
+            <td style="mso-number-format:'@';">2015090218530932885</td>
+            <td>PEDRO RODRIGO VASQUEZ ANTOINE</td>
+            <td>13.495.871-5</td>
+            <td>989977016</td>
+            <td>IVR</td>
+            <td>Mega Plan Control 200 Mb</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO IVR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 18:55:46</td>
+            <td>TELEMARK</td>
+            <td style="mso-number-format:'@';">2015090218554606506</td>
+            <td>ESTELA DEL CARMEN ALQUINTA VARAS</td>
+            <td>5.993.910-6</td>
+            <td>990326688</td>
+            <td></td>
+            <td>Mega Plan Control 2 Gb</td>
+            <td>AGENDADO</td>
+            <td>INGRESO IVR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 18:56:14</td>
+            <td>TELEMARK</td>
+            <td style="mso-number-format:'@';">2015090218561487998</td>
+            <td>JOSE TOLEDO OLMOS</td>
+            <td>10.416.456-0</td>
+            <td>993338417</td>
+            <td>IVR</td>
+            <td>Mega Plan 2,5 GB</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO IVR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 18:57:05</td>
+            <td>TELEMARK</td>
+            <td style="mso-number-format:'@';">2015090218570579662</td>
+            <td>ANA DEL CARMEN RODRIGUEZ RODRIGUEZ</td>
+            <td>17.130.363-K</td>
+            <td>996665112</td>
+            <td>IVR</td>
+            <td>Mega Plan Control 2 Gb</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO IVR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 18:57:11</td>
+            <td>TELEMARK</td>
+            <td style="mso-number-format:'@';">2015090218571185840</td>
+            <td>JUAN BAUTISTA CORDARO CARDENAS</td>
+            <td>4.756.499-9</td>
+            <td>991942470</td>
+            <td>IVR</td>
+            <td>Mega Plan Control 1,5 Gb</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO IVR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 18:57:15</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090218571592347</td>
+            <td>PAULINA ANDREA GUARACHI NUNEZ</td>
+            <td>16.467.912-8</td>
+            <td>976109687</td>
+            <td></td>
+            <td>Mega Plan 4 GB</td>
+            <td>AGENDADO</td>
+            <td>INGRESO IVR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 18:57:18</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090218571804500</td>
+            <td>CLAUDIO ESTEBAN GUZMAN OPORTO</td>
+            <td>12.645.617-4</td>
+            <td>981289421</td>
+            <td>IVR</td>
+            <td>Mega Plan 6 GB (Hab)</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO IVR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 18:57:18</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090218571831070</td>
+            <td>JOSE VALDEBENITO MERINO</td>
+            <td>12.655.634-9</td>
+            <td>942485187</td>
+            <td>IVR</td>
+            <td>Mega Plan 4 GB (Hab)</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO IVR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 18:57:39</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090218573905382</td>
+            <td>SERGIO ALEJANDRO VILLEGAS null</td>
+            <td>17.040.379-7</td>
+            <td>998760264</td>
+            <td></td>
+            <td>Mega Plan 6 GB</td>
+            <td>AGENDADO</td>
+            <td>DESCONEXION IVR VALIDACION PLAN</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 18:57:46</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090218574613443</td>
+            <td>TOMAS RAUL NAVARRETE DURAN</td>
+            <td>6.020.373-3</td>
+            <td>985458458</td>
+            <td></td>
+            <td>Mega Plan 6 GB (Hab)</td>
+            <td>AGENDADO</td>
+            <td>DESCONEXION IVR VALIDACION PLAN</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 18:58:05</td>
+            <td>DIGITEX</td>
+            <td style="mso-number-format:'@';">2015090218580596863</td>
+            <td>PEDRO LUIS TORRES ZAMORA</td>
+            <td>14.104.201-7</td>
+            <td>977654849</td>
+            <td>IVR</td>
+            <td>Mega Plan 8 GB</td>
+            <td>ACEPTADO CONTACTO</td>
+            <td>ACEPTADO CONTACTO IVR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+            <tr >
+            <td>2015-09-02 18:58:28</td>
+            <td>TELEMARK</td>
+            <td style="mso-number-format:'@';">2015090218582822213</td>
+            <td>CRSITOFER LANDEROS LANDEROS</td>
+            <td>18.226.555-1</td>
+            <td>978226448</td>
+            <td></td>
+            <td>FOX+  HD</td>
+            <td>AGENDADO</td>
+            <td>INGRESO IVR</td>
+                            <td>HTTP/1.1 200 OK</td>
+                                    
+        </tr>
+                   </center>
+                                 </div> <!-- /container -->
+        
+            </body>
+</html>
