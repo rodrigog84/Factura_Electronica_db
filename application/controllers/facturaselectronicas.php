@@ -229,6 +229,38 @@ class Facturaselectronicas extends CI_Controller {
 
 
 
+    public function exportFePDF($idfactura,$cedible = null){
+
+        $this->load->model('facturaelectronica');
+        $this->facturaelectronica->exportFePDF($idfactura,'id',$cedible);       
+
+    }
+
+
+
+    public function ver_dte($idfactura,$tipo = 'sii'){
+
+        $ruta = $tipo == 'cliente' ? 'dte_cliente' : 'dte';
+        $this->load->model('facturaelectronica');
+        $dte = $this->facturaelectronica->datos_dte($idfactura);
+
+        if(empty($dte)){
+        //if($dte->path_dte == ''){
+
+            $dte = $this->facturaelectronica->crea_dte($idfactura,$tipo);
+        }
+
+
+        $nombre_archivo = $tipo == 'cliente' ? $dte->archivo_dte_cliente : $dte->archivo_dte;
+        $path_archivo = "./facturacion_electronica/" . $ruta . "/".$dte->path_dte;
+        $data_archivo = basename($path_archivo.$nombre_archivo);
+
+        header('Content-Type: text/plain');
+        header('Content-Disposition: attachment; filename=' . $data_archivo);
+        header('Content-Length: ' . filesize($path_archivo.$nombre_archivo));
+        readfile($path_archivo.$nombre_archivo);                
+     }
+
     public function cargacaf(){
         //print_r($_FILES);
         //print_r($this->input->post(NULL,true)); exit;

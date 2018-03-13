@@ -72,5 +72,23 @@ $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = FALSE;
 
 
+$db['CONS_Integraciones']['hostname'] = '192.168.63.10';
+$db['CONS_Integraciones']['port'] = 1433; //'chilefor_admin21'
+$db['CONS_Integraciones']['username'] = 'AX-DTE'; //'chilefor_admin21'
+$db['CONS_Integraciones']['password'] = 'Passw0rd.2019.'; //'^o6_5+TGP8JK';
+$db['CONS_Integraciones']['database'] = 'CONS_Integraciones'; // 'chilefor_cf_ctz';
+$db['CONS_Integraciones']['dbdriver'] = 'sqlsrv';
+$db['CONS_Integraciones']['dbprefix'] = '';
+$db['CONS_Integraciones']['pconnect'] = FALSE;
+$db['CONS_Integraciones']['db_debug'] = TRUE;
+$db['CONS_Integraciones']['cache_on'] = FALSE;
+$db['CONS_Integraciones']['cachedir'] = '';
+$db['CONS_Integraciones']['char_set'] = 'utf8';
+$db['CONS_Integraciones']['dbcollat'] = 'utf8_general_ci';
+$db['CONS_Integraciones']['swap_pre'] = '';
+$db['CONS_Integraciones']['autoinit'] = TRUE;
+$db['CONS_Integraciones']['stricton'] = FALSE;
+
+
 /* End of file database.php */
 /* Location: ./application/config/database.php */

@@ -946,6 +946,31 @@ if (!function_exists('primera_mayuscula'))
   }
 }
 
+
+
+if (!function_exists('caftotd'))
+{
+
+  function caftotd($caf)
+  {
+      if($caf == 33){
+        $tipodocumento = 101;
+      }else if($caf == 61){
+        $tipodocumento = 102;
+      }else if($caf == 34){
+        $tipodocumento = 103;
+      }else if($caf == 56){
+        $tipodocumento = 104;
+      }else if($caf == 52){
+        $tipodocumento = 105;
+      }
+    return $tipodocumento;
+  }
+
+}
+
+
+
 } 
 
            
