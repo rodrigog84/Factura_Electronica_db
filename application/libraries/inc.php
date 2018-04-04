@@ -39,7 +39,7 @@ define('_LibreDTE_CERTIFICACION_', false);
 date_default_timezone_set('America/Santiago');
 $path= dirname(dirname(__FILE__)).'/libraries/libredte-lib/trunk';
 // incluir autocarga de composer
-
+var_dump($path.'/vendor/autoload.php'); exit;
 if (is_readable($path.'/vendor/autoload.php'))
     include $path.'/vendor/autoload.php';
 else
