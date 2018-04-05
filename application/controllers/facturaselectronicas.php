@@ -243,16 +243,28 @@ class Facturaselectronicas extends CI_Controller {
         $ruta = $tipo == 'cliente' ? 'dte_cliente' : 'dte';
         $this->load->model('facturaelectronica');
         $dte = $this->facturaelectronica->datos_dte($idfactura);
-
         if(empty($dte)){
         //if($dte->path_dte == ''){
-
             $dte = $this->facturaelectronica->crea_dte($idfactura,$tipo);
+        }else{
+
+            if($dte->{$ruta} == ''){
+                $dte = $this->facturaelectronica->crea_dte($idfactura,$tipo);
+            }
         }
+
 
 
         $nombre_archivo = $tipo == 'cliente' ? $dte->archivo_dte_cliente : $dte->archivo_dte;
         $path_archivo = "./facturacion_electronica/" . $ruta . "/".$dte->path_dte;
+        
+
+        if(!file_exists($path_archivo.$nombre_archivo)){
+            $dte = $this->facturaelectronica->crea_dte($idfactura,$tipo);
+            $nombre_archivo = $tipo == 'cliente' ? $dte->archivo_dte_cliente : $dte->archivo_dte;
+            $path_archivo = "./facturacion_electronica/" . $ruta . "/".$dte->path_dte;            
+        }
+
         $data_archivo = basename($path_archivo.$nombre_archivo);
 
         header('Content-Type: text/plain');
