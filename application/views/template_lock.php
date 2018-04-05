@@ -400,7 +400,7 @@
         <!-- begin #footer -->
         <?php if(!isset($footer)){ ?>
         <div id="footer" class="footer">
-            &copy; 2018 Infosys - Consisa - Todos los derechos reservados
+            &copy; 2018 Infosys  - Todos los derechos reservados
         </div>        
         <?php } ?>
 
