@@ -566,29 +566,22 @@ class Facturaelectronica extends CI_Model
 
 
 
-	public function reporte_provee($start,$limit){
+	public function reporte_provee(){
 
-		$data_provee = $this->db->select('count(l.id) as cantidad ')
-		  ->from('lectura_dte_email l');
-		
-		$query = $this->db->get();   
-
-        $result_cantidad = $query->row()->cantidad; 
-
-
-
+	
 		$data_provee = $this->db->select("l.id, c.razon_social, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.created_at, l.procesado",false)
 		  ->from('lectura_dte_email l')
 		  ->join('contribuyentes_autorizados_1 c','l.rutemisor = c.rut','left')
 		  ->order_by('l.id');
 
-		$data_provee = !$limit ? $data_provee : $data_provee->limit($limit,$start);
+		//$data_provee = !$limit ? $data_provee : $data_provee->limit($limit,$start);
 
 		$query = $this->db->get();
 		//echo $this->db->last_query();
-		$result = $query->result();
+		//$result = $query->result();
 		//var_dump($result); exit;
-		 return array('cantidad' => $result_cantidad,'data' => $result);
+		// return array('cantidad' => $result_cantidad,'data' => $result);
+		return $query->result();
 	}
 
 
@@ -609,11 +602,13 @@ class Facturaelectronica extends CI_Model
 			$empresa = $this->facturaelectronica->get_empresa();
 
 			$receptor_factura = $EnvioDte->getReceptor();
+
 			$array_receptor_factura = explode("-",$receptor_factura);
 
 			$documentos = $EnvioDte->getDocumentos();
 			$documento = $documentos[0];
-			//print_r($documento->getResumen()); exit;
+			print_r($documento->getResumen()); exit;
+			//echo $empresa->rut . " - " . $array_receptor_factura[0]; exit;
 
 			if($empresa->rut == $array_receptor_factura[0]){ // validamos que sea una factura de la empresa
 
@@ -625,7 +620,7 @@ class Facturaelectronica extends CI_Model
 				$array_insert = array(
 									  'path' => $path,
 									  'filename' => $dte['filename'],
-									  'content' => $dte['content'],
+									  'content' => iconv('','UTF-8//IGNORE',$dte['content']),
 									  'rutemisor' => $array_rut_emisor[0],
 									  'dvemisor' => $array_rut_emisor[1],
 									  'fecemision' => $EnvioDte->getFechaEmisionFinal()

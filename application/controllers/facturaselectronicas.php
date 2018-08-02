@@ -419,9 +419,19 @@ class Facturaselectronicas extends CI_Controller {
                     'subtitle' => 'Carga DTE Compras');
 
         
+
+        $this->load->model('facturaelectronica');
+        $datos_factura = $this->facturaelectronica->reporte_provee();
+
+
+        //var_dump($datos_factura); exit;
+
         $template = "template";
         $vars['content_menu'] = $content;   
         $vars['content_view'] = 'facturaelectronica/factura_proveedor';
+
+        $vars['datos_factura'] = $datos_factura;   
+
         $this->load->view($template,$vars); 
     }    
 
