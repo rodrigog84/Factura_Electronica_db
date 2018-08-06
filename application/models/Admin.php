@@ -610,10 +610,29 @@ public function get_parametros_generales(){
 
 	}	
 
+
+
+	public function get_comunas_by_region($idregion){
+
+		$this->db->select('c.idcomuna , c.nombre ')
+						  ->from('fe_comuna as c')
+						  ->join('fe_provincia as p','c.idprovincia = p.idprovincia')
+						  ->join('fe_region as r','p.idregion = r.id_region')
+						  ->where('r.id_region', $idregion)
+		                  ->order_by('c.nombre asc');
+		$query = $this->db->get();
+		$datos = $query->result_array();
+
+
+		return $datos;
+
+	}	
+
+
 	public function get_regiones(){
 
 		$this->db->select('id_region , nombre ')
-						  ->from('rem_region')
+						  ->from('fe_region')
 		                  ->order_by('id_region asc');
 		$query = $this->db->get();
 		$datos = $query->result();

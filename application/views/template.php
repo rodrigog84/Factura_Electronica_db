@@ -276,6 +276,11 @@
             <script src="<?php echo base_url(); ?>plugins/jquery.mask.min.js"></script>
       <?php } ?>    
 
+       <?php if(isset($inputmask)){ ?>
+          <script src="<?php echo base_url(); ?>plugins/input-mask/jquery.inputmask.js" type="text/javascript"></script>
+          <script src="<?php echo base_url(); ?>plugins/input-mask/jquery.inputmask.date.extensions.js" type="text/javascript"></script>
+          <script src="<?php echo base_url(); ?>plugins/input-mask/jquery.inputmask.extensions.js" type="text/javascript"></script>      
+      <?php } ?>
 
     <?php if(isset($switchery)){ ?>  
     	<link href="<?php echo base_url(); ?>assets/plugins/switchery/switchery.min.css" rel="stylesheet" />

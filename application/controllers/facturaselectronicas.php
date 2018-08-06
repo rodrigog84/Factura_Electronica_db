@@ -27,13 +27,18 @@ class Facturaselectronicas extends CI_Controller {
 
 
 
-        	$form['rut'] = $empresa->rut."-".$empresa->dv;
+        	$form['rut'] = number_format($empresa->rut,0,".",".")."-".$empresa->dv;
         	$form['razon_social'] = $empresa->razon_social;
         	$form['giro'] = $empresa->giro;
         	$form['cod_actividad'] = $empresa->cod_actividad;
         	$form['direccion'] = $empresa->dir_origen;
         	$form['comuna'] = $empresa->comuna_origen;
-        	$form['fec_resolucion'] = $empresa->fec_resolucion;
+            $form['idregion'] = $empresa->idregion;
+            $form['idcomuna'] = $empresa->idcomuna;
+            $form['telefono'] = $empresa->telefono;
+            $form['mail'] = $empresa->mail;
+            
+        	$form['fec_resolucion'] = substr($empresa->fec_resolucion,8,2)."/".substr($empresa->fec_resolucion,5,2)."/".substr($empresa->fec_resolucion,0,4);
         	$form['nro_resolucion'] = $empresa->nro_resolucion;
         	$form['logo'] = base_url() . "facturacion_electronica/images/" . $empresa->logo;
 
@@ -47,10 +52,23 @@ class Facturaselectronicas extends CI_Controller {
         	$form['comuna'] = "";
         	$form['fec_resolucion'] = "";
         	$form['nro_resolucion'] = "";
+            $form['idregion'] = 0;
+            $form['idcomuna'] = 0;    
+            $form['telefono'] = "";
+            $form['mail'] = "";        
         	$form['logo'] = base_url() . "facturacion_electronica/images/sinimagen.jpg";
         }
 
+        //echo "<pre>";
+        //print_r($form); exit;
+        $this->load->model('admin');
+        $regiones = $this->admin->get_regiones();
+        $vars['formValidation'] = true;
+        $vars['jqueryRut'] = true;
+        $vars['mask'] = true;
+        $vars['inputmask'] = true;
         $vars['content_menu'] = $content;   
+        $vars['regiones'] = $regiones;
         $vars['datosform'] = $form;
 		$template = "template";
 		$vars['content_view'] = 'facturaelectronica/empresas';
@@ -60,6 +78,22 @@ class Facturaselectronicas extends CI_Controller {
 	public function put_empresa(){
 				//print_r($this->input->post(NULL,true)); exit;
 		$this->load->model('facturaelectronica');
+
+
+        $region = $this->input->post('region');
+        $comuna = $this->input->post('comuna');
+        $fec_resolucion = $this->input->post('fec_resolucion');
+
+        if($fec_resolucion !=null){
+                $date = DateTime::createFromFormat('d/m/Y', $fec_resolucion);
+                $fec_resolucion = $date->format('Ymd');
+            }else{
+                $fec_resolucion = null;
+                //$seguro_cesantia =0;
+            }
+
+
+
 		$empresa = $this->facturaelectronica->get_empresa();
 		$tipo_caf = $this->input->post('tipoCaf');
         $config['upload_path'] = "./facturacion_electronica/images/"	;
@@ -85,17 +119,22 @@ class Facturaselectronicas extends CI_Controller {
     		$array_rut = explode("-",$rut);
     		//$fecha_resolucion = $this->input->post('fec_resolucion');
     		//$fec_resolucion = substr($fecha_resolucion,6,4)."-".substr($fecha_resolucion,3,2)."-".substr($fecha_resolucion,0,2);
-    		$fec_resolucion = $this->input->post('fec_resolucion');
+    		//$fec_resolucion = $this->input->post('fec_resolucion');
     		$data_empresa = array(
-    					'rut' => $array_rut[0],
+    					'rut' => str_replace(".","",$array_rut[0]),
     					'dv' => $array_rut[1],
     					'razon_social' => $this->input->post('razon_social'),
     					'giro' => $this->input->post('giro'),
     					'cod_actividad' => $this->input->post('cod_actividad'),
     					'dir_origen' => $this->input->post('direccion'),
-    					'comuna_origen' => $this->input->post('comuna'),
+    					//'comuna_origen' => $this->input->post('comuna'),
+                        'comuna_origen' => '',
     					'fec_resolucion' => $fec_resolucion,
     					'nro_resolucion' => $this->input->post('nro_resolucion'),
+                        'idregion' => $region,
+                        'idcomuna' => $comuna,
+                        'telefono' => $this->input->post('telefono'),                        
+                        'mail' => $this->input->post('mail'),  
     					'logo' => 'logo_empresa.png'
     			);
         	if(count($empresa) > 0){ //actualizar
