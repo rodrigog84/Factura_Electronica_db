@@ -170,16 +170,47 @@ class Facturaselectronicas extends CI_Controller {
 
 
 
-	public function cargacertificado(){
-		//print_r($_FILES);
-		//print_r($this->input->post(NULL,true)); exit;
+
+    public function certificado(){
 
 
         $content = array(
                     'menu' => 'Configuraciones',
                     'title' => 'Configuraciones',
-                    'subtitle' => 'Carga certificado');
+                    'subtitle' => 'Carga certificado Digital');
 
+        $this->load->model('facturaelectronica');
+        $existe = file_exists($this->facturaelectronica->ruta_certificado()) ? true: false;
+
+        if(!$existe){
+            $existe = file_exists($this->facturaelectronica->ruta_certificado('pfx')) ? true: false;            
+        }
+
+
+        if($existe){
+                $vars['message'] = "Certificado ya Cargado. Subir uno nuevo reemplazará el existente";
+                $vars['classmessage'] = 'success';
+                $vars['icon'] = 'fa-check';     
+        }else{
+                $vars['message'] = "Certificado No Cargado. Debe cargar uno para generar documentos electr&oacute;nicos";
+                $vars['classmessage'] = 'danger';
+                $vars['icon'] = 'fa-ban';
+
+        }
+
+        $vars['formValidation'] = true;
+        $vars['content_menu'] = $content;   
+        $template = "template";
+        $vars['content_view'] = 'facturaelectronica/certificado';
+        $this->load->view($template,$vars); 
+
+     }
+
+
+
+	public function cargacertificado(){
+		//print_r($_FILES);
+		//print_r($this->input->post(NULL,true)); exit;
 
 		$password = $this->input->post('password');
 
@@ -223,7 +254,8 @@ class Facturaselectronicas extends CI_Controller {
         $vars['content_menu'] = $content;   
 		
 
-   		redirect('');
+   		//redirect('');
+        redirect('facturaselectronicas/certificado');   
    		//$resp['success'] = true;
    		//echo json_encode($resp);
 	 }
@@ -472,7 +504,34 @@ class Facturaselectronicas extends CI_Controller {
         $vars['datos_factura'] = $datos_factura;   
 
         $this->load->view($template,$vars); 
-    }    
+    }   
+
+
+    public function envio_respuesta($idfactura) {
+
+        $content = array(
+                    'menu' => 'Configuraciones',
+                    'title' => 'Configuraciones',
+                    'subtitle' => 'Env&iacute;o Respuesta Intercambio');
+
+        
+
+        $this->load->model('facturaelectronica');
+        $datos_factura = $this->facturaelectronica->reporte_provee($idfactura);
+
+        $vars['icheck'] = true;
+        
+        $template = "template";
+        $vars['content_menu'] = $content;   
+        $vars['content_view'] = 'facturaelectronica/envio_respuesta';
+
+        $vars['datos_factura'] = $datos_factura;   
+
+        $this->load->view($template,$vars); 
+
+
+
+    }
 
 
     public function cargar_contribuyente(){
@@ -531,6 +590,8 @@ class Facturaselectronicas extends CI_Controller {
 
         }
 
+
+        $vars['formValidation'] = true;
         $vars['content_menu'] = $content;   
         $template = "template";
         $vars['datosform'] = $form;

@@ -32,7 +32,7 @@
 																			<td><?php echo $facturas->fecemision;?></td>
 																			<td>&nbsp;</td>
 																			<td><?php echo $facturas->created_at;?></td>
-																			<td><i class="fa fa-pencil-square-o" aria-hidden="true" role="button"></i></td>
+																			<td><a href="<?php echo base_url();?>facturaselectronicas/envio_respuesta/<?php echo $facturas->id;?>"><i class="fa fa-file-code-o fa-2x" ></i></a></td>
 																			<td>&nbsp;</td>
 																		</tr> 
 												                      <?php $i++; ?>
