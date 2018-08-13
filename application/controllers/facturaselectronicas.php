@@ -518,6 +518,8 @@ class Facturaselectronicas extends CI_Controller {
 
         $this->load->model('facturaelectronica');
         $datos_factura = $this->facturaelectronica->reporte_provee($idfactura);
+        $resumen_dte = $this->facturaelectronica->lectura_dte_provee($idfactura);
+       // var_dump($datos_factura); exit;
 
         $vars['icheck'] = true;
         
@@ -526,6 +528,7 @@ class Facturaselectronicas extends CI_Controller {
         $vars['content_view'] = 'facturaelectronica/envio_respuesta';
 
         $vars['datos_factura'] = $datos_factura;   
+        $vars['resumen_dte'] = $resumen_dte;   
 
         $this->load->view($template,$vars); 
 
@@ -533,6 +536,35 @@ class Facturaselectronicas extends CI_Controller {
 
     }
 
+
+
+    public function envio_acuse_recibo(){
+
+
+        $array_post = $this->input->post(NULL,true);
+
+        $array_dte_enviados = array();
+        $i = 0;
+        foreach($array_post as $elem => $value_elem){
+            $arr_el = explode("-",$elem);
+            if($arr_el[0] == 'estado_documento'){
+                $array_dte_enviados[$i]['TipoDTE'] = $arr_el[1];
+                $array_dte_enviados[$i]['Folio'] = $arr_el[2];
+                $array_dte_enviados[$i]['Estado'] = $value_elem;
+                $i++;
+            }
+        }        
+
+        $array_acuse = array('idfactura' => $array_post['idfactura'],
+                             'estado_envio' => $array_post['estado_envio'],
+                             'mercaderias' => isset($array_post['mercaderias']) ? true : false,
+                             'detalle_dte' => $array_dte_enviados
+                              );
+
+
+        $datos_factura = $this->facturaelectronica->envia_acuse_recibo($array_acuse);
+
+    }
 
     public function cargar_contribuyente(){
 

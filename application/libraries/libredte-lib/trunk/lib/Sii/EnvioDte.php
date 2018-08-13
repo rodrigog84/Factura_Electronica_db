@@ -253,6 +253,19 @@ class EnvioDte extends \sasco\LibreDTE\Sii\Base\Envio
         return $Caratula ? $Caratula['RutEmisor'] : false;
     }
 
+
+    /**
+     * Método que entrega el rut del emisor del envío
+     * @author Esteban De La Fuente Rubio, DeLaF (esteban[at]sasco.cl)
+     * @version 2015-09-07
+     */
+    public function getFolio()
+    {
+        $Caratula = $this->getCaratula();
+        var_dump($Caratula); exit;
+        return $Caratula ? $Caratula['RutEmisor'] : false;
+    }
+
     /**
      * Método que entrega el rut del receptor del envío
      * @author Esteban De La Fuente Rubio, DeLaF (esteban[at]sasco.cl)

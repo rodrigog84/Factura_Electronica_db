@@ -58,10 +58,10 @@ class Facturaelectronica extends CI_Model
 	}
 
 
-	public function ruta_certificado(){
+	public function ruta_certificado($extension = 'p12'){
 		$base_path = __DIR__;
 		$base_path = str_replace("\\", "/", $base_path);
-		$path = $base_path . "/../../facturacion_electronica/certificado/certificado.p12";		
+		$path = $base_path . "/../../facturacion_electronica/certificado/certificado." . $extension;		
 		return $path;
 	}
 
@@ -566,24 +566,396 @@ class Facturaelectronica extends CI_Model
 
 
 
-	public function reporte_provee(){
+	public function reporte_provee($idfactura = null){
 
 	
-		$data_provee = $this->db->select("l.id, c.razon_social, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.created_at, l.procesado",false)
+		$data_provee = $this->db->select("l.id, c.razon_social, l.path, l.filename, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.created_at, l.procesado, l.content, l.proveenombre, l.proveemail",false)
 		  ->from('lectura_dte_email l')
 		  ->join('contribuyentes_autorizados_1 c','l.rutemisor = c.rut','left')
 		  ->order_by('l.id');
 
 		//$data_provee = !$limit ? $data_provee : $data_provee->limit($limit,$start);
-
+		$user_data = is_null($idfactura) ? $data_provee : $data_provee->where('l.id',$idfactura);  
 		$query = $this->db->get();
 		//echo $this->db->last_query();
 		//$result = $query->result();
 		//var_dump($result); exit;
 		// return array('cantidad' => $result_cantidad,'data' => $result);
-		return $query->result();
+		return is_null($idfactura) ? $query->result() :  $query->row();
 	}
 
+
+
+	public function lectura_dte_provee($idfactura = null){
+
+		$datos_factura = $this->reporte_provee($idfactura);
+		//print_r($datos_factura); exit;
+		$xml_archivo = './facturacion_electronica/dte_provee_tmp/'.$datos_factura->path.'/'.$datos_factura->filename;
+
+		$xml_content = "";
+		if(file_exists($xml_archivo)){
+			$xml_content = file_get_contents($xml_archivo);
+		}else{
+			$xml_content = $datos_factura->content;
+		}
+
+		// EL RECEPTOR ESPERADO DEBE SER LA EMPRESA QUE ESTÁ USANDO EL SISTEMA
+		$empresa = $this->facturaelectronica->get_empresa();
+		$RutReceptor_esperado = $empresa->rut.'-'.$empresa->dv;
+		//$RutReceptor_esperado = '1-9';
+		$RutEmisor_esperado = $datos_factura->rutemisor;
+
+		$config = $this->genera_config();
+		include_once $this->ruta_libredte();	
+		$EnvioDte = new \sasco\LibreDTE\Sii\EnvioDte();
+		$EnvioDte->loadXML($xml_content);
+
+
+		//obtenemos una sugerencia de estado del DTE
+		$estado = $EnvioDte->getEstadoValidacion(['RutReceptor'=>$RutReceptor_esperado]);
+		$RecepEnvGlosa = \sasco\LibreDTE\Sii\RespuestaEnvio::$estados['envio'][$estado];
+
+		$documentos = $EnvioDte->getDocumentos();
+
+		//ahora realizamos un analisis por documentos
+		$i = 0;
+		$RecepcionDTE = [];
+		foreach ($documentos as $DTE) {
+		    $estado = $DTE->getEstadoValidacion(['RUTEmisor'=>$RutEmisor_esperado, 'RUTRecep'=>$RutReceptor_esperado]);
+		    $RecepcionDTE[] = [
+		        'TipoDTE' => $DTE->getTipo(),
+		        'Folio' => $DTE->getFolio(),
+		        'FchEmis' => $DTE->getFechaEmision(),
+		        'RUTEmisor' => $DTE->getEmisor(),
+		        'RUTRecep' => $DTE->getReceptor(),
+		        'MntTotal' => $DTE->getMontoTotal(),
+		        'EstadoRecepDTE' => $estado,
+		        'RecepDTEGlosa' => \sasco\LibreDTE\Sii\RespuestaEnvio::$estados['documento'][$estado],
+		    ];
+		}
+
+		$array_resumen = array('idfactura' => $idfactura,
+								'estado' => $estado,
+							   'estado_Glosa' => $RecepEnvGlosa,
+							   'resumen_documentos' => $RecepcionDTE
+							);
+		return $array_resumen;
+	}
+
+
+
+	public function envia_acuse_recibo($array_acuse){
+		$this->db->trans_start();
+
+
+
+		$array_insert_acuse = array(
+							  'idlectura' => $array_acuse['idfactura'],
+							  'estado_envio' => $array_acuse['estado_envio'],
+							  'genera_mercaderias' => $array_acuse['mercaderias'] ? 1 : 0	
+							  );
+
+		$this->db->insert('fe_dte_acuse',$array_insert_acuse);
+		$idacuse = $this->db->insert_id();
+
+		foreach ($array_acuse['detalle_dte'] as $detalle_dte) {
+			$array_insert_detalle_acuse = array(
+								  'iddte' => $idacuse,
+								  'tipodte' => $detalle_dte['TipoDTE'],
+								  'folio' => $detalle_dte['Folio'],
+								  'estado_dte' => $detalle_dte['Estado'],
+								  );
+
+			$this->db->insert('fe_dte_detalle_acuse',$array_insert_detalle_acuse);
+		}
+
+		$datos_factura = $this->reporte_provee($array_acuse['idfactura']);
+		$xml_archivo = './facturacion_electronica/dte_provee_tmp/'.$datos_factura->path.'/'.$datos_factura->filename;
+
+		$xml_content = "";
+		if(file_exists($xml_archivo)){
+			$xml_content = file_get_contents($xml_archivo);
+		}else{
+			$xml_content = $datos_factura->content;
+		}
+
+		// EL RECEPTOR ESPERADO DEBE SER LA EMPRESA QUE ESTÁ USANDO EL SISTEMA
+		$empresa = $this->facturaelectronica->get_empresa();
+		$RutReceptor_esperado = $empresa->rut.'-'.$empresa->dv;
+		//$RutReceptor_esperado = '1-9';
+		$RutEmisor_esperado = $datos_factura->rutemisor;
+		$archivo_recibido = $datos_factura->filename;
+
+		$xml_recepciondte = $this->recepciondte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido,$array_acuse);
+
+
+		$xml_resultadodte = $this->resultadodte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido);
+
+
+		if($array_acuse['mercaderias']){
+			$xml_enviorecibos = $this->envio_recibosdte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido);
+
+		}
+
+		var_dump($xml_recepciondte);
+		var_dump($xml_resultadodte);
+		var_dump($xml_enviorecibos);
+
+		//falta generar los archivos
+		//falta guardar en base de datos que los archivos estan generados
+		//falta enviar por correo
+
+
+
+
+		$this->db->trans_complete();
+
+	}	
+
+
+
+	public function recepciondte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido,$array_acuse = null){
+
+		header('Content-type: text/plain; charset=ISO-8859-1');
+	 	
+		$config = $this->genera_config();
+		include_once $this->ruta_libredte();	
+		//generación de 
+		$EnvioDte = new \sasco\LibreDTE\Sii\EnvioDte();
+		$EnvioDte->loadXML($xml_content);
+		$Caratula = $EnvioDte->getCaratula();
+		$Documentos = $EnvioDte->getDocumentos();	
+
+
+		// caratula
+		$caratula = [
+		    'RutResponde' => $RutReceptor_esperado,
+		    'RutRecibe' => $Caratula['RutEmisor'],
+		    'IdRespuesta' => 1,
+		    //'NmbContacto' => '',
+		    //'MailContacto' => '',
+		];
+
+
+		// procesar cada DTE
+		$RecepcionDTE = [];
+		foreach ($Documentos as $DTE) {
+
+
+			if(is_null($array_acuse)){
+
+				$estado = $DTE->getEstadoValidacion(['RUTEmisor'=>$RutEmisor_esperado, 'RUTRecep'=>$RutReceptor_esperado]);
+			}else{
+
+				$tipoDTE = $DTE->getTipo();
+				$folio = $DTE->getFolio();
+				$estado = false;
+				foreach ($array_acuse['detalle_dte'] as $detalle_dte) {
+
+					if($detalle_dte['TipoDTE'] == $tipoDTE && $detalle_dte['Folio'] == $folio){
+
+						$estado = $detalle_dte['Estado'];
+					}
+
+
+				}
+
+				if(!$estado){
+					$estado = $DTE->getEstadoValidacion(['RUTEmisor'=>$RutEmisor_esperado, 'RUTRecep'=>$RutReceptor_esperado]);
+				}
+			}
+
+
+		    $RecepcionDTE[] = [
+		        'TipoDTE' => $DTE->getTipo(),
+		        'Folio' => $DTE->getFolio(),
+		        'FchEmis' => $DTE->getFechaEmision(),
+		        'RUTEmisor' => $DTE->getEmisor(),
+		        'RUTRecep' => $DTE->getReceptor(),
+		        'MntTotal' => $DTE->getMontoTotal(),
+		        'EstadoRecepDTE' => $estado,
+		        'RecepDTEGlosa' => \sasco\LibreDTE\Sii\RespuestaEnvio::$estados['documento'][$estado],
+		    ];
+		}
+
+
+		// armar respuesta de envío
+		$estado_dte = is_null($array_acuse) ? $EnvioDte->getEstadoValidacion(['RutReceptor'=>$RutReceptor_esperado]) : $array_acuse['estado_envio'];
+
+
+		$RespuestaEnvio = new \sasco\LibreDTE\Sii\RespuestaEnvio();
+		$RespuestaEnvio->agregarRespuestaEnvio([
+		    'NmbEnvio' => basename($archivo_recibido),
+		    'CodEnvio' => 1,
+		    'EnvioDTEID' => $EnvioDte->getID(),
+		    'Digest' => $EnvioDte->getDigest(),
+		    'RutEmisor' => $EnvioDte->getEmisor(),
+		    'RutReceptor' => $EnvioDte->getReceptor(),
+		    'EstadoRecepEnv' => $estado_dte,
+		    'RecepEnvGlosa' => \sasco\LibreDTE\Sii\RespuestaEnvio::$estados['envio'][$estado_dte],
+		    'NroDTE' => count($RecepcionDTE),
+		    'RecepcionDTE' => $RecepcionDTE,
+		]);		
+
+		//$this->load->model('facturaelectronica');
+		$config = $this->genera_config();
+		/*echo "<pre>";
+		echo $estado_dte;
+		print_r($RecepcionDTE);
+		print_r($config);
+		print_r($caratula);*/
+
+
+		//$config = $this->genera_config();
+
+		// asignar carátula y Firma
+		$RespuestaEnvio->setCaratula($caratula);
+		$RespuestaEnvio->setFirma(new \sasco\LibreDTE\FirmaElectronica($config['firma']));
+
+		// generar XML
+		$xml = $RespuestaEnvio->generar();
+
+		// validar schema del XML que se generó
+		if ($RespuestaEnvio->schemaValidate()) {
+		    // mostrar XML al usuario, deberá ser guardado y subido al SII en:
+		    // https://www4.sii.cl/pfeInternet
+		    return $xml;
+		}else{
+			return false;
+		}
+
+		
+	 }
+
+
+	 public function resultadodte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido){
+
+		header('Content-type: text/plain; charset=ISO-8859-1');
+	 	//include $this->ruta_libredte();
+
+		// Cargar EnvioDTE y extraer arreglo con datos de carátula y DTEs
+		$EnvioDte = new \sasco\LibreDTE\Sii\EnvioDte();
+		$EnvioDte->loadXML($xml_content);
+		$Caratula = $EnvioDte->getCaratula();
+		$Documentos = $EnvioDte->getDocumentos();
+
+
+		// caratula
+		$caratula = [
+		    'RutResponde' => $RutReceptor_esperado,
+		    'RutRecibe' => $Caratula['RutEmisor'],
+		    'IdRespuesta' => 1,
+		    //'NmbContacto' => '',
+		    //'MailContacto' => '',
+		];
+
+
+		// objeto para la respuesta
+		$RespuestaEnvio = new \sasco\LibreDTE\Sii\RespuestaEnvio();
+
+
+
+		// procesar cada DTE
+		$i = 1;
+		foreach ($Documentos as $DTE) {
+		    $estado = !$DTE->getEstadoValidacion(['RUTEmisor'=>$RutEmisor_esperado, 'RUTRecep'=>$RutReceptor_esperado]) ? 0 : 2;
+		    $RespuestaEnvio->agregarRespuestaDocumento([
+		        'TipoDTE' => $DTE->getTipo(),
+		        'Folio' => $DTE->getFolio(),
+		        'FchEmis' => $DTE->getFechaEmision(),
+		        'RUTEmisor' => $DTE->getEmisor(),
+		        'RUTRecep' => $DTE->getReceptor(),
+		        'MntTotal' => $DTE->getMontoTotal(),
+		        'CodEnvio' => $i++,
+		        'EstadoDTE' => $estado,
+		        'EstadoDTEGlosa' => \sasco\LibreDTE\Sii\RespuestaEnvio::$estados['respuesta_documento'][$estado],
+		    ]);
+		}
+
+		$this->load->model('facturaelectronica');
+		$config = $this->facturaelectronica->genera_config();
+
+		//$config = $this->genera_config();
+
+		// asignar carátula y Firma
+		$RespuestaEnvio->setCaratula($caratula);
+		$RespuestaEnvio->setFirma(new \sasco\LibreDTE\FirmaElectronica($config['firma']));		
+
+		// generar XML
+		$xml = $RespuestaEnvio->generar();
+
+		// validar schema del XML que se generó
+		if ($RespuestaEnvio->schemaValidate()) {
+		    // mostrar XML al usuario, deberá ser guardado y subido al SII en:
+		    // https://www4.sii.cl/pfeInternet
+		    return $xml;
+		}else{
+			return false;
+		}		
+	
+	 }
+
+
+	 public function envio_recibosdte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido){
+
+	 	$RutResponde = $RutReceptor_esperado;
+		header('Content-type: text/plain; charset=ISO-8859-1');
+	 	//include $this->ruta_libredte();
+
+
+		// Cargar EnvioDTE y extraer arreglo con datos de carátula y DTEs
+		$EnvioDte = new \sasco\LibreDTE\Sii\EnvioDte();
+		$EnvioDte->loadXML($xml_content);
+		$Caratula = $EnvioDte->getCaratula();
+		$Documentos = $EnvioDte->getDocumentos();
+
+
+		// caratula
+		$caratula = [
+		    'RutResponde' => $RutResponde,
+		    'RutRecibe' => $Caratula['RutEmisor'],
+		    //'NmbContacto' => '',
+		    //'MailContacto' => '',
+		];
+
+		$this->load->model('facturaelectronica');
+		$config = $this->facturaelectronica->genera_config();
+		//$config = $this->genera_config();
+		// objeto EnvioRecibo, asignar carátula y Firma
+		$EnvioRecibos = new \sasco\LibreDTE\Sii\EnvioRecibos();
+		$EnvioRecibos->setCaratula($caratula);
+		$EnvioRecibos->setFirma(new \sasco\LibreDTE\FirmaElectronica($config['firma']));
+		$Firma = new \sasco\LibreDTE\FirmaElectronica($config['firma']);
+		$RutFirma = $Firma->getId();
+
+		// procesar cada DTE
+		foreach ($Documentos as $DTE) {
+		    $EnvioRecibos->agregar([
+		        'TipoDoc' => $DTE->getTipo(),
+		        'Folio' => $DTE->getFolio(),
+		        'FchEmis' => $DTE->getFechaEmision(),
+		        'RUTEmisor' => $DTE->getEmisor(),
+		        'RUTRecep' => $DTE->getReceptor(),
+		        'MntTotal' => $DTE->getMontoTotal(),
+		        'Recinto' => 'Oficina central',
+		        'RutFirma' => $RutFirma,
+		    ]);
+		}
+
+		// generar XML
+		$xml = $EnvioRecibos->generar();
+
+
+		// validar schema del XML que se generó
+		if ($EnvioRecibos->schemaValidate()) {
+		    // mostrar XML al usuario, deberá ser guardado y subido al SII en:
+		    // https://www4.sii.cl/pfeInternet
+		    return $xml;
+		}else{
+			return false;
+		}		
+	
+	 }
 
 	 public function dte_compra($dte){
 	 	echo $dte['filename']."<br>";
@@ -607,7 +979,7 @@ class Facturaelectronica extends CI_Model
 
 			$documentos = $EnvioDte->getDocumentos();
 			$documento = $documentos[0];
-			print_r($documento->getResumen()); exit;
+			//print_r($documento->getResumen()); exit;
 			//echo $empresa->rut . " - " . $array_receptor_factura[0]; exit;
 
 			if($empresa->rut == $array_receptor_factura[0]){ // validamos que sea una factura de la empresa
@@ -623,7 +995,10 @@ class Facturaelectronica extends CI_Model
 									  'content' => iconv('','UTF-8//IGNORE',$dte['content']),
 									  'rutemisor' => $array_rut_emisor[0],
 									  'dvemisor' => $array_rut_emisor[1],
-									  'fecemision' => $EnvioDte->getFechaEmisionFinal()
+									  'fecemision' => $EnvioDte->getFechaEmisionFinal(),
+									  'proveenombre' => $dte['proveedor_nombre'],
+									  'proveedor_mail' => $dte['proveedor_mail']
+
 									  );
 
 				$this->db->insert('lectura_dte_email',$array_insert);

@@ -172,12 +172,17 @@ public function lectura_mail(){
 				foreach($emails as $mail) {
 				    
 				    $headerInfo = imap_headerinfo($inbox,$mail);
-				    //print_r($headerInfo);
+				    echo "<pre>";
+				    print_r($headerInfo);
 				    $output .= $headerInfo->subject.'<br/>';
 				    $output .= $headerInfo->toaddress.'<br/>';
 				    $output .= $headerInfo->date.'<br/>';
 				    $output .= $headerInfo->fromaddress.'<br/>';
 				    $output .= $headerInfo->reply_toaddress.'<br/>';
+				    $proveedor_nombre = $headerInfo->from[0]->personal;
+				    $proveedor_mail = $headerInfo->from[0]->mailbox."@".$headerInfo->from[0]->host;
+				    //var_dump($proveedor_nombre);
+				    //var_dump($proveedor_mail); exit;
 				    
 				    $emailStructure = imap_fetchstructure($inbox,$mail);
 				    //print_r($emailStructure); 
@@ -238,6 +243,8 @@ public function lectura_mail(){
 									if($attachment['is_attachment'] == 1 && substr($attachment['filename'],-3) == 'xml'){
 										$array_dtes[$num_dtes]['filename'] = $attachment['filename'];
 										$array_dtes[$num_dtes]['content'] = $attachment['attachment'];
+										$array_dtes[$num_dtes]['proveedor_mail'] = $proveedor_mail;
+										$array_dtes[$num_dtes]['proveedor_nombre'] = $proveedor_nombre;
 										$num_dtes++;
 									}
 								}

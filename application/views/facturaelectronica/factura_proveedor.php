@@ -9,14 +9,14 @@
 																	<thead> 
 																		<tr>
 																			
-																			<th>Raz&oacute;n Social</th> 
-																			<th>Rut</th> 
-																			<th>Email</th> 
-																			<th>Fecha Documento</th> 
-																			<th>Fecha Env&iacute;o</th> 
-																			<th>Fecha Lectura</th> 
-																			<th>Ver Documento</th> 
-																			<th>Respuesta</th> 
+																			<th><small>Proveedor</small></th> 
+																			<th><small>Rut</small></th> 
+																			<th><small>Email</small></th> 
+																			<th><small>Fecha Documento</small></th> 
+																			<th><small>Fecha Env&iacute;o</small></th> 
+																			<th><small>Fecha Lectura</small></th> 
+																			<th><small>Ver Documento</small></th> 
+																			<th><small>Respuesta</small></th> 
 																			
 
 																		</tr> 
@@ -26,14 +26,14 @@
 												                    <?php foreach ($datos_factura as $facturas) { ?>														
 												                    <?php //echo "<pre>"; print_r($facturas); exit; ?>
 																		<tr >
-																			<td><?php echo $facturas->razon_social;?></td>
-																			<td><?php echo $facturas->rutemisor;?></td>
-																			<td><?php echo $facturas->mail;?></td>
-																			<td><?php echo $facturas->fecemision;?></td>
-																			<td>&nbsp;</td>
-																			<td><?php echo $facturas->created_at;?></td>
-																			<td><a href="<?php echo base_url();?>facturaselectronicas/envio_respuesta/<?php echo $facturas->id;?>"><i class="fa fa-file-code-o fa-2x" ></i></a></td>
-																			<td>&nbsp;</td>
+																			<td><small><?php echo $facturas->proveenombre;?></small></td>
+																			<td><small><?php echo $facturas->rutemisor;?></small></td>
+																			<td><small><?php echo $facturas->proveemail;?></small></td>
+																			<td><small><?php echo $facturas->fecemision;?></small></td>
+																			<td><small>&nbsp;</small></td>
+																			<td><small><?php echo $facturas->created_at;?></small></td>
+																			<td><small><a href="<?php echo base_url();?>facturaselectronicas/ver_documento/<?php echo $facturas->id;?>"><i class="fa fa-file-code-o fa-2x" ></i></a></small></td>
+																			<td><small><a href="<?php echo base_url();?>facturaselectronicas/envio_respuesta/<?php echo $facturas->id;?>"><i class="fa fa-mail-reply-all fa-2x	" ></i></a></small></td>
 																		</tr> 
 												                      <?php $i++; ?>
 												                    <?php } ?>																		
@@ -47,4 +47,7 @@
                   </div> 
                   </div>
     </form>                   
+                
+
+
                 
