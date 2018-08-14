@@ -377,55 +377,6 @@ class Facturaelectronica extends CI_Model
 	 
 
 
-	public function exportFePDFCompra($idcompra){
-
-
-		$dte = $this->facturaelectronica->get_provee_by_id($idcompra);
-		$path_archivo = "./facturacion_electronica/dte_provee_tmp/".$dte->path;
-
-    	$xml_content = file_get_contents($path_archivo.$dte->filename);
-
-
-	 	include $this->ruta_libredte();
-		$EnvioDte = new \sasco\LibreDTE\Sii\EnvioDte();
-		$EnvioDte->loadXML($xml_content);
-		$Caratula = $EnvioDte->getCaratula();
-		$Documentos = $EnvioDte->getDocumentos();
-
-
-		$path_pdf = './facturacion_electronica/pdf_compra/';
-		if(!file_exists($path_pdf.$dte->path)){
-			mkdir($path_pdf.$dte->path,0777,true);
-		}	
-
-		$base_path = __DIR__;
-		$base_path = str_replace("\\", "/", $base_path);
-		$path_pdf = $base_path . "/../../facturacion_electronica/pdf_compra/".$dte->path;				
-
-		// directorio temporal para guardar los PDF
-			// procesar cada DTEs e ir agregándolo al PDF
-		foreach ($Documentos as $DTE) {
-		    if (!$DTE->getDatos())
-		        die('No se pudieron obtener los datos del DTE');
-		    $pdf = new \sasco\LibreDTE\Sii\PDF\Dte(false); // =false hoja carta, =true papel contínuo (false por defecto si no se pasa)
-		    $pdf->setFooterText();
-		    $pdf->setLogo('./facturacion_electronica/images/logo_empresa.png'); // debe ser PNG!
-		    $pdf->setResolucion(['FchResol'=>$Caratula['FchResol'], 'NroResol'=>$Caratula['NroResol']]);
-		    //$pdf->setCedible(true);
-		    $pdf->agregar($DTE->getDatos(), $DTE->getTED());
-
-		    //echo $dir.'/dte_'.$Caratula['RutEmisor'].'_'.$DTE->getID().'.pdf'; exit;
-		    $archivo = 'dte_'.$Caratula['RutEmisor'].'_'.$DTE->getID();
-		    $nombre_archivo = $archivo.".pdf";		    
-		    $pdf->Output($path_pdf.$nombre_archivo, 'FI');
-		}
-
-		//$data_archivo = basename($path_archivo.$dte->filename);
-		//print_r($xml_content); 	 	
-	}
-
-
-
 	public function get_contribuyentes(){
 
 		
@@ -569,7 +520,7 @@ class Facturaelectronica extends CI_Model
 	public function reporte_provee($idfactura = null){
 
 	
-		$data_provee = $this->db->select("l.id, c.razon_social, l.path, l.filename, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.created_at, l.procesado, l.content, l.proveenombre, l.proveemail",false)
+		$data_provee = $this->db->select("l.id, c.razon_social, l.path, l.filename, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.fecgeneraacuse,  l.created_at, l.procesado, l.content, l.proveenombre, l.proveemail",false)
 		  ->from('lectura_dte_email l')
 		  ->join('contribuyentes_autorizados_1 c','l.rutemisor = c.rut','left')
 		  ->order_by('l.id');
@@ -686,21 +637,100 @@ class Facturaelectronica extends CI_Model
 		$RutEmisor_esperado = $datos_factura->rutemisor;
 		$archivo_recibido = $datos_factura->filename;
 
-		$xml_recepciondte = $this->recepciondte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido,$array_acuse);
+		$result_recepcion = $this->recepciondte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido,$array_acuse);
+
+		$error = false;
+		if(!$result_recepcion){
+					$error = true;
+					$message = "Error en creación de Recepcion DTE.  Verifique formato y cargue nuevamente";
+
+		}else{
+			$xml_recepcion_dte = $result_recepcion;
+
+			if(!$error){
+				$result_resultado = $this->resultadodte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido);
+				if(!$result_resultado){
+					$error = true;
+					$message = "Error en creación de Resultado DTE.  Verifique formato y cargue nuevamente";
+
+				}else{
+					$xml_resultado_dte = $result_resultado;
+
+					if(!$error){
+						if($array_acuse['mercaderias']){
+							$result_envio_recibos = $this->envio_recibosdte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido);
+						}
+						if(!$result_envio_recibos){
+							$error = true;
+							$message = "Error en creación de Envio de Recibo.  Verifique formato y cargue nuevamente";
+
+						}else{
+							$xml_envio_recibosdte = $result_envio_recibos;
+						}
+
+					}
 
 
-		$xml_resultadodte = $this->resultadodte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido);
+				}
 
+			}
 
-		if($array_acuse['mercaderias']){
-			$xml_enviorecibos = $this->envio_recibosdte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido);
 
 		}
 
-		var_dump($xml_recepciondte);
-		var_dump($xml_resultadodte);
-		var_dump($xml_enviorecibos);
 
+
+// COMENZAR A ALMACENAR
+		if(!$error){
+
+			$nombre_recepcion_dte = "RecepcionDTE_".$array_acuse['idfactura']."_".date("His").".xml"; // nombre archivo
+			$nombre_resultado_dte = "ResultadoDTE_".$array_acuse['idfactura']."_".date("His").".xml"; // nombre archivo
+			$nombre_envio_recibo = "EnvioRecibo_".$array_acuse['idfactura']."_".date("His").".xml"; // nombre archivo
+			//$path_acuse = date('Ym').'/'; // ruta guardado
+			if(!file_exists('./facturacion_electronica/acuse_recibo/'.$datos_factura->path)){
+				mkdir('./facturacion_electronica/acuse_recibo/'.$datos_factura->path,0777,true);
+			}		
+
+			//archivo recepcion		
+			$f_archivo_recepcion_dte = fopen('./facturacion_electronica/acuse_recibo/'.$datos_factura->path.$nombre_recepcion_dte,'w');
+			fwrite($f_archivo_recepcion_dte,$xml_recepcion_dte);
+			fclose($f_archivo_recepcion_dte);
+
+
+			//archivo resultado		
+			$f_archivo_resultado_dte = fopen('./facturacion_electronica/acuse_recibo/'.$datos_factura->path.$nombre_resultado_dte,'w');
+			fwrite($f_archivo_resultado_dte,$xml_resultado_dte);
+			fclose($f_archivo_resultado_dte);
+
+			//archivo envio recibo	
+			$f_archivo_envio_recibo = fopen('./facturacion_electronica/acuse_recibo/'.$datos_factura->path.$nombre_envio_recibo,'w');
+			fwrite($f_archivo_envio_recibo,$xml_envio_recibosdte);
+			fclose($f_archivo_envio_recibo);
+
+			// Obtiene fecha de emisión de documento
+			$EnvioDte = new \sasco\LibreDTE\Sii\EnvioDte();
+			$EnvioDte->loadXML($xml_content);
+			$Documentos = $EnvioDte->getDocumentos();
+			$Documento = $Documentos[0];
+			$fec_documento = $Documento->getFechaEmision();
+
+			$array_insert = array(
+							'envios_recibos' => iconv('','UTF-8//IGNORE',$xml_envio_recibosdte),
+							'recepcion_dte' => iconv('','UTF-8//IGNORE',$xml_recepcion_dte),
+							'resultado_dte' => iconv('','UTF-8//IGNORE',$xml_resultado_dte),
+							'arch_env_rec' => $nombre_envio_recibo,
+							'arch_rec_dte' => $nombre_recepcion_dte,
+							'arch_res_dte' => $nombre_resultado_dte,
+							'fecgeneraacuse' => date('Ymd H:i:s')	
+							);
+
+			$this->db->where('id',$array_acuse['idfactura']);
+			$this->db->update('lectura_dte_email',$array_insert); 
+		}else{
+
+
+			return -1;
+		}
 		//falta generar los archivos
 		//falta guardar en base de datos que los archivos estan generados
 		//falta enviar por correo
@@ -711,6 +741,55 @@ class Facturaelectronica extends CI_Model
 		$this->db->trans_complete();
 
 	}	
+
+
+	public function exportFePDFCompra($idcompra){
+
+
+		$dte = $this->reporte_provee($idcompra);
+
+		$path_archivo = "./facturacion_electronica/dte_provee_tmp/".$dte->path;
+
+    	$xml_content = file_get_contents($path_archivo.$dte->filename);
+
+
+	 	include $this->ruta_libredte();
+		$EnvioDte = new \sasco\LibreDTE\Sii\EnvioDte();
+		$EnvioDte->loadXML($xml_content);
+		$Caratula = $EnvioDte->getCaratula();
+		$Documentos = $EnvioDte->getDocumentos();
+
+
+		$path_pdf = './facturacion_electronica/pdf_compra/';
+		if(!file_exists($path_pdf.$dte->path)){
+			mkdir($path_pdf.$dte->path,0777,true);
+		}	
+
+		$base_path = __DIR__;
+		$base_path = str_replace("\\", "/", $base_path);
+		$path_pdf = $base_path . "/../../facturacion_electronica/pdf_compra/".$dte->path;				
+
+		// directorio temporal para guardar los PDF
+			// procesar cada DTEs e ir agregándolo al PDF
+		foreach ($Documentos as $DTE) {
+		    if (!$DTE->getDatos())
+		        die('No se pudieron obtener los datos del DTE');
+		    $pdf = new \sasco\LibreDTE\Sii\PDF\Dte(false); // =false hoja carta, =true papel contínuo (false por defecto si no se pasa)
+		    $pdf->setFooterText();
+		    $pdf->setLogo('./facturacion_electronica/images/logo_empresa.png'); // debe ser PNG!
+		    $pdf->setResolucion(['FchResol'=>$Caratula['FchResol'], 'NroResol'=>$Caratula['NroResol']]);
+		    //$pdf->setCedible(true);
+		    $pdf->agregar($DTE->getDatos(), $DTE->getTED());
+
+		    //echo $dir.'/dte_'.$Caratula['RutEmisor'].'_'.$DTE->getID().'.pdf'; exit;
+		    $archivo = 'dte_'.$Caratula['RutEmisor'].'_'.$DTE->getID();
+		    $nombre_archivo = $archivo.".pdf";		    
+		    $pdf->Output($path_pdf.$nombre_archivo, 'FI');
+		}
+
+		//$data_archivo = basename($path_archivo.$dte->filename);
+		//print_r($xml_content); 	 	
+	}
 
 
 

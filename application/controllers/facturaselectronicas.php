@@ -484,6 +484,14 @@ class Facturaselectronicas extends CI_Controller {
     public function factura_proveedor(){
 
 
+    $resultid = $this->session->set_flashdata('factura_proveedor_result');
+    if($resultid == 1){
+                $vars['message'] = "Acuse de recibo generado correctamente";
+                $vars['classmessage'] = 'success';
+                $vars['icon'] = 'fa-check';     
+     }
+
+
         $content = array(
                     'menu' => 'Configuraciones',
                     'title' => 'Configuraciones',
@@ -500,11 +508,24 @@ class Facturaselectronicas extends CI_Controller {
         $template = "template";
         $vars['content_menu'] = $content;   
         $vars['content_view'] = 'facturaelectronica/factura_proveedor';
-
+        $vars['gritter'] = true;
         $vars['datos_factura'] = $datos_factura;   
 
         $this->load->view($template,$vars); 
     }   
+
+
+    public function ver_pdf_compra($idcompra){
+        $this->load->model('facturaelectronica');
+
+        $this->facturaelectronica->exportFePDFCompra($idcompra);
+
+        
+
+
+        
+     }
+
 
 
     public function envio_respuesta($idfactura) {
@@ -563,6 +584,8 @@ class Facturaselectronicas extends CI_Controller {
 
 
         $datos_factura = $this->facturaelectronica->envia_acuse_recibo($array_acuse);
+        $this->session->set_flashdata('factura_proveedor_result', 1);
+        redirect('facturaselectronicas/factura_proveedor');   
 
     }
 
