@@ -34,7 +34,7 @@
 																			<td><small><?php echo $facturas->fecgeneraacuse;?></small></td>
 																			<td><small><?php echo $facturas->fecenvio;?></small></td>
 																			<td><small><?php echo $facturas->created_at;?></small></td>
-																			<td><small><a href="<?php echo base_url();?>facturaselectronicas/ver_pdf_compra/<?php echo $facturas->id;?>"><i class="fa fa-file-code-o fa-2x" ></i></a></small></td>
+																			<td><small><a href="<?php echo base_url();?>facturaselectronicas/ver_pdf_compra/<?php echo $facturas->id;?>" target="_blank"><i class="fa fa-file-code-o fa-2x" ></i></a></small></td>
 																			<td><small><a href="<?php echo base_url();?>facturaselectronicas/envio_respuesta/<?php echo $facturas->id;?>"><i class="fa fa-mail-reply-all fa-2x	" ></i></a></small></td>
 																		</tr> 
 												                      <?php $i++; ?>

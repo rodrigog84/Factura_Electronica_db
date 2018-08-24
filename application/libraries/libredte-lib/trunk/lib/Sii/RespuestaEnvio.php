@@ -191,15 +191,22 @@ class RespuestaEnvio extends \sasco\LibreDTE\Sii\Base\Documento
                 ]
             ]
         ];
+
+
         if (isset($this->respuesta_envios[0])) {
             $arreglo['RespuestaDTE']['Resultado']['RecepcionEnvio'] = $this->respuesta_envios;
         } else {
             $arreglo['RespuestaDTE']['Resultado']['ResultadoDTE'] = $this->respuesta_documentos;
         }
         // generar XML del envío
+        //var_dump($arreglo); 
         $xmlEnvio = (new \sasco\LibreDTE\XML())->generate($arreglo)->saveXML();
+        //var_dump($xmlEnvio);
+
         // firmar XML del envío y entregar
         $this->xml_data = $this->Firma ? $this->Firma->signXML($xmlEnvio, '#ResultadoEnvio', 'Resultado', true) : $xmlEnvio;
+
+
         return $this->xml_data;
     }
 

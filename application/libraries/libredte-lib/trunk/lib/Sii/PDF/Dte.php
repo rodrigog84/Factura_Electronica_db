@@ -227,7 +227,7 @@ class Dte extends \sasco\LibreDTE\PDF
         $this->agregarCondPago();
         $this->agregarVendedor();
         
-        //if (!empty($dte['Referencia']))
+        if (!empty($dte['Referencia']))
             $this->agregarReferencia($dte['Referencia']);
 
         //AGREGAR RECUADRO PARA DATOS DEL DESTINATARIO
@@ -758,6 +758,7 @@ class Dte extends \sasco\LibreDTE\PDF
     private function agregarTotales(array $totales, $y = 200, $x = 145, $offset = 25)
     {
         // normalizar totales
+        //print_r($totales);exit;
         $totales = array_merge([
             'MntNeto' => false,
             'MntExe' => false,
@@ -782,7 +783,9 @@ class Dte extends \sasco\LibreDTE\PDF
             }
             foreach($ImptoReten as $i) {
                 $totales['ImptoReten_'.$i['TipoImp']] = $i['MontoImp'];
-                $glosas['ImptoReten_'.$i['TipoImp']] = \sasco\LibreDTE\Sii\ImpuestosAdicionales::getGlosa($i['TipoImp']).' ('.$i['TasaImp'].'%) $';
+               // $glosas['ImptoReten_'.$i['TipoImp']] = \sasco\LibreDTE\Sii\ImpuestosAdicionales::getGlosa($i['TipoImp']).' ('.$i['TasaImp'].'%) $';
+
+                 $glosas['ImptoReten_'.$i['TipoImp']] = \sasco\LibreDTE\Sii\ImpuestosAdicionales::getGlosa($i['TipoImp']).' $';
             }
             $totales['MntTotal'] = $MntTotal;
         }
