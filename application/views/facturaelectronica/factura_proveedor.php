@@ -15,8 +15,9 @@
 																			<th><small>Fecha Documento</small></th> 
 																			<th><small>Fecha Genera Acuse</small></th>
 																			<th><small>Fecha Env&iacute;o</small></th> 
-																			<th><small>Fecha Lectura</small></th> 
+																			<th><small>Fecha Lectura</small></th>
 																			<th><small>Ver Documento</small></th> 
+																			<th><small>Ver XML</small></th> 
 																			<th><small>Respuesta</small></th> 
 																			
 
@@ -24,7 +25,9 @@
 																	</thead> 
 																	<tbody> 
 												                    <?php $i = 1; ?>
-												                    <?php foreach ($datos_factura as $facturas) { ?>														
+												                    <?php if(count($datos_factura) > 0){ ?>
+												                    <?php foreach ($datos_factura as $facturas) { ?>	
+												                    <?php $mercaderias = $facturas->envios_recibos == 1 ? 1 : 0; ?>		
 												                    <?php //echo "<pre>"; print_r($facturas); exit; ?>
 																		<tr >
 																			<td><small><?php echo $facturas->proveenombre;?></small></td>
@@ -34,11 +37,16 @@
 																			<td><small><?php echo $facturas->fecgeneraacuse;?></small></td>
 																			<td><small><?php echo $facturas->fecenvio;?></small></td>
 																			<td><small><?php echo $facturas->created_at;?></small></td>
-																			<td><small><a href="<?php echo base_url();?>facturaselectronicas/ver_pdf_compra/<?php echo $facturas->id;?>" target="_blank"><i class="fa fa-file-code-o fa-2x" ></i></a></small></td>
-																			<td><small><a href="<?php echo base_url();?>facturaselectronicas/envio_respuesta/<?php echo $facturas->id;?>"><i class="fa fa-mail-reply-all fa-2x	" ></i></a></small></td>
+																			<td><small><a href="<?php echo base_url();?>facturaselectronicas/ver_pdf_compra/<?php echo $facturas->id;?>" target="_blank"><i class="fa fa-file-pdf-o fa-2x" ></i></a></small></td>
+																			<td><small><a href="#" class="lnk_xml" id="<?php echo $facturas->id;?>" data-toggle="modal" data-target="#show-xml" data-mercaderias="<?php echo $mercaderias;?>" data-envrec="<?php echo $facturas->arch_env_rec;?>" data-recdte="<?php echo $facturas->arch_rec_dte;?>" data-resdte="<?php echo $facturas->arch_res_dte;?>"  data-path="<?php echo $facturas->path;?>"><i class="fa fa-file-o fa-2x" ></i></a></small></td>
+																			<td><small><a href="<?php echo base_url();?>facturaselectronicas/envio_respuesta/<?php echo $facturas->id;?>" ><i class="fa fa-mail-reply-all fa-2x	" ></i></a></small></td>
 																		</tr> 
 												                      <?php $i++; ?>
-												                    <?php } ?>																		
+												                    <?php } ?>													
+												                    <?php }else{ ?>
+												                    	<tr ><td colspan="9">No existen facturas de proveedor disponibles </td></tr>
+
+												                    <?php } ?>	
 																	</tbody> 
 																</table>                           
                         </div>
@@ -50,11 +58,68 @@
                   </div>
     </form>                   
                 
-
+<div class="modal fade" id="show-xml" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Confirmar Env&iacute;o</h4>
+                </div>
+            
+                <div class="modal-body">
+                	<div class="row">
+                		<div class='col-md-4'>
+                				<div class="form-group">
+                            		<label for="caja">Env&iacute;o Recibo</label>  
+                				<a href="#" id="lnk_envio_recibos" target="_blank"><img src="<?php echo base_url();?>images/29611.svg" width="40%" height="40%"></a>
+                		</div>
+                	</div>
+                	<div class="row">
+                		<div class='col-md-4'>
+                				<div class="form-group">
+                            		<label for="caja">Recepci&oacute;n DTE</label>  
+                				<a href="#" id="lnk_recepcion_dte"  target="_blank"><img src="<?php echo base_url();?>images/29611.svg" width="40%" height="40%"></a>
+                		</div>
+                	</div>
+                	<div class="row">
+                		<div class='col-md-4'>
+                				<div class="form-group">
+                            		<label for="caja">Resultado DTE</label>  
+                				<a href="#" id="lnk_resultado_dte" target="_blank"><img src="<?php echo base_url();?>images/29611.svg" width="40%" height="40%"></a>
+                		</div>
+                	</div>                	                	
+       
+                	</div>           	                    
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 <script>
 
     $(document).ready(function() {
+
+    	$('.lnk_xml').click(function(){
+    		if($(this).data('mercaderias') == '1'){
+    			$('#lnk_envio_recibos').attr('disabled','disabled');
+    		}else{
+    			$('#lnk_envio_recibos').attr('disabled',false);
+	    		$('#lnk_envio_recibos').attr('href','<?php echo base_url();?>facturacion_electronica/acuse_recibo/'+$(this).data('path')+'/'+$(this).data('envrec'));
+
+    		}
+
+			$('#lnk_recepcion_dte').attr('href','<?php echo base_url();?>facturacion_electronica/acuse_recibo/'+$(this).data('path')+'/'+$(this).data('recdte'));
+
+
+			$('#lnk_recepcion_dte').attr('href','<?php echo base_url();?>facturacion_electronica/acuse_recibo/'+$(this).data('path')+'/'+$(this).data('recdte'));
+    	});
+
+
         <?php if(isset($message)){ ?>
 
           $.gritter.add({

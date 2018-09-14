@@ -581,8 +581,7 @@ class Facturaselectronicas extends CI_Controller {
                              'mercaderias' => isset($array_post['mercaderias']) ? true : false,
                              'detalle_dte' => $array_dte_enviados
                               );
-
-
+        print_r($array_acuse);
         $datos_factura = $this->facturaelectronica->envia_acuse_recibo($array_acuse);
         $this->session->set_flashdata('factura_proveedor_result', 1);
         redirect('facturaselectronicas/factura_proveedor');   

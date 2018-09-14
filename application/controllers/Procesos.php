@@ -172,8 +172,8 @@ public function lectura_mail(){
 				foreach($emails as $mail) {
 				    
 				    $headerInfo = imap_headerinfo($inbox,$mail);
-				    echo "<pre>";
-				    print_r($headerInfo);
+				    //echo "<pre>";
+				   // print_r($headerInfo);
 				    $output .= $headerInfo->subject.'<br/>';
 				    $output .= $headerInfo->toaddress.'<br/>';
 				    $output .= $headerInfo->date.'<br/>';

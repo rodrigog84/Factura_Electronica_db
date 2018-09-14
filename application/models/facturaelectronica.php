@@ -520,7 +520,7 @@ class Facturaelectronica extends CI_Model
 	public function reporte_provee($idfactura = null){
 
 	
-		$data_provee = $this->db->select("l.id, c.razon_social, l.path, l.filename, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.fecgeneraacuse,  l.created_at, l.procesado, l.content, l.proveenombre, l.proveemail",false)
+		$data_provee = $this->db->select("l.id, c.razon_social, l.path, l.filename, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.fecgeneraacuse,  l.created_at, l.procesado, l.content, l.proveenombre, l.proveemail, l.envios_recibos, l.path, l.arch_env_rec, l.arch_rec_dte, l.arch_res_dte",false)
 		  ->from('lectura_dte_email l')
 		  ->join('contribuyentes_autorizados_1 c','l.rutemisor = c.rut','left')
 		  ->order_by('l.id');
@@ -607,6 +607,7 @@ class Facturaelectronica extends CI_Model
 							  );
 
 		$this->db->insert('fe_dte_acuse',$array_insert_acuse);
+
 		$idacuse = $this->db->insert_id();
 
 		foreach ($array_acuse['detalle_dte'] as $detalle_dte) {
@@ -619,6 +620,8 @@ class Facturaelectronica extends CI_Model
 
 			$this->db->insert('fe_dte_detalle_acuse',$array_insert_detalle_acuse);
 		}
+
+
 
 		$datos_factura = $this->reporte_provee($array_acuse['idfactura']);
 		$xml_archivo = './facturacion_electronica/dte_provee_tmp/'.$datos_factura->path.'/'.$datos_factura->filename;
@@ -639,6 +642,7 @@ class Facturaelectronica extends CI_Model
 
 		$result_recepcion = $this->recepciondte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido,$array_acuse);
 
+
 		$error = false;
 		if(!$result_recepcion){
 					$error = true;
@@ -649,6 +653,7 @@ class Facturaelectronica extends CI_Model
 
 			if(!$error){
 				$result_resultado = $this->resultadodte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido);
+
 				if(!$result_resultado){
 					$error = true;
 					$message = "Error en creación de Resultado DTE.  Verifique formato y cargue nuevamente";
@@ -659,6 +664,9 @@ class Facturaelectronica extends CI_Model
 					if(!$error){
 						if($array_acuse['mercaderias']){
 							$result_envio_recibos = $this->envio_recibosdte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido);
+						}else{
+
+							$result_envio_recibos =  true;	
 						}
 						if(!$result_envio_recibos){
 							$error = true;
@@ -1078,7 +1086,7 @@ class Facturaelectronica extends CI_Model
 									  'dvemisor' => $array_rut_emisor[1],
 									  'fecemision' => $EnvioDte->getFechaEmisionFinal(),
 									  'proveenombre' => $dte['proveedor_nombre'],
-									  'proveedor_mail' => $dte['proveedor_mail']
+									  'proveemail' => $dte['proveedor_mail']
 
 									  );
 
