@@ -558,6 +558,52 @@ class Facturaselectronicas extends CI_Controller {
     }
 
 
+    public function envio_email_acuse($idfactura) {
+
+        $content = array(
+                    'menu' => 'Configuraciones',
+                    'title' => 'Configuraciones',
+                    'subtitle' => 'Env&iacute;o Email Respuesta');
+
+        
+
+        $this->load->model('facturaelectronica');
+        $datos_factura = $this->facturaelectronica->reporte_provee($idfactura);
+        $resumen_dte = $this->facturaelectronica->lectura_dte_provee($idfactura);
+        //var_dump($datos_factura); exit;
+
+        $vars['icheck'] = true;
+        
+        $template = "template";
+        $vars['content_menu'] = $content;   
+        $vars['content_view'] = 'facturaelectronica/envio_email_respuesta';
+
+        $vars['datos_factura'] = $datos_factura;   
+        $vars['resumen_dte'] = $resumen_dte;   
+        $vars['formValidation'] = true;
+
+        $this->load->view($template,$vars); 
+
+
+
+    }
+
+
+
+    public function envio_email_acuse_recibo(){
+
+
+        $email_respuesta = $this->input->post('responder');
+        $idfactura = $this->input->post('idfactura');
+
+          
+
+        $datos_factura = $this->facturaelectronica->envia_email_acuse_recibo($idfactura,$email_respuesta);
+        $this->session->set_flashdata('factura_proveedor_result', 1);
+        redirect('facturaselectronicas/factura_proveedor');   
+
+    }
+
 
     public function envio_acuse_recibo(){
 

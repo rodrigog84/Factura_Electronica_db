@@ -517,6 +517,87 @@ class Facturaelectronica extends CI_Model
 
 
 
+
+	public function envia_email_acuse_recibo($idfactura,$email_respuesta){
+
+
+			$factura = $this->datos_dte($idfactura);
+			$track_id = $factura->trackid;
+			$path = $factura->path_dte;
+
+			$nombre_dte = $factura->archivo_dte_cliente != '' ? $factura->archivo_dte_cliente : $factura->archivo_dte;
+			//$nombre_dte = $factura->archivo_dte;
+
+			$empresa = $this->get_empresa();
+			$datos_empresa_factura = $this->get_empresa_factura($idfactura);
+
+			$messageBody  = 'Envío de DTE<br><br>';
+	        $messageBody .= '<b>Datos Emisor:</b><br>';
+	        $messageBody .= $empresa->razon_social.'<br>';
+	        $messageBody .= 'RUT:'.$empresa->rut.'-'.$empresa->dv .'<br><br>';
+
+	        $messageBody .= '<b>Datos Receptor:</b><br>';
+	        $messageBody .= $datos_empresa_factura->nombre_cliente.'<br>';
+	        $messageBody .= 'RUT:'.substr($datos_empresa_factura->rut_cliente,0,strlen($datos_empresa_factura->rut_cliente) - 1)."-".substr($datos_empresa_factura->rut_cliente,-1) .'<br><br>';			        
+
+	        //$messageBody .= '<a href="'. base_url() .'facturas/exportFePDF_mail/'.$track_id.'" >Ver Factura</a><br><br>';
+
+	        $messageBody .= 'Este correo adjunta Documentos Tributarios Electrónicos (DTE) para el receptor electrónico indicado. Por favor responda con un acuse de recibo (RespuestaDTE) conforme al modelo de intercambio de Factura Electrónica del SII.<br><br>';
+	        $messageBody .= 'Facturación Electrónica Infosys SPA.';
+
+
+	        $email_data = $this->facturaelectronica->get_email();
+		    if(count($email_data) > 0 && !is_null($datos_empresa_factura->e_mail)){ //MAIL SE ENVÍA SÓLO EN CASO QUE TENGAMOS REGISTRADOS EMAIL DE ORIGEN Y DESTINO
+		    	$this->load->library('email');
+				$config['protocol']    = $email_data->tserver_intercambio;
+				$config['smtp_host']    = $email_data->host_intercambio;
+				$config['smtp_port']    = $email_data->port_intercambio;
+				$config['smtp_timeout'] = '7';
+				$config['smtp_user']    = $email_data->email_intercambio;
+				$config['smtp_pass']    = $email_data->pass_intercambio;
+				$config['charset']    = 'utf-8';
+				$config['newline']    = "\r\n";
+				$config['mailtype'] = 'html'; // or html
+				$config['validation'] = TRUE; // bool whether to validate email or not      			
+
+
+		        $this->email->initialize($config);		  		
+				
+			    $this->email->from($email_data->email_intercambio, 'Factura Electrónica '. NOMBRE_EMPRESA);
+			    $this->email->to($datos_empresa_factura->e_mail);
+
+			    #$this->email->bcc(array('rodrigo.gonzalez@info-sys.cl','cesar.moraga@info-sys.cl','sergio.arriagada@info-sys.cl','rene.gonzalez@info-sys.cl')); 
+			    $this->email->subject('Envio de DTE ' .$track_id . '_'.$empresa->rut.'-'.$empresa->dv."_".substr($datos_empresa_factura->rut_cliente,0,strlen($datos_empresa_factura->rut_cliente) - 1)."-".substr($datos_empresa_factura->rut_cliente,-1));
+			    $this->email->message($messageBody);
+
+			    //$this->email->attach('./facturacion_electronica/dte/'.$path.$nombre_dte);
+				$ruta =  $factura->archivo_dte_cliente != '' ? 'dte_cliente' : 'dte';
+ 			    $this->email->attach('./facturacion_electronica/' . $ruta .'/'.$path.$nombre_dte);	
+
+
+			    try {
+			      $this->email->send();
+			      //var_dump($this->email->print_debugger());
+			      	        //exit;
+			    } catch (Exception $e) {
+			      echo $e->getMessage() . '<br />';
+			      echo $e->getCode() . '<br />';
+			      echo $e->getFile() . '<br />';
+			      echo $e->getTraceAsString() . '<br />';
+			      echo "no";
+
+			    }
+			    return true;
+
+			}else{
+
+				return false;
+			}
+
+	}
+
+
+
 	public function reporte_provee($idfactura = null){
 
 	

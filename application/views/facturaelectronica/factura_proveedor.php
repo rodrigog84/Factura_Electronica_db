@@ -19,6 +19,7 @@
 																			<th><small>Ver Documento</small></th> 
 																			<th><small>Ver XML</small></th> 
 																			<th><small>Respuesta</small></th> 
+																			<th><small>Env&iacute;o Email</small></th>
 																			
 
 																		</tr> 
@@ -39,7 +40,29 @@
 																			<td><small><?php echo $facturas->created_at;?></small></td>
 																			<td><small><a href="<?php echo base_url();?>facturaselectronicas/ver_pdf_compra/<?php echo $facturas->id;?>" target="_blank"><i class="fa fa-file-pdf-o fa-2x" ></i></a></small></td>
 																			<td><small><a href="#" class="lnk_xml" id="<?php echo $facturas->id;?>" data-toggle="modal" data-target="#show-xml" data-mercaderias="<?php echo $mercaderias;?>" data-envrec="<?php echo $facturas->arch_env_rec;?>" data-recdte="<?php echo $facturas->arch_rec_dte;?>" data-resdte="<?php echo $facturas->arch_res_dte;?>"  data-path="<?php echo $facturas->path;?>"><i class="fa fa-file-o fa-2x" ></i></a></small></td>
-																			<td><small><a href="<?php echo base_url();?>facturaselectronicas/envio_respuesta/<?php echo $facturas->id;?>" ><i class="fa fa-mail-reply-all fa-2x	" ></i></a></small></td>
+																			<td><small>
+																			<?php if(is_null($facturas->fecgeneraacuse)){ ?>
+																				<a href="<?php echo base_url();?>facturaselectronicas/envio_respuesta/<?php echo $facturas->id;?>" <?php echo $facturas->fecgeneraacuse == '' ? '' : 'disabled'; ?> ><i class="fa fa-mail-reply-all fa-2x	" ></i></a>
+																			<?php }else{ ?>
+
+																				<i class="fa fa-check fa-2x	" ></i>
+
+																			<?php } ?>
+
+
+																			</small></td>
+																			<td><small>
+																			<?php if(is_null($facturas->fecgeneraacuse)){ ?>
+																				
+																				<i class="fa fa-times fa-2x	" ></i>
+
+																			<?php }else{ ?>
+
+																				<a href="<?php echo base_url();?>facturaselectronicas/envio_email_acuse/<?php echo $facturas->id;?>" <?php echo $facturas->fecgeneraacuse == '' ? '' : 'disabled'; ?> ><i class="fa fa-envelope-o fa-2x	" ></i></a>
+																			<?php } ?>
+
+
+																			</small></td>
 																		</tr> 
 												                      <?php $i++; ?>
 												                    <?php } ?>													
@@ -64,12 +87,12 @@
             
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="myModalLabel">Confirmar Env&iacute;o</h4>
+                    <h4 class="modal-title" id="myModalLabel">Descarga XML</h4>
                 </div>
             
                 <div class="modal-body">
-                	<div class="row">
-                		<div class='col-md-4'>
+                	<div class="row" >
+                		<div class='col-md-4' id="div_envio_recibos">
                 				<div class="form-group">
                             		<label for="caja">Env&iacute;o Recibo</label>  
                 				<a href="#" id="lnk_envio_recibos" target="_blank"><img src="<?php echo base_url();?>images/29611.svg" width="40%" height="40%"></a>
@@ -107,16 +130,18 @@
     	$('.lnk_xml').click(function(){
     		if($(this).data('mercaderias') == '1'){
     			$('#lnk_envio_recibos').attr('disabled','disabled');
+    			$('#div_envio_recibos').hide();
     		}else{
     			$('#lnk_envio_recibos').attr('disabled',false);
 	    		$('#lnk_envio_recibos').attr('href','<?php echo base_url();?>facturacion_electronica/acuse_recibo/'+$(this).data('path')+'/'+$(this).data('envrec'));
+	    		$('#div_envio_recibos').show();
 
     		}
 
 			$('#lnk_recepcion_dte').attr('href','<?php echo base_url();?>facturacion_electronica/acuse_recibo/'+$(this).data('path')+'/'+$(this).data('recdte'));
 
 
-			$('#lnk_recepcion_dte').attr('href','<?php echo base_url();?>facturacion_electronica/acuse_recibo/'+$(this).data('path')+'/'+$(this).data('recdte'));
+			$('#lnk_resultado_dte').attr('href','<?php echo base_url();?>facturacion_electronica/acuse_recibo/'+$(this).data('path')+'/'+$(this).data('resdte'));
     	});
 
 
