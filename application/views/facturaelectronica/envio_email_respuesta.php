@@ -42,7 +42,8 @@
                         <div class="panel-footer">
                 <!--button class = "btn btn-info" id="comando" data-toggle="modal" data-target="#confirm-send">Generar Respuesta Intercambio  </button-->
                 <input type="hidden" name="idfactura" value="<?php echo $resumen_dte['idfactura'];?>" >
-                <a href="#"  title="Generar Email Intercambio" class="btn btn-info" data-toggle="modal" data-target="#confirm-send">Generar Email Intercambio</a>
+                <!--a href="#"  title="Generar Email Intercambio" class="btn btn-info" data-toggle="modal" data-target="#confirm-send">Generar Email Intercambio</a-->
+                <input type="submit" title="Generar Email Intercambio" class="btn btn-info" value="Generar Email Intercambio">
               </div>
                  
                   </div><br><br>
@@ -50,7 +51,7 @@
 
                   </div>                  
 
-			</form>
+			         </form>
     <div class="modal fade" id="confirm-send" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -83,18 +84,18 @@
 </script>
 
  <script>
-        $('#confirm-send').on('show.bs.modal', function(e) {
+    /*    $('#confirm-send').on('show.bs.modal', function(e) {
 
             //$(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
             
         });
 
         $('#enviar_acuse').on('click',function(){
-
+          console.log("envio");
         		$('#form_envio_acuse').submit();
 
         })
-
+*/
 $(document).ready(function() {
 
          $('#form_envio_acuse').formValidation({

@@ -484,9 +484,14 @@ class Facturaselectronicas extends CI_Controller {
     public function factura_proveedor(){
 
 
-    $resultid = $this->session->set_flashdata('factura_proveedor_result');
+    $resultid = $this->session->flashdata('factura_proveedor_result');
+    //echo $resultid; exit;
     if($resultid == 1){
                 $vars['message'] = "Acuse de recibo generado correctamente";
+                $vars['classmessage'] = 'success';
+                $vars['icon'] = 'fa-check';     
+     }else if($resultid == 2){
+                $vars['message'] = "Acuse de recibo enviado correctamente";
                 $vars['classmessage'] = 'success';
                 $vars['icon'] = 'fa-check';     
      }
@@ -599,8 +604,11 @@ class Facturaselectronicas extends CI_Controller {
           
 
         $datos_factura = $this->facturaelectronica->envia_email_acuse_recibo($idfactura,$email_respuesta);
-        $this->session->set_flashdata('factura_proveedor_result', 1);
+        $this->session->set_flashdata('factura_proveedor_result', 2);
         redirect('facturaselectronicas/factura_proveedor');   
+
+
+
 
     }
 
