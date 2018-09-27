@@ -728,4 +728,38 @@ class Facturaselectronicas extends CI_Controller {
 
     }   
 
+
+
+
+    public function docto_venta(){
+
+
+    $resultid = $this->session->flashdata('factura_proveedor_result');
+
+
+
+        $content = array(
+                    'menu' => 'Facturaci&oacute;n',
+                    'title' => 'Facturaci&oacute;n',
+                    'subtitle' => 'Documentos Ventas');
+
+        
+
+        $this->load->model('facturaelectronica');
+        $datos_factura = $this->facturaelectronica->facturas_venta();
+
+
+        //var_dump($datos_factura); exit;
+
+        $template = "template";
+        $vars['content_menu'] = $content;   
+        $vars['content_view'] = 'facturaelectronica/docto_venta';
+        $vars['gritter'] = true;
+        $vars['datos_factura'] = $datos_factura;   
+
+        $this->load->view($template,$vars); 
+    }   
+
+
+
 }

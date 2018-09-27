@@ -625,6 +625,24 @@ class Facturaelectronica extends CI_Model
 	}
 
 
+	public function facturas_venta($idfactura = null){
+
+	
+		$data_provee = $this->db->select("l.id, c.razon_social, l.path, l.filename, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.fecgeneraacuse,  l.created_at, l.procesado, l.content, l.proveenombre, l.proveemail, l.envios_recibos, l.path, l.arch_env_rec, l.arch_rec_dte, l.arch_res_dte",false)
+		  ->from('lectura_dte_email l')
+		  ->join('contribuyentes_autorizados_1 c','l.rutemisor = c.rut','left')
+		  ->order_by('l.id')
+		  ->limit(3);
+
+		//$data_provee = !$limit ? $data_provee : $data_provee->limit($limit,$start);
+		$user_data = is_null($idfactura) ? $data_provee : $data_provee->where('l.id',$idfactura);  
+		$query = $this->db->get();
+		//echo $this->db->last_query();
+		//$result = $query->result();
+		//var_dump($result); exit;
+		// return array('cantidad' => $result_cantidad,'data' => $result);
+		return is_null($idfactura) ? $query->result() :  $query->row();
+	}
 
 	public function lectura_dte_provee($idfactura = null){
 
