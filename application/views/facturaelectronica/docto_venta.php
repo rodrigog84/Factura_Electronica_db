@@ -8,13 +8,16 @@
 										<table class="table"> 
 																	<thead> 
 																		<tr>
-																			
-																			<th><small>Cliente</small></th> 
-																			<th><small>Rut</small></th> 
-																			<th><small>Email</small></th> 
-																			<th><small>Fecha Documento</small></th> 
+																			<th><small>Nro. Docto</small></th> 
+                                                                            <th><small>Tipo Docto</small></th> 
+                                                                            <th><small>Fecha Emisi&oacute;n</small></th> 
+                                                                            <th><small>Fecha Venc</small></th> 
+                                                                            <th><small>Rut</small></th> 
+																			<th><small>Raz&oacute;n Social</small></th>
+																			<th><small>Total</small></th> 
 																			<th><small>Ver Documento</small></th> 
 																			<th><small>Ver XML</small></th> 
+                                                                            <th><small>Env&iacute;o DTE</small></th> 
 																			
 
 																		</tr> 
@@ -23,15 +26,18 @@
 												                    <?php $i = 1; ?>
 												                    <?php if(count($datos_factura) > 0){ ?>
 												                    <?php foreach ($datos_factura as $facturas) { ?>	
-												                    <?php $mercaderias = $facturas->envios_recibos == 1 ? 1 : 0; ?>		
 												                    <?php //echo "<pre>"; print_r($facturas); exit; ?>
 																		<tr >
-																			<td><small><?php echo $facturas->proveenombre;?></small></td>
-																			<td><small><?php echo $facturas->rutemisor;?></small></td>
-																			<td><small><?php echo $facturas->proveemail;?></small></td>
-																			<td><small><?php echo $facturas->fecemision;?></small></td>
-																			<td><small><a href="<?php echo base_url();?>facturacion_electronica/pdf/dte_76568660-1_T33F18199954.pdf" target="_blank"><i class="fa fa-file-pdf-o fa-2x" ></i></a></small></td>
-																			<td><small><a href="<?php echo base_url();?>facturacion_electronica/dte/201804/2_61_7_SII_233439.xml" target="_blank"><i class="fa fa-file-o fa-2x" ></i></a></small></td>
+																			<td><small><?php echo $facturas->num_factura;?></small></td>
+																			<td><small><?php echo $facturas->tipo_docto;?></small></td>
+																			<td><small><?php echo $facturas->fecha_factura;?></small></td>
+																			<td><small><?php echo $facturas->fecha_venc;?></small></td>
+                                                                            <td><small><?php echo substr($facturas->rut,0,strlen($facturas->rut)-1)."-".substr($facturas->rut,-1);?></small></td>
+                                                                            <td><small><?php echo $facturas->razon_social;?></small></td>
+                                                                            <td><small><?php echo number_format($facturas->totalfactura,0,".",".");?></small></td>
+																			<td><small><a href="<?php echo base_url();?>facturaselectronicas/exportPDF/<?php echo $facturas->id;?>" target="_blank"><i class="fa fa-file-pdf-o fa-2x" ></i></a></small></td>
+																			<td><small><a href="<?php echo base_url();?>facturaselectronicas/ver_dte/<?php echo $facturas->id;?>" target="_blank"><i class="fa fa-file-o fa-2x" ></i></a></small></td>
+                                                                            <td><small><a href="<?php echo base_url();?>facturaselectronicas/ver_dte/<?php echo $facturas->id;?>" target="_blank"><i class="fa fa-mail-reply-all fa-2x" ></i></a></small></td>
 																			
 																		</tr> 
 												                      <?php $i++; ?>

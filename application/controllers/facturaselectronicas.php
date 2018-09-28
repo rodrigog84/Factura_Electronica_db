@@ -731,6 +731,23 @@ class Facturaselectronicas extends CI_Controller {
 
 
 
+    public function exportPDF($idfactura){
+
+        $numero = $this->input->get('numfactura');
+        $cabecera = $this->db->get_where('factura_clientes', array('id' => $idfactura));    
+        $tipodocumento = 1;
+        foreach($cabecera->result() as $v){  
+                $tipodocumento = $v->tipo_documento; 
+        }
+
+
+        $this->load->model('facturaelectronica');
+        $this->facturaelectronica->exportFePDF($idfactura,'id');
+
+
+    }
+
+
     public function docto_venta(){
 
 

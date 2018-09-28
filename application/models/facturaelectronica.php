@@ -286,7 +286,6 @@ class Facturaelectronica extends CI_Model
 	 		$factura = $this->datos_dte_by_trackid($idfactura);
 	 	}
 
-
 	 	$nombre_pdf = is_null($cedible) ? $factura->pdf : $factura->pdf_cedible;
 
 	 	//file_exists 
@@ -625,10 +624,13 @@ class Facturaelectronica extends CI_Model
 	}
 
 
+
+
+
 	public function facturas_venta($idfactura = null){
 
 	
-		$data_provee = $this->db->select("l.id, c.razon_social, l.path, l.filename, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.fecgeneraacuse,  l.created_at, l.procesado, l.content, l.proveenombre, l.proveemail, l.envios_recibos, l.path, l.arch_env_rec, l.arch_rec_dte, l.arch_res_dte",false)
+		/*$data_provee = $this->db->select("l.id, c.razon_social, l.path, l.filename, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.fecgeneraacuse,  l.created_at, l.procesado, l.content, l.proveenombre, l.proveemail, l.envios_recibos, l.path, l.arch_env_rec, l.arch_rec_dte, l.arch_res_dte",false)
 		  ->from('lectura_dte_email l')
 		  ->join('contribuyentes_autorizados_1 c','l.rutemisor = c.rut','left')
 		  ->order_by('l.id')
@@ -637,11 +639,27 @@ class Facturaelectronica extends CI_Model
 		//$data_provee = !$limit ? $data_provee : $data_provee->limit($limit,$start);
 		$user_data = is_null($idfactura) ? $data_provee : $data_provee->where('l.id',$idfactura);  
 		$query = $this->db->get();
-		//echo $this->db->last_query();
-		//$result = $query->result();
-		//var_dump($result); exit;
-		// return array('cantidad' => $result_cantidad,'data' => $result);
 		return is_null($idfactura) ? $query->result() :  $query->row();
+		*/
+
+		$data_provee = $this->db->select("f.id
+										,f.num_factura
+										,td.descripcion as tipo_docto
+										,convert(varchar,f.fecha_factura,103) as fecha_factura
+										,convert(varchar,f.fecha_venc,103) as fecha_venc
+										,c.rut
+										,c.nombres as razon_social
+										,f.totalfactura",false)
+								  ->from('factura_clientes f')
+								  ->join('clientes c','f.id_cliente = c.id','left')
+								  ->join('tipo_documento td','f.tipo_documento = td.id','left')
+								  ->order_by('f.fecha_factura','desc')
+								  ->order_by('f.num_factura','desc');
+
+		//$data_provee = !$limit ? $data_provee : $data_provee->limit($limit,$start);
+		$user_data = is_null($idfactura) ? $data_provee : $data_provee->where('f.id',$idfactura);  
+		$query = $this->db->get();
+		return is_null($idfactura) ? $query->result() :  $query->row();		
 	}
 
 	public function lectura_dte_provee($idfactura = null){
