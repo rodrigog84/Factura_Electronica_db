@@ -520,6 +520,72 @@ class Facturaselectronicas extends CI_Controller {
     }   
 
 
+
+    public function reporte_factura_proveedor(){
+
+
+    $resultid = $this->session->flashdata('factura_proveedor_result');
+    //echo $resultid; exit;
+    if($resultid == 1){
+                $vars['message'] = "Acuse de recibo generado correctamente";
+                $vars['classmessage'] = 'success';
+                $vars['icon'] = 'fa-check';     
+     }else if($resultid == 2){
+                $vars['message'] = "Acuse de recibo enviado correctamente";
+                $vars['classmessage'] = 'success';
+                $vars['icon'] = 'fa-check';     
+     }
+
+
+            $title_libro = 'detalle_espacios_comunes';
+            $title_report = 'Detalle Cuentas Espacios Comunes';
+
+            $this->load->library('PHPExcel');
+            $this->phpexcel->setActiveSheetIndex(0);
+            $sheet = $this->phpexcel->getActiveSheet();
+            $sheet->setTitle($title_libro);
+
+
+            $sheet->getColumnDimension('A')->setWidth(5);
+
+            $sheet->mergeCells('B2:D2');
+            $sheet->setCellValue('B2', $title_report);
+            $sheet->getColumnDimension('B')->setWidth(20);
+            $sheet->setCellValue('B3', 'Nombre Comunidad');
+            $sheet->setCellValue('C3',html_entity_decode('a'));
+            $sheet->mergeCells('C3:D3');
+            $sheet->setCellValue('B4', 'Rut Comunidad');
+            $sheet->setCellValue('C4','15773067-3');          
+            $sheet->mergeCells('C4:D4');
+            $sheet->setCellValue('B5', 'Direccion Comunidad');
+            $sheet->setCellValue('C5','111');                       
+            $sheet->mergeCells('C5:D5');
+            $sheet->setCellValue('B6', 'Fecha emision Reporte');
+            $sheet->setCellValue('C6',date('d/m/Y') );
+            $sheet->mergeCells('C6:D6');
+            
+            $sheet->getStyle("B2:B6")->getFont()->setBold(true);
+            $sheet->getStyle("B2:D6")->getFont()->setSize(10);
+
+
+
+            header("Content-Type: application/vnd.ms-excel");
+            $nombreArchivo = $title_libro;
+            header("Content-Disposition: attachment; filename=\"$nombreArchivo.xls\"");
+            header("Cache-Control: max-age=0");
+            // Genera Excel
+            $writer = new PHPExcel_Writer_Excel5($this->phpexcel); //objeto de PHPExcel, para escribir en el excel
+            //$writer = new PHPExcel_Writer_Excel2007($this->phpexcel); //objeto de PHPExcel, para escribir en el excel
+            // Escribir
+            //$writer->setIncludeCharts(TRUE);          
+            $writer->save('php://output');
+            exit;           
+
+
+
+    }   
+
+
     public function ver_pdf_compra($idcompra){
         $this->load->model('facturaelectronica');
 

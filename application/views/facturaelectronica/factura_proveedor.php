@@ -1,7 +1,11 @@
 <form id="formotros" action="<?php echo base_url();?>rrhh/submit_mut_caja" method="post" role="form" enctype="multipart/form-data">
                             <div class="panel panel-inverse">                       
                                 <div class="panel-heading">
-                                      <h4 class="panel-title">Listado Facturas Proveedores</h4>
+                                      <h4 class="panel-title">Listado Facturas Proveedores
+                                      <div class="pull-right box-tools">
+                                        <h5><a href="<?php echo base_url(); ?>facturaselectronicas/reporte_factura_proveedor" style="color:white" data-toggle="tooltip" title="Exportar"><i class="fa fa-file-excel-o"></i></a></h5>
+                                     </div>
+                                     </h4>
                                   </div>
                       <div class="panel-body">
                         <div class='row'>
