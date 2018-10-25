@@ -608,7 +608,7 @@ class Facturaelectronica extends CI_Model
 	public function reporte_provee($idfactura = null){
 
 	
-		$data_provee = $this->db->select("l.id, c.razon_social, l.path, l.filename, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.fecgeneraacuse,  l.created_at, l.procesado, l.content, l.proveenombre, l.proveemail, l.envios_recibos, l.path, l.arch_env_rec, l.arch_rec_dte, l.arch_res_dte",false)
+		$data_provee = $this->db->select("0 as folio, 'Facturas' as tipo_documento, l.id, c.razon_social, l.path, l.filename, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.fecgeneraacuse,  l.created_at, l.procesado, l.content, l.proveenombre, l.proveemail, l.envios_recibos, l.path, l.arch_env_rec, l.arch_rec_dte, l.arch_res_dte, 0 as monto_afecto, 0 as monto_exento, 0 as monto_neto, 0 as iva, 0 as monto_total, convert(date,getdate()) as fec_pago_vencimiento, 'Glosa' as glosa",false)
 		  ->from('lectura_dte_email l')
 		  ->join('contribuyentes_autorizados_1 c','l.rutemisor = c.rut','left')
 		  ->order_by('l.id');
@@ -616,7 +616,7 @@ class Facturaelectronica extends CI_Model
 		//$data_provee = !$limit ? $data_provee : $data_provee->limit($limit,$start);
 		$user_data = is_null($idfactura) ? $data_provee : $data_provee->where('l.id',$idfactura);  
 		$query = $this->db->get();
-		//echo $this->db->last_query();
+		//echo $this->db->last_query(); exit;
 		//$result = $query->result();
 		//var_dump($result); exit;
 		// return array('cantidad' => $result_cantidad,'data' => $result);
@@ -1193,12 +1193,14 @@ class Facturaelectronica extends CI_Model
 
 			$documentos = $EnvioDte->getDocumentos();
 			$documento = $documentos[0];
+			var_dump($documento); exit;
 			//print_r($documento->getResumen()); exit;
 			//echo $empresa->rut . " - " . $array_receptor_factura[0]; exit;
 
 			if($empresa->rut == $array_receptor_factura[0]){ // validamos que sea una factura de la empresa
 
 				$rut_emisor = $EnvioDte->getEmisor();
+				$folio = $EnvioDte->getFolio();
 				$array_rut_emisor = explode("-",$rut_emisor);
 
 
@@ -1211,7 +1213,8 @@ class Facturaelectronica extends CI_Model
 									  'dvemisor' => $array_rut_emisor[1],
 									  'fecemision' => $EnvioDte->getFechaEmisionFinal(),
 									  'proveenombre' => $dte['proveedor_nombre'],
-									  'proveemail' => $dte['proveedor_mail']
+									  'proveemail' => $dte['proveedor_mail'],
+									  'folio' => $folio
 
 									  );
 

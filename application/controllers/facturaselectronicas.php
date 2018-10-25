@@ -8,6 +8,7 @@ class Facturaselectronicas extends CI_Controller {
 		$this->load->library('session');
 		$this->load->database();
 		$this->load->model('facturaelectronica');
+        $this->load->helper('format');
 	}
 
 	
@@ -536,37 +537,132 @@ class Facturaselectronicas extends CI_Controller {
                 $vars['icon'] = 'fa-check';     
      }
 
+            
 
-            $title_libro = 'detalle_espacios_comunes';
-            $title_report = 'Detalle Cuentas Espacios Comunes';
+
+            $title_libro = 'Dte Recibidos';
+            $title_report = 'Reporte DTE Recibidos';
 
             $this->load->library('PHPExcel');
             $this->phpexcel->setActiveSheetIndex(0);
             $sheet = $this->phpexcel->getActiveSheet();
             $sheet->setTitle($title_libro);
+            //$datos_factura = $this->facturaelectronica->reporte_provee();
+
+            $i = 1;
+
+             $sheet->getColumnDimension('A')->setWidth(20);
+             $sheet->setCellValue('A'.$i, 'Tipo Documento');
+             $sheet->getColumnDimension('B')->setWidth(20);
+             $sheet->setCellValue('B'.$i, 'Rut Proveedor');
+             $sheet->getColumnDimension('C')->setWidth(25);
+             $sheet->setCellValue('C'.$i, 'Folio');
+             $sheet->getColumnDimension('D')->setWidth(15);
+             $sheet->setCellValue('D'.$i, 'Fecha Emisión Documento');
+             $sheet->getColumnDimension('E')->setWidth(15);
+             $sheet->setCellValue('E'.$i, 'Fecha Pago Vencimiento');
+             $sheet->getColumnDimension('F')->setWidth(17);
+             $sheet->setCellValue('F'.$i, 'Monto Total');            
+             $sheet->getColumnDimension('G')->setWidth(17);
+             $sheet->setCellValue('G'.$i, 'Monto Afecto');            
+             $sheet->getColumnDimension('H')->setWidth(17);
+             $sheet->setCellValue('H'.$i, 'Monto Exento');            
+             $sheet->getColumnDimension('I')->setWidth(17);
+             $sheet->setCellValue('I'.$i, 'Monto Neto');            
+             $sheet->getColumnDimension('J')->setWidth(17);
+             $sheet->setCellValue('J'.$i, 'IVA');                                                   
+             $sheet->getColumnDimension('K')->setWidth(17);
+             $sheet->setCellValue('K'.$i, 'Glosa');  
+
+             $columnaFinal = 10;
+
+             $columnaTotales = 11;
+             $sheet->getStyle("A".$i.":".ordenLetrasExcel($columnaFinal).$i)->getFont()->setBold(true);
+             $datos_factura = $this->facturaelectronica->reporte_provee();
 
 
-            $sheet->getColumnDimension('A')->setWidth(5);
+             $i++;
+                $filaInicio = $i-1; 
+                
+                //$sheet->getStyle("B7:I7")->getFont()->setSize(11);  
+                $linea = 1;
+                foreach ($datos_factura as $factura) {
+                    $sheet->setCellValue("A".$i,$factura->tipo_documento);
+                    $sheet->setCellValue("B".$i,$factura->rutemisor);
+                    $sheet->setCellValue("C".$i,$factura->folio);
+                    $sheet->setCellValue("D".$i,$factura->fecemision);
+                    $sheet->setCellValue("E".$i,$factura->fec_pago_vencimiento);
+                    $sheet->setCellValue("F".$i,$factura->monto_total);
+                    $sheet->getStyle('F'.$i)->getNumberFormat()->setFormatCode('#,##0');
+                    $sheet->setCellValue("G".$i,$factura->monto_afecto);
+                    $sheet->getStyle('G'.$i)->getNumberFormat()->setFormatCode('#,##0');
+                    $sheet->setCellValue("H".$i,$factura->monto_exento);
+                    $sheet->getStyle('H'.$i)->getNumberFormat()->setFormatCode('#,##0');
+                    $sheet->setCellValue("I".$i,$factura->monto_neto);
+                    $sheet->getStyle('I'.$i)->getNumberFormat()->setFormatCode('#,##0');
+                    $sheet->setCellValue("J".$i,$factura->iva);
+                    $sheet->getStyle('J'.$i)->getNumberFormat()->setFormatCode('#,##0');
+                    $sheet->setCellValue("K".$i,$factura->glosa);                                                            
+                    if($i % 2 != 0){
+                        //echo "consulta 4: -- i : ".$i. "  -- mod : ". ($i % 2)."<br>";
+                        $sheet->getStyle("A".$i.":".ordenLetrasExcel($columnaFinal).$i)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+                        $sheet->getStyle("A".$i.":".ordenLetrasExcel($columnaFinal).$i)->getFill()->getStartColor()->setRGB('F7F9FD');                  
+                    }                   
+                    $i++;
+                    $linea++;
+                }
 
-            $sheet->mergeCells('B2:D2');
-            $sheet->setCellValue('B2', $title_report);
-            $sheet->getColumnDimension('B')->setWidth(20);
-            $sheet->setCellValue('B3', 'Nombre Comunidad');
-            $sheet->setCellValue('C3',html_entity_decode('a'));
-            $sheet->mergeCells('C3:D3');
-            $sheet->setCellValue('B4', 'Rut Comunidad');
-            $sheet->setCellValue('C4','15773067-3');          
-            $sheet->mergeCells('C4:D4');
-            $sheet->setCellValue('B5', 'Direccion Comunidad');
-            $sheet->setCellValue('C5','111');                       
-            $sheet->mergeCells('C5:D5');
-            $sheet->setCellValue('B6', 'Fecha emision Reporte');
-            $sheet->setCellValue('C6',date('d/m/Y') );
-            $sheet->mergeCells('C6:D6');
+                 $i--;      
+
+
             
-            $sheet->getStyle("B2:B6")->getFont()->setBold(true);
-            $sheet->getStyle("B2:D6")->getFont()->setSize(10);
+            $sheet->getStyle("A" . $filaInicio . ":".ordenLetrasExcel($columnaFinal).$i)->getFont()->setSize(10);
 
+            /*************************todos los bordes internos *************************************/
+            $sheet->getStyle("A".$filaInicio.":".ordenLetrasExcel($columnaFinal).$i)->getBorders()->getAllBorders()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+
+
+            /*************************bordes cuadro principal (externo) *************************************/
+                    for($j=1;$j<=$columnaFinal;$j++){ //borde superior
+                        $sheet->getStyle(ordenLetrasExcel($j).$filaInicio)->getBorders()->getTop()->setBorderStyle(PHPExcel_Style_Border::BORDER_MEDIUM);
+                    }
+            
+                    for($j=0;$j<=$columnaFinal;$j++){ //borde inferior
+                        $sheet->getStyle(ordenLetrasExcel($j).$i)->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_MEDIUM);
+                    }
+            
+                    for($n=$filaInicio;$n<=$i;$n++){ //borde izquierdo
+                        $sheet->getStyle("A".$n)->getBorders()->getLeft()->setBorderStyle(PHPExcel_Style_Border::BORDER_MEDIUM);
+                    }
+            
+                    for($n=$filaInicio;$n<=$i;$n++){ //borde derecho
+                        $sheet->getStyle(ordenLetrasExcel($columnaFinal).$n)->getBorders()->getRight()->setBorderStyle(PHPExcel_Style_Border::BORDER_MEDIUM);
+                    }
+            
+            /**********************************************************************************************************/    
+
+
+            /***************************** Segundo borde superior********************************************************/
+            
+                    for($j=0;$j<=$columnaFinal;$j++){ //borde inferior
+                        $sheet->getStyle(ordenLetrasExcel($j).$filaInicio)->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_MEDIUM);
+                    }
+            
+            /******************************************************************************************************/
+
+
+            /***************************** Color fila superior********************************************************/
+            
+                    for($j=0;$j<=$columnaFinal;$j++){ //color fondo inferior
+                        $sheet->getStyle(ordenLetrasExcel($j).$filaInicio)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+                        $sheet->getStyle(ordenLetrasExcel($j).$filaInicio)->getFill()->getStartColor()->setRGB('E8EDFF');
+                    }
+            
+            /******************************************************************************************************/
+
+
+
+            $sheet->setSelectedCells('A1'); //celda seleccionada
 
 
             header("Content-Type: application/vnd.ms-excel");
