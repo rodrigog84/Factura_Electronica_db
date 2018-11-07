@@ -571,10 +571,8 @@ class Facturaselectronicas extends CI_Controller {
              $sheet->setCellValue('I'.$i, 'Monto Neto');            
              $sheet->getColumnDimension('J')->setWidth(17);
              $sheet->setCellValue('J'.$i, 'IVA');                                                   
-             $sheet->getColumnDimension('K')->setWidth(17);
-             $sheet->setCellValue('K'.$i, 'Glosa');  
 
-             $columnaFinal = 10;
+             $columnaFinal = 9;
 
              $columnaTotales = 11;
              $sheet->getStyle("A".$i.":".ordenLetrasExcel($columnaFinal).$i)->getFont()->setBold(true);
@@ -602,7 +600,7 @@ class Facturaselectronicas extends CI_Controller {
                     $sheet->getStyle('I'.$i)->getNumberFormat()->setFormatCode('#,##0');
                     $sheet->setCellValue("J".$i,$factura->iva);
                     $sheet->getStyle('J'.$i)->getNumberFormat()->setFormatCode('#,##0');
-                    $sheet->setCellValue("K".$i,$factura->glosa);                                                            
+                    //$sheet->setCellValue("K".$i,$factura->glosa);                                                            
                     if($i % 2 != 0){
                         //echo "consulta 4: -- i : ".$i. "  -- mod : ". ($i % 2)."<br>";
                         $sheet->getStyle("A".$i.":".ordenLetrasExcel($columnaFinal).$i)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);

@@ -153,13 +153,12 @@ public function lectura_mail(){
 				$imapPath = '{imap.gmail.com:993/imap/ssl/novalidate-cert}INBOX';
 				$username = $email_data->email_contacto;
 				$password = $email_data->pass_contacto;
-				 
 				// try to connect 
 				$inbox = imap_open($imapPath,$username,$password) or die('Cannot connect to Gmail: ' . imap_last_error());
 
 
 			   // $emails = imap_search($inbox,'SUBJECT "Envio de DTEs"  SINCE "01-08-2017" UNSEEN' );
-			    $date = date ( "j F Y", strToTime ( "-5 days" ) );
+			    $date = date ( "j F Y", strToTime ( "-20 days" ) );
 			   // echo $date; exit;
 			     $emails = imap_search($inbox,'SUBJECT "Envio de DTEs" SINCE "' . $date . '" ' );
 			     
@@ -258,7 +257,7 @@ public function lectura_mail(){
 					}
 
 				}
-
+				//print_r($array_dtes); exit;
 
 				foreach ($array_dtes as $dte) {
 					$codproceso = $this->facturaelectronica->dte_compra($dte);

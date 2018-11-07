@@ -608,9 +608,10 @@ class Facturaelectronica extends CI_Model
 	public function reporte_provee($idfactura = null){
 
 	
-		$data_provee = $this->db->select("0 as folio, 'Facturas' as tipo_documento, l.id, c.razon_social, l.path, l.filename, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.fecgeneraacuse,  l.created_at, l.procesado, l.content, l.proveenombre, l.proveemail, l.envios_recibos, l.path, l.arch_env_rec, l.arch_rec_dte, l.arch_res_dte, 0 as monto_afecto, 0 as monto_exento, 0 as monto_neto, 0 as iva, 0 as monto_total, convert(date,getdate()) as fec_pago_vencimiento, 'Glosa' as glosa",false)
+		$data_provee = $this->db->select("folio, caf.nombre as tipo_documento, l.id, c.razon_social, l.path, l.filename, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.fecgeneraacuse,  l.created_at, l.procesado, l.content, l.proveenombre, l.proveemail, l.envios_recibos, l.path, l.arch_env_rec, l.arch_rec_dte, l.arch_res_dte, monto_afecto, monto_exento, monto_neto, iva, monto_total, fecvenc as fec_pago_vencimiento",false)
 		  ->from('lectura_dte_email l')
 		  ->join('contribuyentes_autorizados_1 c','l.rutemisor = c.rut','left')
+		  ->join('tipo_caf caf','l.tipodoc = caf.id','left')
 		  ->order_by('l.id');
 
 		//$data_provee = !$limit ? $data_provee : $data_provee->limit($limit,$start);
@@ -1192,43 +1193,59 @@ class Facturaelectronica extends CI_Model
 			$array_receptor_factura = explode("-",$receptor_factura);
 
 			$documentos = $EnvioDte->getDocumentos();
-			$documento = $documentos[0];
-			var_dump($documento); exit;
+			//$documento = $documentos[0];
+			//var_dump($documento->getDatos()); exit;
 			//print_r($documento->getResumen()); exit;
 			//echo $empresa->rut . " - " . $array_receptor_factura[0]; exit;
+			foreach ($documentos as $DTE) {
+				if($empresa->rut == $array_receptor_factura[0]){ // validamos que sea una factura de la empresa
 
-			if($empresa->rut == $array_receptor_factura[0]){ // validamos que sea una factura de la empresa
-
-				$rut_emisor = $EnvioDte->getEmisor();
-				$folio = $EnvioDte->getFolio();
-				$array_rut_emisor = explode("-",$rut_emisor);
-
-
-				$path = date('Ym').'/'; // ruta guardado
-				$array_insert = array(
-									  'path' => $path,
-									  'filename' => $dte['filename'],
-									  'content' => iconv('','UTF-8//IGNORE',$dte['content']),
-									  'rutemisor' => $array_rut_emisor[0],
-									  'dvemisor' => $array_rut_emisor[1],
-									  'fecemision' => $EnvioDte->getFechaEmisionFinal(),
-									  'proveenombre' => $dte['proveedor_nombre'],
-									  'proveemail' => $dte['proveedor_mail'],
-									  'folio' => $folio
-
-									  );
-
-				$this->db->insert('lectura_dte_email',$array_insert);
+					$rut_emisor = $EnvioDte->getEmisor();
+				//	echo "<pre>";
+					$folio = $DTE->getFolio();
+					$array_datos = $DTE->getDatos();
+				//	var_dump($array_datos['Encabezado']['IdDoc']['FchVenc']);
+					$monto_total = $DTE->getMontoTotal();
 
 
-				
+					$resumen = $DTE->getResumen();
+					$array_rut_emisor = explode("-",$rut_emisor);
+
+
+					$path = date('Ym').'/'; // ruta guardado
+					$array_insert = array(
+										  'path' => $path,
+										  'filename' => $dte['filename'],
+										  'content' => iconv('','UTF-8//IGNORE',$dte['content']),
+										  'rutemisor' => $array_rut_emisor[0],
+										  'dvemisor' => $array_rut_emisor[1],
+										  'fecemision' => $EnvioDte->getFechaEmisionFinal(),
+										  'proveenombre' => $dte['proveedor_nombre'],
+										  'proveemail' => $dte['proveedor_mail'],
+										  'folio' => $folio,
+										  'monto_total' => $monto_total,
+										  'monto_neto' => $resumen['MntNeto'],
+										  'monto_exento' => $resumen['MntExe'],
+										  'iva' => $resumen['MntIVA'],
+										  'monto_afecto' => $resumen['MntIVA'] == 0 ? 0 : $resumen['MntNeto'] ,
+										  'fecvenc' => $array_datos['Encabezado']['IdDoc']['FchVenc'],
+										  'tipodoc' => $array_datos['Encabezado']['IdDoc']['TipoDTE']
+										  );
+
+					$this->db->insert('lectura_dte_email',$array_insert);
+
+
+					
+
+
+				}
+
 				if(!file_exists('./facturacion_electronica/dte_provee_tmp/' . $path . '/')){
 					mkdir('./facturacion_electronica/dte_provee_tmp/' . $path . '/',0777,true);
 				}				
 				$f_archivo = fopen('./facturacion_electronica/dte_provee_tmp/' . $path . '/' .$dte['filename'],'w');
 				fwrite($f_archivo,$dte['content']);
-				fclose($f_archivo);	
-
+				fclose($f_archivo);					
 			}
 
 		
