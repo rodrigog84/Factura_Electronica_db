@@ -17,9 +17,9 @@ class Main extends CI_Controller {
       		if(!$this->session->userdata('menu_list')){
       			$this->session->set_userdata('menu_list',json_decode($this->ion_auth_model->get_menu($this->session->userdata('user_id'))));
       		}
-      		if($this->router->fetch_class()."/".$this->router->fetch_method() != "main/dashboard" && !$this->session->userdata('comunidadid') && ($this->session->userdata('level') == 1 || $this->session->userdata('level') == 3)){
+      		/*if($this->router->fetch_class()."/".$this->router->fetch_method() != "main/dashboard" && !$this->session->userdata('comunidadid')  ){
 				      		redirect('main/dashboard');      			
-      		}
+      		}*/
       }
       
    }
@@ -47,14 +47,14 @@ class Main extends CI_Controller {
 					'subtitle' => 'Panel de Control');
 
 
-		
+		//echo $this->session->userdata('level') ; exit;
 		$vars['content_menu'] = $content;				
 		
 
 		$vars['content_view'] = 'dashboard';
 		$template = "template";
-
-		if($this->session->userdata('level') == 2){
+		//echo $this->session->userdata('empresaid'); exit;
+		if($this->session->userdata('level') == 1){
 			// SI YA SELECCIONO COMUNIDAD, NO ES NECESARIO ELEGIR NUEVAMENTE
 			$unidad_id = $unidad_id == '' && $this->session->userdata('empresaid') ? $this->session->userdata('empresaid') : $unidad_id;
 

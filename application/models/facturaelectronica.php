@@ -61,7 +61,8 @@ class Facturaelectronica extends CI_Model
 	public function ruta_certificado($extension = 'p12'){
 		$base_path = __DIR__;
 		$base_path = str_replace("\\", "/", $base_path);
-		$path = $base_path . "/../../facturacion_electronica/certificado/certificado." . $extension;		
+		$path = $base_path . "/../../facturacion_electronica/certificado/certificado_" .  $this->session->userdata('empresaid') ."." .$extension;		
+		//echo $path; exit;
 		return $path;
 	}
 
@@ -123,6 +124,7 @@ class Facturaelectronica extends CI_Model
 	public function get_empresa(){
 		$this->db->select('rut, dv, razon_social, giro, cod_actividad, dir_origen, comuna_origen, fec_resolucion, nro_resolucion, logo, idregion, idcomuna, telefono, mail ')
 		  ->from('empresa')
+		  ->where('idempresa',$this->session->userdata('empresaid'))
 		  ->limit(1);
 		$query = $this->db->get();
 		return $query->row();
@@ -1533,6 +1535,7 @@ class Facturaelectronica extends CI_Model
 						  ->from('folios_caf f')
 						  ->join('caf c','f.idcaf = c.id')
 						  ->where('c.tipo_caf',$tipo_documento)
+						  ->where('c.idempresa',$this->session->userdata('empresaid'))
 						  ->where("f.estado = 'P'");
 		$query = $this->db->get();
 		$folios_existentes = $query->result();				
@@ -1779,13 +1782,13 @@ class Facturaelectronica extends CI_Model
 			$query = $this->db->get();
 			$data_csv = $query->result();
 
-			if($docto->tipocaf == 33){
+			/*if($docto->tipocaf == 33){
 				$docto->folio = 1;
 			}else if($docto->tipocaf == 34){
 				$docto->folio = 23;
 			}else if($docto->tipocaf == 61){
 				$docto->folio = 2;
-			}
+			}*/
 
 
 			//$datos_folio = $this->get_content_caf_folio($docto->folio,$docto->tipocaf);
@@ -1887,7 +1890,7 @@ class Facturaelectronica extends CI_Model
 				}// FIN REGCSV
 				//echo $tipodocumento."<br>";
 
-				if($tipodocumento == 101 || $tipodocumento == 102 || $tipodocumento == 103 || $tipodocumento == 104){  // SI ES FACTURA ELECTRONICA O NOTA DE CRÉDITO O FACTURA EXENTA ELECTRONICA O NOTA DE DEBITO
+				if($tipodocumento == 101 || $tipodocumento == 102 || $tipodocumento == 103 || $tipodocumento == 104|| $tipodocumento == 107){  // SI ES FACTURA ELECTRONICA O NOTA DE CRÉDITO O FACTURA EXENTA ELECTRONICA O NOTA DE DEBITO O FACTURA DE COMPRA
 
 							$tipo_caf = $docto->tipocaf;
 

@@ -98,7 +98,7 @@ class Facturaselectronicas extends CI_Controller {
 		$empresa = $this->facturaelectronica->get_empresa();
 		$tipo_caf = $this->input->post('tipoCaf');
         $config['upload_path'] = "./facturacion_electronica/images/"	;
-        $config['file_name'] = 'logo_empresa';
+        $config['file_name'] = 'logo_empresa_'.$this->session->userdata('empresaid');
         $config['allowed_types'] = "*";
         $config['max_size'] = "10240";
         $config['overwrite'] = TRUE;
@@ -136,7 +136,8 @@ class Facturaselectronicas extends CI_Controller {
                         'idcomuna' => $comuna,
                         'telefono' => $this->input->post('telefono'),                        
                         'mail' => $this->input->post('mail'),  
-    					'logo' => 'logo_empresa.png'
+    					'logo' => 'logo_empresa_'.$this->session->userdata('empresaid').'.png',
+                        'idempresa' => $this->session->userdata('empresaid')
     			);
         	if(count($empresa) > 0){ //actualizar
         		$this->db->where('id',1);
@@ -147,6 +148,11 @@ class Facturaselectronicas extends CI_Controller {
 
 	        	$carga = true;
 				$this->db->insert('empresa',$data_empresa);
+
+                $data_param = array('nombre' => 'rut_empresa',
+                                    'valor' => str_replace(".","",$array_rut[0])."-".$array_rut[1],
+                                    'idempresa' => $this->session->userdata('empresaid'));
+                $this->db->insert('param_fe',$data_param);
 
         	}
 
@@ -218,7 +224,7 @@ class Facturaselectronicas extends CI_Controller {
         $password_encrypt = md5($password.SALT);
         $config['upload_path'] = "./facturacion_electronica/certificado/"	;
 
-        $config['file_name'] = "certificado";
+        $config['file_name'] = "certificado_".$this->session->userdata('empresaid');
         $config['allowed_types'] = "*";
         $config['max_size'] = "10240";
         $config['overwrite'] = TRUE;
@@ -245,11 +251,37 @@ class Facturaselectronicas extends CI_Controller {
 
         }
 
-        $this->db->where('nombre', 'cert_password');
-        $this->db->update('param_fe',array('valor' => $password)); 
+        $this->db->select('valor ')
+          ->from('param_fe')
+          ->where('nombre','cert_password')
+          ->where('idempresa',$this->session->userdata('empresaid'));
+        $query_valida_param = $this->db->get();
+        if(count($query_valida_param->result()) > 0){
 
-        $this->db->where('nombre', 'cert_password_encrypt'); //veremos si se puede usar la password encriptada
-        $this->db->update('param_fe',array('valor' => $password_encrypt));         
+            $this->db->where('nombre', 'cert_password');
+            $this->db->where('idempresa', $this->session->userdata('empresaid'));
+            $this->db->update('param_fe',array('valor' => $password)); 
+
+            $this->db->where('nombre', 'cert_password_encrypt'); //veremos si se puede usar la password encriptada
+            $this->db->where('idempresa', $this->session->userdata('empresaid'));
+            $this->db->update('param_fe',array('valor' => $password_encrypt));   
+
+        }else{
+            $data_param_1 = array('nombre' => 'cert_password',
+                                  'valor' => $password,
+                                    'idempresa' =>$this->session->userdata('empresaid')  );
+
+            $this->db->insert('param_fe',$data_param_1);
+
+
+            $data_param_2 = array('nombre' => 'cert_password_encrypt',
+                                  'valor' => $password_encrypt,
+                                    'idempresa' =>$this->session->userdata('empresaid')  );
+
+            $this->db->insert('param_fe',$data_param_2);
+
+        }
+      
    		$dataupload = $this->upload->data();
 
         $vars['content_menu'] = $content;   
@@ -277,17 +309,20 @@ class Facturaselectronicas extends CI_Controller {
 
         $cant_33 = $this->facturaelectronica->estado_tipo_documento(33);
         $cant_34 = $this->facturaelectronica->estado_tipo_documento(34);
+        $cant_46 = $this->facturaelectronica->estado_tipo_documento(46);
         $cant_56 = $this->facturaelectronica->estado_tipo_documento(56);
         $cant_61 = $this->facturaelectronica->estado_tipo_documento(61);
 
 
         $array_folios[33]['message'] = $cant_33 > 0 ? $cant_33.$message_si : $message_no;
         $array_folios[34]['message'] = $cant_34 > 0 ? $cant_34.$message_si : $message_no;
+        $array_folios[46]['message'] = $cant_46 > 0 ? $cant_46.$message_si : $message_no;
         $array_folios[56]['message'] = $cant_56 > 0 ? $cant_56.$message_si : $message_no;
         $array_folios[61]['message'] = $cant_61 > 0 ? $cant_61.$message_si : $message_no;
 
         $array_folios[33]['style'] = $cant_33 > 0 ? 'text-success' : 'text-warning';
         $array_folios[34]['style'] = $cant_34 > 0 ? 'text-success' : 'text-warning';
+        $array_folios[46]['style'] = $cant_46 > 0 ? 'text-success' : 'text-warning';
         $array_folios[56]['style'] = $cant_56 > 0 ? 'text-success' : 'text-warning';
         $array_folios[61]['style'] = $cant_61 > 0 ? 'text-success' : 'text-warning';
 
@@ -351,7 +386,7 @@ class Facturaselectronicas extends CI_Controller {
 
         $tipo_caf = $this->input->post('tipoCaf');
         $config['upload_path'] = "./facturacion_electronica/caf/"   ;
-        $config['file_name'] = $tipo_caf."_".date("Ymdhis");
+        $config['file_name'] = $tipo_caf."_".$this->session->userdata('empresaid')."_".date("Ymdhis");
         $config['allowed_types'] = "*";
         $config['max_size'] = "10240";
         $config['overwrite'] = TRUE;
@@ -396,7 +431,8 @@ class Facturaselectronicas extends CI_Controller {
 
                 $this->db->select('valor ')
                   ->from('param_fe')
-                  ->where('nombre','rut_empresa');
+                  ->where('nombre','rut_empresa')
+                  ->where('idempresa',$this->session->userdata('empresaid'));
                 $query = $this->db->get();
                 $parametro = $query->row(); 
 
@@ -420,6 +456,7 @@ class Facturaselectronicas extends CI_Controller {
                                   ->from('folios_caf f')
                                   ->join('caf c','f.idcaf = c.id')
                                   ->where('c.tipo_caf',$tipo_caf)
+                                  ->where('c.idempresa',$this->session->userdata('empresaid'))
                                   ->where('f.folio between ' . $folio_desde . ' and ' . $folio_hasta);
 
                 $query = $this->db->get();
@@ -437,6 +474,7 @@ class Facturaselectronicas extends CI_Controller {
                         'fh' => $folio_hasta,                   
                         'archivo' => $config['file_name'].".xml",
                         'caf_content' => $xml_content,
+                        'idempresa' => $this->session->userdata('empresaid')
                         );
                     $this->db->insert('caf',$data_array); 
                     $idcaf = $this->db->insert_id();
@@ -468,7 +506,6 @@ class Facturaselectronicas extends CI_Controller {
 
 
         }
-
 
 
         if($error && $carga){
@@ -513,6 +550,7 @@ class Facturaselectronicas extends CI_Controller {
 
         $template = "template";
         $vars['content_menu'] = $content;   
+        $vars['datatable'] = true;
         $vars['content_view'] = 'facturaelectronica/factura_proveedor';
         $vars['gritter'] = true;
         $vars['datos_factura'] = $datos_factura;   
@@ -932,6 +970,7 @@ class Facturaselectronicas extends CI_Controller {
         $vars['content_menu'] = $content;   
         $vars['content_view'] = 'facturaelectronica/docto_venta';
         $vars['gritter'] = true;
+        $vars['datatable'] = true;
         $vars['datos_factura'] = $datos_factura;   
 
         $this->load->view($template,$vars); 

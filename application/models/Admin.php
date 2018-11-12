@@ -479,8 +479,8 @@ class Admin extends CI_Model
 	public function empresas_asignadas($userid,$levelid,$empresaid = null){
 
 		$empresa_data = $this->db->select('c.id_empresa, c.nombre ')
-						  ->from('rem_empresa as c')
-						  ->join('rem_usuario_empresa as uc','c.id_empresa = uc.id_empresa')
+						  ->from('fe_empresa as c')
+						  ->join('fe_usuario_empresa as uc','c.id_empresa = uc.id_empresa')
 		                  ->where('uc.idusuario', $userid)
 		                  ->where('c.active = 1')
 		                  ->order_by('c.nombre asc');
