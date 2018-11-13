@@ -10,13 +10,13 @@ class Procesos extends CI_Controller {
 	}
 
 
-	public function lectura_db_fe(){
+	public function lectura_db_fe($idempresa){
 
 
 						$this->load->model('facturaelectronica');
-						//$codproceso = $this->facturaelectronica->guarda_doc_proc();
-						$codproceso = 'sjX9NBbZ9M';
-						$this->facturaelectronica->crea_dte_db($codproceso);
+						$codproceso = $this->facturaelectronica->guarda_doc_proc($idempresa);
+						//$codproceso = 'sjX9NBbZ9M';
+						$this->facturaelectronica->crea_dte_db($codproceso,$idempresa);
 		        
 
 
@@ -138,13 +138,13 @@ class Procesos extends CI_Controller {
 
 
 
-public function lectura_mail(){
+public function lectura_mail($idempresa){
 
 		set_time_limit(4000); 
 		 
 		// Connect to gmail
 		$this->load->model('facturaelectronica');
-		$email_data = $this->facturaelectronica->get_email();
+		$email_data = $this->facturaelectronica->get_email($idempresa);
 
 		if(count($email_data) > 0){
 
@@ -260,7 +260,7 @@ public function lectura_mail(){
 				//print_r($array_dtes); exit;
 
 				foreach ($array_dtes as $dte) {
-					$codproceso = $this->facturaelectronica->dte_compra($dte);
+					$codproceso = $this->facturaelectronica->dte_compra($dte,$idempresa);
 				}		
 				 
 				// colse the connection

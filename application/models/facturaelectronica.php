@@ -217,12 +217,13 @@ class Facturaelectronica extends CI_Model
 	 }	 
 
 
-	public function get_content_caf_folio($folio,$tipo_documento){
+	public function get_content_caf_folio($folio,$tipo_documento,$idempresa){
 		$this->db->select('f.estado, c.archivo, c.caf_content ')
 		  ->from('caf c')
 		  ->join('folios_caf f','f.idcaf = c.id')
 		  ->where('f.folio',$folio)
 		  ->where('c.tipo_caf',$tipo_documento)
+		  ->where('c.idempresa',$idempresa)
 		  ->limit(1);
 		  $query = $this->db->get();
 		  $caf = $query->row();					  
@@ -483,23 +484,27 @@ class Facturaelectronica extends CI_Model
 	 public function registro_email($data){
 
 		$this->db->select('id')
-		  ->from('email_fe');
+		  ->from('email_fe')
+		  ->where('idempresa',$this->session->userdata('empresaid'));
 		$query = $this->db->get();
 		$email = $query->row();	 		
 
         	if(count($email) > 0){ //actualizar
-        		$this->db->where('id',1);
+        		$this->db->where('idempresa',$this->session->userdata('empresaid'));
         		$this->db->update('email_fe',$data);
         	}else{ //insertar
         		$data['created_at'] = date("Y-m-d H:i:s");
+        		$data['idempresa'] = $this->session->userdata('empresaid');
 				$this->db->insert('email_fe',$data);
         	}	 	
         return true;
 	 }
 
-	public function get_email(){
-		$this->db->select('email_contacto, pass_contacto, tserver_contacto, port_contacto, host_contacto, email_intercambio, pass_intercambio, tserver_intercambio, port_intercambio, host_intercambio ')
+	public function get_email($idempresa = null){
+		$email_data = $this->db->select('email_contacto, pass_contacto, tserver_contacto, port_contacto, host_contacto, email_intercambio, pass_intercambio, tserver_intercambio, port_intercambio, host_intercambio ')
 		  ->from('email_fe');
+
+		 $email_data = is_null($idempresa) ? $email_data->where('idempresa',$this->session->userdata('empresaid')) : $email_data->where('idempresa',$idempresa);
 		$query = $this->db->get();
 		return $query->row();
 	 }
@@ -614,6 +619,7 @@ class Facturaelectronica extends CI_Model
 		  ->from('lectura_dte_email l')
 		  ->join('contribuyentes_autorizados_1 c','l.rutemisor = c.rut','left')
 		  ->join('tipo_caf caf','l.tipodoc = caf.id','left')
+		  ->where('idempresa',$this->session->userdata('empresaid'))
 		  ->order_by('l.id');
 
 		//$data_provee = !$limit ? $data_provee : $data_provee->limit($limit,$start);
@@ -656,6 +662,7 @@ class Facturaelectronica extends CI_Model
 								  ->from('factura_clientes f')
 								  ->join('clientes c','f.id_cliente = c.id','left')
 								  ->join('tipo_documento td','f.tipo_documento = td.id','left')
+								  ->where('f.idempresa',$this->session->userdata('empresaid'))
 								  ->order_by('f.fecha_factura','desc')
 								  ->order_by('f.num_factura','desc');
 
@@ -881,6 +888,7 @@ class Facturaelectronica extends CI_Model
 
 	public function exportFePDFCompra($idcompra){
 
+		$empresa = $this->facturaelectronica->get_empresa();
 
 		$dte = $this->reporte_provee($idcompra);
 		echo "<pre>";
@@ -914,7 +922,7 @@ class Facturaelectronica extends CI_Model
 		        die('No se pudieron obtener los datos del DTE');
 		    $pdf = new \sasco\LibreDTE\Sii\PDF\Dte(false); // =false hoja carta, =true papel contínuo (false por defecto si no se pasa)
 		    $pdf->setFooterText();
-		    $pdf->setLogo('./facturacion_electronica/images/logo_empresa.png'); // debe ser PNG!
+		    $pdf->setLogo('./facturacion_electronica/images/' . $empresa->logo); // debe ser PNG!
 		    $pdf->setResolucion(['FchResol'=>$Caratula['FchResol'], 'NroResol'=>$Caratula['NroResol']]);
 
 		    //$pdf->setCedible(true);
@@ -1174,7 +1182,7 @@ class Facturaelectronica extends CI_Model
 	
 	 }
 
-	 public function dte_compra($dte){
+	 public function dte_compra($dte,$idempresa){
 	 	echo $dte['filename']."<br>";
 	 	$this->db->select('filename')
 	 			->from('lectura_dte_email')
@@ -1231,7 +1239,8 @@ class Facturaelectronica extends CI_Model
 										  'iva' => $resumen['MntIVA'],
 										  'monto_afecto' => $resumen['MntIVA'] == 0 ? 0 : $resumen['MntNeto'] ,
 										  'fecvenc' => $array_datos['Encabezado']['IdDoc']['FchVenc'],
-										  'tipodoc' => $array_datos['Encabezado']['IdDoc']['TipoDTE']
+										  'tipodoc' => $array_datos['Encabezado']['IdDoc']['TipoDTE'],
+										  'idempresa' => $idempresa
 										  );
 
 					$this->db->insert('lectura_dte_email',$array_insert);
@@ -1330,7 +1339,7 @@ class Facturaelectronica extends CI_Model
 
 
 
-	public function guarda_doc_proc(){
+	public function guarda_doc_proc($idempresa){
 
 
 
@@ -1455,7 +1464,8 @@ class Facturaelectronica extends CI_Model
 					        					//'nombre' => '0',
 					        					//'preciounit' => '0',
 					        					//'totaldetalle' => '0',
-					        					'codigoproceso' => $codproceso
+					        					'codigoproceso' => $codproceso,
+					        					'idempresa' => $idempresa
 					        			);
 
 					        $this->db->insert('guarda_doc_proc',$array_data);
@@ -1754,7 +1764,7 @@ class Facturaelectronica extends CI_Model
 	}	 
 
 
-	public function crea_dte_db($codproceso){
+	public function crea_dte_db($codproceso,$idempresa){
 
 		$this->db->select('distinct tipocaf, folio ',false)
 			->from('guarda_doc_proc')
@@ -1778,7 +1788,8 @@ class Facturaelectronica extends CI_Model
 		  			->from('guarda_doc_proc f')
 		  			->join('guarda_detalle_doc_proc d','f.id = d.iddoc')
 		  			->where('tipocaf',$docto->tipocaf)
-		  			->where('folio',$docto->folio);
+		  			->where('folio',$docto->folio)
+		  			->where('f.idempresa',$idempresa);
 			$query = $this->db->get();
 			$data_csv = $query->result();
 
@@ -1792,7 +1803,7 @@ class Facturaelectronica extends CI_Model
 
 
 			//$datos_folio = $this->get_content_caf_folio($docto->folio,$docto->tipocaf);
-			$datos_folio = $this->get_content_caf_folio($docto->folio,$docto->tipocaf);
+			$datos_folio = $this->get_content_caf_folio($docto->folio,$docto->tipocaf,$idempresa);
 
 
 			if(count($datos_folio) > 0){
@@ -1823,7 +1834,7 @@ class Facturaelectronica extends CI_Model
 
 
 				if($docto->tipocaf == 61 || $docto->tipocaf == 56){
-					$numfactura = isset($this->get_content_caf_folio($data_csv[0]->referencia,33)->idfactura) ? $this->get_content_caf_folio($data_csv[0]->referencia,33)->idfactura : $data_csv[0]->referencia;  //referencia siempre es una factura electronica
+					$numfactura = isset($this->get_content_caf_folio($data_csv[0]->referencia,33,$idempresa)->idfactura) ? $this->get_content_caf_folio($data_csv[0]->referencia,33,$idempresa)->idfactura : $data_csv[0]->referencia;  //referencia siempre es una factura electronica
 				}else{
 					$numfactura = 0;
 				}
@@ -1849,7 +1860,9 @@ class Facturaelectronica extends CI_Model
 			        'id_observa' => 0,
 			        'id_despacho' => 0,
 			        'estado' => 0,
-			        'forma' => 1	          
+			        'forma' => 1,
+			        'idempresa' => $idempresa
+
 				);
 
 				$this->db->insert('factura_clientes', $factura_cliente); 
@@ -2044,7 +2057,7 @@ class Facturaelectronica extends CI_Model
 										// Objetos de Firma y Folios
 							$Firma = new sasco\LibreDTE\FirmaElectronica($config['firma']); //lectura de certificado digital		
 
-							$caf = $this->get_content_caf_folio($docto->folio,$tipo_caf);
+							$caf = $this->get_content_caf_folio($docto->folio,$tipo_caf,$idempresa);
 							
 							$Folios = new sasco\LibreDTE\Sii\Folios($caf->caf_content);
 								

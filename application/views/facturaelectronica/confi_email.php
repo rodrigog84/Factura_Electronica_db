@@ -57,7 +57,7 @@
 						              <div class='col-md-6'>
                             <div class="form-group">
                             	<label for="caja">Puerto</label>    
-								<input type="text" class="form-control" id="port_contacto" name="port_contacto" placeholder="465" value="<?php echo $datosform['port_contacto'];?>">
+								<input type="text" class="form-control" id="port_contacto" name="port_contacto" placeholder="999" value="<?php echo $datosform['port_contacto'];?>">
                             </div>  
                           </div>
 
@@ -131,7 +131,7 @@
 						              <div class='col-md-6'>
                             <div class="form-group">
                             	<label for="caja">Puerto</label>    
-								<input type="text" class="form-control" id="port_intercambio" name="port_intercambio" placeholder="465" value="<?php echo $datosform['port_intercambio'];?>">
+								<input type="text" class="form-control" id="port_intercambio" name="port_intercambio" placeholder="999" value="<?php echo $datosform['port_intercambio'];?>">
                             </div>  
                           </div>
 
