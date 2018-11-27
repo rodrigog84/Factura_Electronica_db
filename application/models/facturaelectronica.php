@@ -342,7 +342,7 @@ class Facturaelectronica extends CI_Model
 			    	$pdf->setCedible(true);
 			    }*/
 			    $pdf->agregar($DTE->getDatos(), $DTE->getTED());
-			    if($factura->tipo_caf == 33 || $factura->tipo_caf == 34 || $factura->tipo_caf == 52){
+			    if($factura->tipo_caf == 33 || $factura->tipo_caf == 34 ||  $factura->tipo_caf == 46 || $factura->tipo_caf == 52){
 				    $pdf->setCedible(true);
 				    $pdf->agregar($DTE->getDatos(), $DTE->getTED());			    	
 			    }
@@ -1357,7 +1357,7 @@ class Facturaelectronica extends CI_Model
         $query_int = $int_db->get();
         echo "<pre>";
         $array_documentos = $query_int->result();
-
+        var_dump($array_documentos);
         $codproceso = randomstring_mm(10);
 
 
@@ -1792,6 +1792,18 @@ class Facturaelectronica extends CI_Model
 		  			->where('f.idempresa',$idempresa);
 			$query = $this->db->get();
 			$data_csv = $query->result();
+
+
+			/*$this->db->select('min(fc.folio) as folio ',false)
+		  			->from('folios_caf fc')
+		  			->join('caf c','fc.idcaf = c.id')
+		  			->where('c.idempresa',$idempresa)
+		  			->where('fc.estado','P')
+		  			->where('c.tipo_caf',$docto->tipocaf);
+			$query = $this->db->get();
+			$data_folio = $query->row();
+
+			$docto->folio = $data_folio->folio;*/
 
 			/*if($docto->tipocaf == 33){
 				$docto->folio = 1;

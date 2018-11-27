@@ -43,7 +43,7 @@
 												                      <?php $i++; ?>
 												                    <?php } ?>													
 												                    <?php }else{ ?>
-												                    	<tr ><td colspan="9">No existen facturas de proveedor disponibles </td></tr>
+												                    	<tr ><td colspan="9">No existen documentos disponibles </td></tr>
 
 												                    <?php } ?>	
 																	</tbody> 

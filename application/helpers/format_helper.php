@@ -963,6 +963,8 @@ if (!function_exists('caftotd'))
         $tipodocumento = 104;
       }else if($caf == 52){
         $tipodocumento = 105;
+      }else if($caf == 46){
+        $tipodocumento = 107;
       }
     return $tipodocumento;
   }
