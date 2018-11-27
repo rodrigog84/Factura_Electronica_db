@@ -15,7 +15,8 @@ class Procesos extends CI_Controller {
 
 						$this->load->model('facturaelectronica');
 						$codproceso = $this->facturaelectronica->guarda_doc_proc($idempresa);
-						//$codproceso = 'sjX9NBbZ9M';
+						var_dump($codproceso);
+						//$codproceso = 'WQR1NTeBJo';
 						$this->facturaelectronica->crea_dte_db($codproceso,$idempresa);
 		        
 
@@ -145,23 +146,26 @@ public function lectura_mail($idempresa){
 		// Connect to gmail
 		$this->load->model('facturaelectronica');
 		$email_data = $this->facturaelectronica->get_email($idempresa);
-
+		//echo "<pre>";
+		//var_dump($email_data);// exit;
 		if(count($email_data) > 0){
 
 
 
-				$imapPath = '{imap.gmail.com:993/imap/ssl/novalidate-cert}INBOX';
+				//$imapPath = '{imap.gmail.com:993/imap/ssl/novalidate-cert}INBOX';
+			$imapPath = '{outlook.office365.com:993/imap/ssl/novalidate-cert}INBOX';
 				$username = $email_data->email_contacto;
 				$password = $email_data->pass_contacto;
 				// try to connect 
-				$inbox = imap_open($imapPath,$username,$password) or die('Cannot connect to Gmail: ' . imap_last_error());
+				$inbox = imap_open($imapPath,$username,$password) or die('Cannot connect to Outlook: ' . imap_last_error());
 
 
 			   // $emails = imap_search($inbox,'SUBJECT "Envio de DTEs"  SINCE "01-08-2017" UNSEEN' );
 			    $date = date ( "j F Y", strToTime ( "-20 days" ) );
 			   // echo $date; exit;
 			     $emails = imap_search($inbox,'SUBJECT "Envio de DTEs" SINCE "' . $date . '" ' );
-			     
+			   //  $emails = imap_search($inbox,'ALL' );
+			     //var_dump($emails); exit;
 
 				$output = '';
 				$array_dtes = array();
@@ -172,7 +176,7 @@ public function lectura_mail($idempresa){
 				    
 				    $headerInfo = imap_headerinfo($inbox,$mail);
 				    //echo "<pre>";
-				   // print_r($headerInfo);
+				    //print_r($headerInfo);
 				    $output .= $headerInfo->subject.'<br/>';
 				    $output .= $headerInfo->toaddress.'<br/>';
 				    $output .= $headerInfo->date.'<br/>';
@@ -258,7 +262,7 @@ public function lectura_mail($idempresa){
 
 				}
 				//print_r($array_dtes); exit;
-
+				//exit;
 				foreach ($array_dtes as $dte) {
 					$codproceso = $this->facturaelectronica->dte_compra($dte,$idempresa);
 				}		
