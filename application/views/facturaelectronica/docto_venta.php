@@ -37,7 +37,9 @@
                                                                             <td><small><?php echo number_format($facturas->totalfactura,0,".",".");?></small></td>
 																			<td><small><a href="<?php echo base_url();?>facturaselectronicas/exportPDF/<?php echo $facturas->id;?>" target="_blank"><i class="fa fa-file-pdf-o fa-2x" ></i></a></small></td>
 																			<td><small><a href="<?php echo base_url();?>facturaselectronicas/ver_dte/<?php echo $facturas->id;?>" target="_blank"><i class="fa fa-file-o fa-2x" ></i></a></small></td>
-                                                                            <td><small><a href="<?php echo base_url();?>facturaselectronicas/ver_dte/<?php echo $facturas->id;?>" target="_blank"><i class="fa fa-mail-reply-all fa-2x" ></i></a></small></td>
+                                                                            <td><small>
+                                                                                <a href="#" class="lnk_dte"  data-toggle="modal" data-idfact="<?php echo $facturas->id;?>" data-target="#show-estado_dte" >
+                                                                                <i class="fa fa-mail-reply-all fa-2x" ></i></a></small></td>
 																			
 																		</tr> 
 												                      <?php $i++; ?>
@@ -57,39 +59,59 @@
                   </div>
     </form>                   
                 
-<div class="modal fade" id="show-xml" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+
+            
+<div class="modal fade" id="show-estado_dte" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog  modal-lg">
             <div class="modal-content">
             
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="myModalLabel">Descarga XML</h4>
+                    <h4 class="modal-title" id="myModalLabel">Ver Estado DTE</h4>
                 </div>
             
                 <div class="modal-body">
-                	<div class="row" >
-                		<div class='col-md-4' id="div_envio_recibos">
-                				<div class="form-group">
-                            		<label for="caja">Env&iacute;o Recibo</label>  
-                				<a href="#" id="lnk_envio_recibos" target="_blank"><img src="<?php echo base_url();?>images/29611.svg" width="40%" height="40%"></a>
-                		</div>
-                	</div>
-                	<div class="row">
-                		<div class='col-md-4'>
-                				<div class="form-group">
-                            		<label for="caja">Recepci&oacute;n DTE</label>  
-                				<a href="#" id="lnk_recepcion_dte"  target="_blank"><img src="<?php echo base_url();?>images/29611.svg" width="40%" height="40%"></a>
-                		</div>
-                	</div>
-                	<div class="row">
-                		<div class='col-md-4'>
-                				<div class="form-group">
-                            		<label for="caja">Resultado DTE</label>  
-                				<a href="#" id="lnk_resultado_dte" target="_blank"><img src="<?php echo base_url();?>images/29611.svg" width="40%" height="40%"></a>
-                		</div>
-                	</div>                	                	
-       
-                	</div>           	                    
+                    <div class="row">
+                        <div class='col-md-4'>
+                            <label><b>Tipo Documento:</b></label>
+                        </div>
+                        <div class='col-md-8'>
+                           <span id="est_dte_tip_doc"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class='col-md-4'>
+                            <label><b>Folio:</b></label>
+                        </div>
+                        <div class='col-md-8'>
+                            <span id="est_dte_folio"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class='col-md-4'>
+                            <label><b>Identificador de Env&iacute;o:</b></label>
+                        </div>
+                        <div class='col-md-8'>
+                            <span id="est_dte_trackid"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class='col-md-4'>
+                            <label><b>Estado del Env&iacute;o:</b></label>
+                        </div>
+                        <div class='col-md-8'>
+                            <span id="est_dte_est_envio"></span>
+                        </div>
+                    </div> 
+                    <div class="row">
+                        <div class='col-md-4'>
+                            <label><b>Estado del DTE:</b></label>
+                        </div>
+                        <div class='col-md-8'>
+                            <span id="est_dte_est_dte"></span>
+
+                        </div>
+                    </div>                                 
                 </div>
                 
                 <div class="modal-footer">
@@ -97,27 +119,19 @@
                 </div>
             </div>
         </div>
-    </div>
-
+    </div>                
 <script>
 
     $(document).ready(function() {
 
-    	$('.lnk_xml').click(function(){
-    		if($(this).data('mercaderias') == '1'){
-    			$('#lnk_envio_recibos').attr('disabled','disabled');
-    			$('#div_envio_recibos').hide();
-    		}else{
-    			$('#lnk_envio_recibos').attr('disabled',false);
-	    		$('#lnk_envio_recibos').attr('href','<?php echo base_url();?>facturacion_electronica/acuse_recibo/'+$(this).data('path')+'/'+$(this).data('envrec'));
-	    		$('#div_envio_recibos').show();
+    	$('.lnk_dte').click(function(){
+    		$('#est_dte_tip_doc').html('Factura Electr&oacute;nica');
+            $('#est_dte_folio').html('4647');
+            $('#est_dte_trackid').html('3345388136');
+            $('#est_dte_est_envio').html('EPR - Envio Procesado');
+            $('#est_dte_est_dte').html('DTE Recibido - Documento Recibido por el SII. Datos Coinciden con los Registrados');
 
-    		}
-
-			$('#lnk_recepcion_dte').attr('href','<?php echo base_url();?>facturacion_electronica/acuse_recibo/'+$(this).data('path')+'/'+$(this).data('recdte'));
-
-
-			$('#lnk_resultado_dte').attr('href','<?php echo base_url();?>facturacion_electronica/acuse_recibo/'+$(this).data('path')+'/'+$(this).data('resdte'));
+            console.log($(this).data('idfact'));
     	});
 
 

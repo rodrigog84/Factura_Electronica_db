@@ -139,6 +139,77 @@ class Procesos extends CI_Controller {
 
 
 
+public function prueba_email($tipo_email,$idempresa){
+
+		$this->load->model('facturaelectronica');
+		//$email_data = $this->facturaelectronica->get_email();
+		$email_data = $this->facturaelectronica->get_email($idempresa);
+
+		if(count($email_data) > 0){
+			if($tipo_email == 'intercambio'){
+				$email = $email_data->email_intercambio;
+				$pass = $email_data->pass_intercambio;
+				$tserver = $email_data->tserver_intercambio;
+				$port = $email_data->port_intercambio;
+				$host = $email_data->host_intercambio;
+			}else if($tipo_email == 'contacto'){
+				$email = $email_data->email_contacto;
+				$pass = $email_data->pass_contacto;
+				$tserver = $email_data->tserver_contacto;
+				$port = $email_data->port_contacto;
+				$host = $email_data->host_contacto;
+
+			}
+
+			$this->load->library('email');
+
+			$config['protocol']    = $tserver;
+			$config['smtp_host']    = $host;
+			$config['smtp_port']    = $port;
+			$config['smtp_timeout'] = '7';
+			$config['smtp_user']    = $email;
+			$config['smtp_pass']    = $pass;
+			$config['charset']    = 'utf-8';
+			$config['newline']    = "\r\n";
+			$config['mailtype'] = 'html'; // or html
+			$config['validation'] = TRUE; // bool whether to validate email or not      			
+
+			//var_dump($config);
+			$this->email->initialize($config);		  		
+
+		    $this->email->from($email, 'Prueba');
+		    $this->email->to('rodrigog.84@gmail.com');
+
+		    //$this->email->bcc(array('rodrigo.gonzalez@info-sys.cl','cesar.moraga@info-sys.cl','sergio.arriagada@info-sys.cl','rene.gonzalez@info-sys.cl')); 
+		    $this->email->subject('Prueba de Envío');
+		    $this->email->message("Este es un mensaje de prueba");	
+		    try {
+		      //$this->email->send();
+		    	var_dump($this->email->send());
+			  $result['success'] = true;
+			  $result['message'] = "Email enviado correctamente. Favor verificar casilla de correos";
+
+
+		    } catch (Exception $e) {
+		      echo $e->getMessage() . '<br />';
+		      echo $e->getCode() . '<br />';
+		      echo $e->getFile() . '<br />';
+		      echo $e->getTraceAsString() . '<br />';		    	
+			  $result['success'] = false;
+			  $result['message'] = "Error en envío de email. ". $e->getMessage();		    	
+		    }		
+					        
+		 }else{
+
+			$result['success'] = false;
+			$result['message'] = "Error en envío de email. No existe cuenta de correo configurada";
+		 }	
+
+
+		 echo json_encode($result);
+	}
+
+
 public function lectura_mail($idempresa){
 
 		set_time_limit(4000); 
