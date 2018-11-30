@@ -125,13 +125,67 @@
     $(document).ready(function() {
 
     	$('.lnk_dte').click(function(){
-    		$('#est_dte_tip_doc').html('Factura Electr&oacute;nica');
-            $('#est_dte_folio').html('4647');
-            $('#est_dte_trackid').html('3345388136');
-            $('#est_dte_est_envio').html('EPR - Envio Procesado');
-            $('#est_dte_est_dte').html('DTE Recibido - Documento Recibido por el SII. Datos Coinciden con los Registrados');
 
-            console.log($(this).data('idfact'));
+            var idfactura = $(this).data('idfact');
+
+           $.ajax({
+                  type: 'GET',
+                  async: false,
+                  url: "<?php echo base_url();?>facturaselectronicas/datos_dte_json/"+idfactura,
+                 success : function(data) {
+
+                        
+                        var obj_datos = JSON.parse(data);
+                        console.log(obj_datos);
+                        $('#est_dte_tip_doc').html(obj_datos.tipo_doc);
+                        $('#est_dte_folio').html(obj_datos.folio);
+                        $('#est_dte_trackid').html(obj_datos.trackid);
+                        /*$('#est_dte_est_envio').html('EPR - Envio Procesado');
+                        $('#est_dte_est_dte').html('DTE Recibido - Documento Recibido por el SII. Datos Coinciden con los Registrados');*/
+
+                    }
+
+            });
+
+
+
+
+           $.ajax({
+                  type: 'GET',
+                  async: false,
+                  url: "<?php echo base_url();?>facturaselectronicas/estado_envio_dte/"+idfactura,
+                 success : function(data) {
+
+                        
+                        var obj_envio = JSON.parse(data);
+                        console.log(obj_envio);
+                        var cod_envio = obj_envio.codigo == -11 ? 'Error' : obj_envio.codigo
+                        var estado_envio_dte = obj_envio.error ? obj_envio.message : cod_envio + " - " + obj_envio.glosa;                       
+                        $('#est_dte_est_envio').html(estado_envio_dte);
+                        /*$('#est_dte_est_dte').html('DTE Recibido - Documento Recibido por el SII. Datos Coinciden con los Registrados');*/
+
+                    }
+
+            });
+
+           $.ajax({
+                  type: 'GET',
+                  async: false,
+                  url: "<?php echo base_url();?>facturaselectronicas/estado_dte/"+idfactura,
+                 success : function(data) {
+
+                        
+                        var obj_estado = JSON.parse(data);
+                        var estado_dte = obj_estado.error ? obj_estado.message : obj_estado.glosa_estado + " - " + obj_estado.glosa_err; 
+                        console.log(obj_estado);
+                      
+                        $('#est_dte_est_dte').html(estado_dte);
+                        /*$('#est_dte_est_dte').html('DTE Recibido - Documento Recibido por el SII. Datos Coinciden con los Registrados');*/
+
+                    }
+
+            });
+            //console.log($(this).data('idfact'));
     	});
 
 
