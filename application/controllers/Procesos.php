@@ -47,7 +47,9 @@ class Procesos extends CI_Controller {
 		foreach ($facturas as $factura) {
 			$idfactura = $factura->idfactura;
 			$factura = $this->facturaelectronica->datos_dte($idfactura);
-			$config = $this->facturaelectronica->genera_config();
+			//echo "<pre>";
+
+			$config = $this->facturaelectronica->genera_config($factura->idempresa);
 			include $this->facturaelectronica->ruta_libredte();
 
 

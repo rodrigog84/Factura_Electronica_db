@@ -46,11 +46,24 @@ class Facturaelectronica extends CI_Model
 		return $path;
 	}
 
-	public function genera_config(){
+	public function genera_config($idempresa){
+
+
+        $existe = file_exists($this->facturaelectronica->ruta_certificado('p12',$idempresa)) ? true: false;
+
+        if(!$existe){
+            $existe = file_exists($this->facturaelectronica->ruta_certificado('pfx',$idempresa)) ? true: false;      
+            if($existe){
+            	$file = $this->facturaelectronica->ruta_certificado('pfx',$idempresa);
+            }
+        }else{
+        	$file = $this->facturaelectronica->ruta_certificado('p12',$idempresa);
+        }
+
 		$config = [
 		    'firma' => [
-		        'file' => $this->ruta_certificado(),
-		        'pass' => $this->busca_parametro_fe('cert_password'),
+		        'file' => $file,
+		        'pass' => $this->busca_parametro_fe('cert_password',$idempresa),
 		    ],
 		];
 
@@ -58,18 +71,19 @@ class Facturaelectronica extends CI_Model
 	}
 
 
-	public function ruta_certificado($extension = 'p12'){
+	public function ruta_certificado($extension = 'p12',$idempresa){
 		$base_path = __DIR__;
 		$base_path = str_replace("\\", "/", $base_path);
-		$path = $base_path . "/../../facturacion_electronica/certificado/certificado_" .  $this->session->userdata('empresaid') ."." .$extension;		
+		$path = $base_path . "/../../facturacion_electronica/certificado/certificado_" .  $idempresa ."." .$extension;		
 		//echo $path; exit;
 		return $path;
 	}
 
-	 public function busca_parametro_fe($parametro){
+	 public function busca_parametro_fe($parametro,$idempresa){
 		$this->db->select('valor ')
 		  ->from('param_fe')
-		  ->where('nombre',$parametro);
+		  ->where('nombre',$parametro)
+		  ->where('idempresa',$idempresa);
 		$query = $this->db->get();
 		$parametro = $query->row();	
 		return $parametro->valor;
@@ -232,7 +246,7 @@ class Facturaelectronica extends CI_Model
 
 	public function datos_dte($idfactura){
 
-		$this->db->select('f.id, f.folio, f.path_dte, f.archivo_dte, f.dte, f.pdf, f.pdf_cedible, f.trackid, c.tipo_caf, tc.nombre as tipo_doc, cae.nombre as giro ')
+		$this->db->select('f.id, f.folio, f.path_dte, f.archivo_dte, f.dte, f.pdf, f.pdf_cedible, f.trackid, c.tipo_caf, tc.nombre as tipo_doc, cae.nombre as giro, fc.idempresa ')
 		  ->from('folios_caf f')
 		  ->join('caf c','f.idcaf = c.id')
 		  ->join('tipo_caf tc','c.tipo_caf = tc.id')
@@ -246,6 +260,19 @@ class Facturaelectronica extends CI_Model
 		return $query->row();
 	}	
 
+
+	public function get_factura_no_enviada(){
+		$this->db->select('c.idfactura')
+		  ->from('folios_caf c ')
+		  ->join('factura_clientes fc','c.idfactura = fc.id')
+		  ->where('c.trackid','0')
+		  ->where('c.idfactura <> 0')
+		  ->where('c.estado','O');
+		$query = $this->db->get();
+
+		//echo $this->db->last_query(); exit;
+		return $query->result();
+	 }	
 
 
 	public function get_libro_by_id($idlibro){
@@ -385,7 +412,7 @@ class Facturaelectronica extends CI_Model
 		//$this->db->trans_start();
 		header('Content-type: text/plain; charset=ISO-8859-1');
 
-		$config = $this->genera_config();
+		$config = $this->genera_config($this->session->userdata('empresaid'));
 		include $this->ruta_libredte();
 		// solicitar datos
 		$datos = \sasco\LibreDTE\Sii::getContribuyentes(
@@ -691,7 +718,7 @@ class Facturaelectronica extends CI_Model
 		//$RutReceptor_esperado = '1-9';
 		$RutEmisor_esperado = $datos_factura->rutemisor;
 
-		$config = $this->genera_config();
+		$config = $this->genera_config($this->session->userdata('empresaid'));
 		include_once $this->ruta_libredte();	
 		$EnvioDte = new \sasco\LibreDTE\Sii\EnvioDte();
 		$EnvioDte->loadXML($xml_content);
@@ -943,7 +970,7 @@ class Facturaelectronica extends CI_Model
 
 		header('Content-type: text/plain; charset=ISO-8859-1');
 	 	
-		$config = $this->genera_config();
+		$config = $this->genera_config($this->session->userdata('empresaid'));
 		include_once $this->ruta_libredte();	
 		//generación de 
 		$EnvioDte = new \sasco\LibreDTE\Sii\EnvioDte();
@@ -1023,7 +1050,7 @@ class Facturaelectronica extends CI_Model
 		]);		
 
 		//$this->load->model('facturaelectronica');
-		$config = $this->genera_config();
+		$config = $this->genera_config($this->session->userdata('empresaid'));
 		/*echo "<pre>";
 		echo $estado_dte;
 		print_r($RecepcionDTE);
@@ -1098,7 +1125,7 @@ class Facturaelectronica extends CI_Model
 		}
 
 		$this->load->model('facturaelectronica');
-		$config = $this->facturaelectronica->genera_config();
+		$config = $this->facturaelectronica->genera_config($this->session->userdata('empresaid'));
 
 		//$config = $this->genera_config();
 
@@ -1144,7 +1171,7 @@ class Facturaelectronica extends CI_Model
 		];
 
 		$this->load->model('facturaelectronica');
-		$config = $this->facturaelectronica->genera_config();
+		$config = $this->facturaelectronica->genera_config($this->session->userdata('empresaid'));
 		//$config = $this->genera_config();
 		// objeto EnvioRecibo, asignar carátula y Firma
 		$EnvioRecibos = new \sasco\LibreDTE\Sii\EnvioRecibos();
@@ -1191,7 +1218,7 @@ class Facturaelectronica extends CI_Model
 		$query = $this->db->get();
 		if(count($query->result()) == 0){
 
-			$config = $this->genera_config();
+			$config = $this->genera_config($idempresa);
 			include_once $this->ruta_libredte();	
 			$EnvioDte = new \sasco\LibreDTE\Sii\EnvioDte();
 			$EnvioDte->loadXML($dte['content']);
@@ -1588,7 +1615,7 @@ class Facturaelectronica extends CI_Model
 
 		header('Content-type: text/plain; charset=ISO-8859-1');
 		$this->load->model('facturaelectronica');
-		$config = $this->genera_config();
+		$config = $this->genera_config($this->session->userdata('empresaid'));
 		include $this->ruta_libredte();
 
 		$empresa = $this->get_empresa();
@@ -1775,7 +1802,7 @@ class Facturaelectronica extends CI_Model
 		$data_doctos = $query->result();
 
 
-		$config = $this->genera_config();
+		$config = $this->genera_config($idempresa);
 		include $this->ruta_libredte();
 		$empresa = $this->get_empresa();
 		foreach ($data_doctos as $docto) {

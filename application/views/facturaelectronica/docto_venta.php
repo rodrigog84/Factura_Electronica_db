@@ -17,7 +17,7 @@
 																			<th><small>Total</small></th> 
 																			<th><small>Ver Documento</small></th> 
 																			<th><small>Ver XML</small></th> 
-                                                                            <th><small>Env&iacute;o DTE</small></th> 
+                                                                            <th><small>Estado DTE</small></th> 
 																			
 
 																		</tr> 

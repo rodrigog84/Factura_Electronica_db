@@ -5,10 +5,17 @@ class Facturaselectronicas extends CI_Controller {
 	public function __construct()
 	{
 		parent::__construct();
+        $this->load->library('ion_auth');
 		$this->load->library('session');
 		$this->load->database();
 		$this->load->model('facturaelectronica');
         $this->load->helper('format');
+
+         if (!$this->ion_auth->logged_in()){
+             $this->session->set_userdata('uri_array',$this->uri->rsegment_array());
+             redirect('auth/login', 'refresh');
+            }
+
 	}
 
 	
@@ -187,10 +194,10 @@ class Facturaselectronicas extends CI_Controller {
                     'subtitle' => 'Carga certificado Digital');
 
         $this->load->model('facturaelectronica');
-        $existe = file_exists($this->facturaelectronica->ruta_certificado()) ? true: false;
+        $existe = file_exists($this->facturaelectronica->ruta_certificado('p12',$this->session->userdata('empresaid'))) ? true: false;
 
         if(!$existe){
-            $existe = file_exists($this->facturaelectronica->ruta_certificado('pfx')) ? true: false;            
+            $existe = file_exists($this->facturaelectronica->ruta_certificado('pfx',$this->session->userdata('empresaid'))) ? true: false;            
         }
 
 
@@ -957,7 +964,7 @@ class Facturaselectronicas extends CI_Controller {
     public function estado_dte($idfactura){
         $this->load->model('facturaelectronica');
         $datos_dte = $this->facturaelectronica->datos_dte($idfactura);
-        $config = $this->facturaelectronica->genera_config();
+        $config = $this->facturaelectronica->genera_config($this->session->userdata('empresaid'));
         include $this->facturaelectronica->ruta_libredte();
 
         $Firma = new \sasco\LibreDTE\FirmaElectronica($config['firma']); //lectura de certificado digital
@@ -1035,7 +1042,7 @@ class Facturaselectronicas extends CI_Controller {
     public function estado_envio_dte($idfactura){
         $this->load->model('facturaelectronica');
         $datos_dte = $this->facturaelectronica->datos_dte($idfactura);
-        $config = $this->facturaelectronica->genera_config();
+        $config = $this->facturaelectronica->genera_config($this->session->userdata('empresaid'));
         include $this->facturaelectronica->ruta_libredte();
         $empresa = $this->facturaelectronica->get_empresa();
 
