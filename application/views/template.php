@@ -429,7 +429,7 @@
                 <ul class="nav">
                     <li class="nav-header">Men&uacute; Principal</li>
                     <?php //if($this->session->userdata('level') == 7 || $this->session->userdata('level') == 8){ ?>
-                        <li><a href="<?php echo base_url();?>welcome/bienvenida"><i class="fa fa-laptop"></i> <span>Inicio</span></a></li>
+                        <li><a href="<?php echo base_url();?>main/dashboard"><i class="fa fa-laptop"></i> <span>Inicio</span></a></li>
                     <?php //}else{ ?>
                         <!--li><a href="<?php echo base_url();?>welcome/dashboard"><i class="fa fa-bar-chart-o"></i> <span>Dashboard</span></a></li-->
                     <?php //} ?>

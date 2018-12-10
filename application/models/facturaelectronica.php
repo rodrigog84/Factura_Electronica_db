@@ -135,10 +135,12 @@ class Facturaelectronica extends CI_Model
 
 	 }
 
-	public function get_empresa(){
+	public function get_empresa($idempresa = null){
+
+		$idempresa = is_null($idempresa) ? $this->session->userdata('empresaid') : $idempresa;
 		$this->db->select('rut, dv, razon_social, giro, cod_actividad, dir_origen, comuna_origen, fec_resolucion, nro_resolucion, logo, idregion, idcomuna, telefono, mail ')
 		  ->from('empresa')
-		  ->where('idempresa',$this->session->userdata('empresaid'))
+		  ->where('idempresa',$idempresa)
 		  ->limit(1);
 		$query = $this->db->get();
 		return $query->row();
@@ -197,7 +199,7 @@ class Facturaelectronica extends CI_Model
 
 	public function get_empresa_factura($id_factura){
 
-		$tabla_contribuyentes = $this->busca_parametro_fe('tabla_contribuyentes');
+	//	$tabla_contribuyentes = $this->busca_parametro_fe('tabla_contribuyentes',$this->session->userdata('empresaid'));
 
 		$this->db->select('c.nombres as nombre_cliente, c.rut as rut_cliente, c.direccion, m.nombre as nombre_comuna, s.nombre as nombre_ciudad, c.fono, e.nombre as giro, isnull(ca.mail,c.e_mail) as e_mail',false)
 		  ->from('factura_clientes acc')
@@ -205,10 +207,13 @@ class Facturaelectronica extends CI_Model
 		  ->join('cod_activ_econ e','c.id_giro = e.id','left')
 		  ->join('comuna m','c.id_comuna = m.id','left')		  
 		  ->join('ciudad s','c.id_ciudad = s.id','left')	
-		  ->join($tabla_contribuyentes . ' ca','c.rut = concat(ca.rut,ca.dv)','left')
+		//  ->join($tabla_contribuyentes . ' ca','c.rut = concat(ca.rut,ca.dv)','left')
+		    ->join('contribuyentes_autorizados_1 ca','c.rut = concat(ca.rut,ca.dv)','left')
 		  ->where('acc.id',$id_factura)
 		  ->limit(1);
 		$query = $this->db->get();
+		echo $this->db->last_query();
+		print_r( $query->row());
 		return $query->row();
 	 }	 
 
@@ -557,18 +562,22 @@ class Facturaelectronica extends CI_Model
 			//$factura = $this->datos_dte($idfactura);
 			//echo "<pre>";
 			//print_r($resumen_dte);
-		
+			//exit;
 			//$nombre_dte = $factura->archivo_dte_cliente != '' ? $factura->archivo_dte_cliente : $factura->archivo_dte;
 			//$nombre_dte = $factura->archivo_dte;
 
 			$empresa = $this->get_empresa();
-			$datos_empresa_factura = $this->get_empresa_factura($idfactura);
+			//print_r($empresa);
+			//$datos_empresa_factura = $this->get_empresa_factura($idfactura);
+			//echo "<pre>";
+			//print_r($datos_empresa_factura);
+			//echo "1"; exit;
 
 			$messageBody  = 'Envío de Acuse de Recibo<br><br>';
 	        $messageBody .= '<b>Datos Emisor:</b><br>';
 	        $messageBody .= $empresa->razon_social.'<br>';
 	        $messageBody .= 'RUT:'.$empresa->rut.'-'.$empresa->dv .'<br><br>';
-
+	        //exit;
 	        //$messageBody .= '<a href="'. base_url() .'facturas/exportFePDF_mail/'.$track_id.'" >Ver Factura</a><br><br>';
 
 	       // $messageBody .= 'Este correo adjunta Documentos Tributarios Electrónicos (DTE) para el receptor electrónico indicado. Por favor responda con un acuse de recibo (RespuestaDTE) conforme al modelo de intercambio de Factura Electrónica del SII.<br><br>';
@@ -576,7 +585,7 @@ class Facturaelectronica extends CI_Model
 
 
 	        $email_data = $this->facturaelectronica->get_email();
-	      //  print_r(count($email_data)); exit;
+	        //print_r(count($email_data)); exit;
 		    if(count($email_data) > 0 ){ //MAIL SE ENVÍA SÓLO EN CASO QUE TENGAMOS REGISTRADOS EMAIL DE ORIGEN Y DESTINO
 		    	$this->load->library('email');
 				$config['protocol']    = $email_data->tserver_intercambio;
@@ -1213,18 +1222,22 @@ class Facturaelectronica extends CI_Model
 	 	echo $dte['filename']."<br>";
 	 	$this->db->select('filename')
 	 			->from('lectura_dte_email')
-	 			->where('filename',$dte['filename']);
+	 			->where('filename',$dte['filename'])
+	 			->where('idempresa',$idempresa);
 
 		$query = $this->db->get();
 		if(count($query->result()) == 0){
 
 			$config = $this->genera_config($idempresa);
+
+			//print_r($config); exit;
 			include_once $this->ruta_libredte();	
 			$EnvioDte = new \sasco\LibreDTE\Sii\EnvioDte();
 			$EnvioDte->loadXML($dte['content']);
 
-			$empresa = $this->facturaelectronica->get_empresa();
-
+			$empresa = $this->facturaelectronica->get_empresa($idempresa);
+			//echo "<pre>";
+			//print_r($empresa); exit;
 			$receptor_factura = $EnvioDte->getReceptor();
 
 			$array_receptor_factura = explode("-",$receptor_factura);
@@ -1249,7 +1262,7 @@ class Facturaelectronica extends CI_Model
 					$array_rut_emisor = explode("-",$rut_emisor);
 
 
-					$path = date('Ym').'/'; // ruta guardado
+					$path = date('Ym').'/' . $idempresa . '/'; // ruta guardado
 					$array_insert = array(
 										  'path' => $path,
 										  'filename' => $dte['filename'],

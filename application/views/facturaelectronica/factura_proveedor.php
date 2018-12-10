@@ -21,7 +21,8 @@
 																			<th><small>Fecha Env&iacute;o</small></th> 
 																			<th><small>Fecha Lectura</small></th>
 																			<th><small>Ver Documento</small></th> 
-																			<th><small>Ver XML</small></th> 
+                                                                            <th><small>XML Proveedor</small></th> 
+																			<th><small>XML Respuesta</small></th> 
 																			<th><small>Respuesta</small></th> 
 																			<th><small>Env&iacute;o Email</small></th>
 																			
@@ -43,7 +44,17 @@
 																			<td><small><?php echo $facturas->fecenvio;?></small></td>
 																			<td><small><?php echo $facturas->created_at;?></small></td>
 																			<td><small><a href="<?php echo base_url();?>facturaselectronicas/ver_pdf_compra/<?php echo $facturas->id;?>" target="_blank"><i class="fa fa-file-pdf-o fa-2x" ></i></a></small></td>
-																			<td><small><a href="#" class="lnk_xml" id="<?php echo $facturas->id;?>" data-toggle="modal" data-target="#show-xml" data-mercaderias="<?php echo $mercaderias;?>" data-envrec="<?php echo $facturas->arch_env_rec;?>" data-recdte="<?php echo $facturas->arch_rec_dte;?>" data-resdte="<?php echo $facturas->arch_res_dte;?>"  data-path="<?php echo $facturas->path;?>"><i class="fa fa-file-o fa-2x" ></i></a></small></td>
+                                                                            <td><small><a href="<?php echo base_url();?>facturacion_electronica/dte_provee_tmp/<?php echo $facturas->path. $facturas->filename;?>" target="_blank"><i class="fa fa-file-text-o fa-2x" ></i></a></small></td>
+																			<td><small>
+                                                                            <?php if(!is_null($facturas->fecgeneraacuse)){ ?>
+                                                                                <a href="#" class="lnk_xml" id="<?php echo $facturas->id;?>" data-toggle="modal" data-target="#show-xml" data-mercaderias="<?php echo $mercaderias;?>" data-envrec="<?php echo $facturas->arch_env_rec;?>" data-recdte="<?php echo $facturas->arch_rec_dte;?>" data-resdte="<?php echo $facturas->arch_res_dte;?>"  data-path="<?php echo $facturas->path;?>"><i class="fa fa-file-o fa-2x" ></i></a>
+                                                                            <?php }else{ ?>
+
+                                                                                <i class="fa fa-times fa-2x " ></i>
+
+                                                                            <?php } ?>
+
+                                                                            </small></td>
 																			<td><small>
 																			<?php if(is_null($facturas->fecgeneraacuse)){ ?>
 																				<a href="<?php echo base_url();?>facturaselectronicas/envio_respuesta/<?php echo $facturas->id;?>" <?php echo $facturas->fecgeneraacuse == '' ? '' : 'disabled'; ?> ><i class="fa fa-mail-reply-all fa-2x	" ></i></a>
@@ -56,6 +67,7 @@
 
 																			</small></td>
 																			<td><small>
+                                                                            <?php // igual queda disponible el botón por si es necesario enviar a alguien más ?>
 																			<?php if(is_null($facturas->fecgeneraacuse)){ ?>
 																				
 																				<i class="fa fa-times fa-2x	" ></i>

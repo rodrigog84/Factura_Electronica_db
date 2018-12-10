@@ -220,13 +220,20 @@ public function lectura_mail($idempresa){
 		$this->load->model('facturaelectronica');
 		$email_data = $this->facturaelectronica->get_email($idempresa);
 		//echo "<pre>";
-		//var_dump($email_data);// exit;
+		//var_dump($email_data); //exit;
+		if(strpos($email_data->host_contacto,'office365')){
+			$tipo_host = 'office';
+		}else{
+			$tipo_host = 'gmail';
+		}
+
+		//echo $tipo_host; exit;
 		if(count($email_data) > 0){
 
 
 
 				//$imapPath = '{imap.gmail.com:993/imap/ssl/novalidate-cert}INBOX';
-			$imapPath = '{outlook.office365.com:993/imap/ssl/novalidate-cert}INBOX';
+				$imapPath = $tipo_host == 'office' ? '{outlook.office365.com:993/imap/ssl/novalidate-cert}INBOX' : '{imap.gmail.com:993/imap/ssl/novalidate-cert}INBOX';
 				$username = $email_data->email_contacto;
 				$password = $email_data->pass_contacto;
 				// try to connect 
@@ -334,6 +341,7 @@ public function lectura_mail($idempresa){
 					}
 
 				}
+				//echo "<pre>";
 				//print_r($array_dtes); exit;
 				//exit;
 				foreach ($array_dtes as $dte) {

@@ -29,6 +29,7 @@ class Facturaselectronicas extends CI_Controller {
 
 
 		$empresa = $this->facturaelectronica->get_empresa();
+        //print_r($empresa); exit;
 		$existe = count($empresa) > 0 ? true : false;
 
         if($existe){
@@ -552,7 +553,7 @@ class Facturaselectronicas extends CI_Controller {
         $this->load->model('facturaelectronica');
         $datos_factura = $this->facturaelectronica->reporte_provee();
 
-
+        //echo "<pre>";
         //var_dump($datos_factura); exit;
 
         $template = "template";
@@ -809,6 +810,8 @@ class Facturaselectronicas extends CI_Controller {
           
 
         $datos_factura = $this->facturaelectronica->envia_email_acuse_recibo($idfactura,$email_respuesta);
+       // echo "<pre>";
+       // var_dump($datos_factura); exit;
         $this->session->set_flashdata('factura_proveedor_result', 2);
         redirect('facturaselectronicas/factura_proveedor');   
 
