@@ -266,14 +266,18 @@ class Facturaelectronica extends CI_Model
 	}	
 
 
-	public function get_factura_no_enviada(){
-		$this->db->select('c.idfactura')
-		  ->from('folios_caf c ')
-		  ->join('factura_clientes fc','c.idfactura = fc.id')
-		  ->where('c.trackid','0')
-		  ->where('c.idfactura <> 0')
-		  ->where('c.estado','O');
-		$query = $this->db->get();
+	public function get_factura_no_enviada($idempresa = null){
+		$facturas = $this->db->select('c.idfactura')
+					  ->from('folios_caf c ')
+					  ->join('factura_clientes fc','c.idfactura = fc.id')
+					  ->where('c.trackid','0')
+					  ->where('c.idfactura <> 0')
+					  ->where('c.estado','O');
+
+
+		$facturas = is_null($idempresa) ? $facturas : $facturas->where('fc.idempresa',$idempresa);
+		  
+		$query = $facturas->get();
 
 		//echo $this->db->last_query(); exit;
 		return $query->result();

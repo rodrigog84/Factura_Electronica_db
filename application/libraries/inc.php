@@ -33,7 +33,7 @@
 // activar todos los errores
 ini_set('display_errors', true);
 error_reporting(E_ALL);
-define('_LibreDTE_CERTIFICACION_', false);
+define('_LibreDTE_CERTIFICACION_', true);
 
 // zona horaria
 date_default_timezone_set('America/Santiago');

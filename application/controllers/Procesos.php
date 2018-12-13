@@ -15,7 +15,7 @@ class Procesos extends CI_Controller {
 
 						$this->load->model('facturaelectronica');
 						$codproceso = $this->facturaelectronica->guarda_doc_proc($idempresa);
-						var_dump($codproceso);
+						//var_dump($codproceso);
 						//$codproceso = 'WQR1NTeBJo';
 						$this->facturaelectronica->crea_dte_db($codproceso,$idempresa);
 		        
@@ -37,21 +37,21 @@ class Procesos extends CI_Controller {
 
 
 
-	public function envio_programado_sii(){
+	public function envio_programado_sii($idempresa){
 		set_time_limit(0);
 		$this->load->model('facturaelectronica');
-		$facturas = $this->facturaelectronica->get_factura_no_enviada();
-
-		
+		$facturas = $this->facturaelectronica->get_factura_no_enviada($idempresa);
 
 		foreach ($facturas as $factura) {
 			$idfactura = $factura->idfactura;
 			$factura = $this->facturaelectronica->datos_dte($idfactura);
 			//echo "<pre>";
+			//print_r($factura);
+			//exit;
 
-			$config = $this->facturaelectronica->genera_config($factura->idempresa);
+			$config = $this->facturaelectronica->genera_config($idempresa);
 			include $this->facturaelectronica->ruta_libredte();
-
+			//print_r($config);
 
 			$token = \sasco\LibreDTE\Sii\Autenticacion::getToken($config['firma']);
 			if (!$token) {
@@ -76,8 +76,8 @@ class Procesos extends CI_Controller {
 		 	}else{
 		 		$xml = $factura->dte;
 		 	}
-
-
+		 	//echo htmlentities($xml)."<br>-----------------";
+		 	
 			$EnvioDte = new \sasco\LibreDTE\Sii\EnvioDte();
 			$EnvioDte->loadXML($xml);
 			$Documentos = $EnvioDte->getDocumentos();	
@@ -85,7 +85,10 @@ class Procesos extends CI_Controller {
 			$DTE = $Documentos[0];
 			$RutEmisor = $DTE->getEmisor(); 
 
+
+			//echo $RutEmisor."<br>";
 			// enviar DTE
+
 			$result_envio = \sasco\LibreDTE\Sii::enviar($RutEnvia, $RutEmisor, $xml, $token);
 
 			// si hubo algún error al enviar al servidor mostrar
@@ -226,7 +229,8 @@ public function lectura_mail($idempresa){
 		}else{
 			$tipo_host = 'gmail';
 		}
-
+		//echo "<pre>";
+		//echo $tipo_host."<br>";
 		//echo $tipo_host; exit;
 		if(count($email_data) > 0){
 
@@ -241,7 +245,7 @@ public function lectura_mail($idempresa){
 
 
 			   // $emails = imap_search($inbox,'SUBJECT "Envio de DTEs"  SINCE "01-08-2017" UNSEEN' );
-			    $date = date ( "j F Y", strToTime ( "-20 days" ) );
+			    $date = date ( "j F Y", strToTime ( "-25 days" ) );
 			   // echo $date; exit;
 			     $emails = imap_search($inbox,'SUBJECT "Envio de DTEs" SINCE "' . $date . '" ' );
 			   //  $emails = imap_search($inbox,'ALL' );
