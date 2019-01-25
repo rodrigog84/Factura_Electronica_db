@@ -530,6 +530,36 @@ class Facturaselectronicas extends CI_Controller {
     public function factura_proveedor(){
 
 
+    $rut  = str_replace(".","",$this->input->post('rut'));
+    $arrayrut = explode("-",$rut);  
+    $folio  = $this->input->post('folio');    
+    $estado = $this->input->post('estado');
+    $fechad = $this->input->post('fecha_desde');
+    $fechah = $this->input->post('fecha_hasta');
+
+    //echo $folio;
+
+    //var_dump($arrayrut);
+
+    if(!$rut){
+        $rut = null;
+    }else{
+        $rut= $arrayrut[0];
+    };
+    if(!$folio){
+        $folio = null;
+    };
+
+    //echo $rut;
+
+     //exit;//va
+
+    //$rut //echo $estado;
+    //echo $folio;
+    //echo $rut;
+
+    //exit;
+
     $resultid = $this->session->flashdata('factura_proveedor_result');
     //echo $resultid; exit;
     if($resultid == 1){
@@ -551,7 +581,7 @@ class Facturaselectronicas extends CI_Controller {
         
 
         $this->load->model('facturaelectronica');
-        $datos_factura = $this->facturaelectronica->reporte_provee();
+        $datos_factura = $this->facturaelectronica->reporte_provee($estado,$folio,$rut);
 
         //echo "<pre>";
         //var_dump($datos_factura); exit;

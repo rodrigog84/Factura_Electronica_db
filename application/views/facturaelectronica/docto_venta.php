@@ -1,4 +1,54 @@
 <form id="formotros" action="<?php echo base_url();?>rrhh/submit_mut_caja" method="post" role="form" enctype="multipart/form-data">
+
+    <div class="panel panel-inverse">                       
+        <div class="panel-heading">
+              <h4 class="panel-title">Buscar Entre Documentos Emitidos</h4>
+          </div>
+          <div class="panel-body">
+            <div class='row'>
+              <div class='col-md-6'>
+                <div class="form-group">
+                      <label for="caja">Rut Receptor</label>    
+                      <input type="text" name="rut" class="form-control" id="rut" placeholder="Rut" value="">
+                </div>  
+              </div>
+            <div class='col-md-6'>
+                <div class="form-group">
+                    <label for="caja">Folio</label>    
+                      <input type="text" name="razon_social" class="form-control" id="razon_social" placeholder="Razón Social" value="">
+                </div>  
+              </div>
+            </div>
+            <div class='col-md-6'>
+                            <div class="form-group">
+                                <label for="caja">Fecha Emision Desde</label>
+                              <div class="input-group">
+                                  <div class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                  </div>
+                                <input placeholder="Fecha desde" class="form-control mask_date" id="fec_resolucion" name="fec_resolucion"   size="30" type="text" value="" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
+                                </div>                              
+                            </div>  
+                          </div>
+                            <div class='col-md-6'>
+                            <div class="form-group">
+                                <label for="caja">Fecha Emiison Hasta</label>    
+
+                              <div class="input-group">
+                                  <div class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                  </div>
+                                <input placeholder="Fecha hasta" class="form-control mask_date" id="fec_resolucion" name="fec_resolucion"   size="30" type="text" value="" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
+                                </div>                              
+                            </div>  
+                          </div>
+                         
+                        </div>                      
+                        <div class="panel-footer" style="text-align:center;">
+                        <button type="submit" class="btn btn-primary">Buscar</button>&nbsp;&nbsp;
+                      </div>
+
+                        </div>  
                             <div class="panel panel-inverse">                       
                                 <div class="panel-heading">
                                       <h4 class="panel-title">Listado Documentos de Clientes</h4>

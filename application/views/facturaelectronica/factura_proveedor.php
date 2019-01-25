@@ -1,4 +1,64 @@
-<form id="formotros" action="<?php echo base_url();?>rrhh/submit_mut_caja" method="post" role="form" enctype="multipart/form-data">
+<form id="formotros" action="<?php echo base_url();?>facturaselectronicas/factura_proveedor" method="post" role="form" enctype="multipart/form-data">
+
+    <div class="panel panel-inverse">                       
+        <div class="panel-heading">
+              <h4 class="panel-title">Buscar Entre Documentos Recibidos</h4>
+          </div>
+          <div class="panel-body">
+            <div class='row'>
+              <div class='col-md-6'>
+                <div class="form-group">
+                      <label for="caja">Rut Emisor</label>    
+                      <input type="text" name="rut" class="form-control" id="rut" placeholder="12262247-9" value="">
+                </div>  
+              </div>
+
+            <div class='col-md-6'>
+                <div class="form-group">
+                    <label for="caja">Folio</label>    
+                      <input type="text" name="folio" class="form-control" id="folio" placeholder="Folio" value="">
+                </div>  
+              </div>
+            </div>
+            <div class='col-md-6'>
+
+                            <div class="form-group">
+                                <label for="caja">Fecha Emision Desde</label>
+                              <div class="input-group">
+                                  <div class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                  </div>
+                                <input placeholder="Fecha desde" class="form-control mask_date" id="fecha_desde" name="fecha_desde"   size="30" type="text" value="" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
+                                </div>                              
+                            </div>  
+                          </div>
+                            <div class='col-md-6'>
+                            <div class="form-group">
+                                <label for="caja">Fecha Emiison Hasta</label>    
+
+                              <div class="input-group">
+                                  <div class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                  </div>
+                                <input placeholder="Fecha hasta" class="form-control mask_date" id="fecha_hasta" name="fecha_hasta"   size="30" type="text" value="" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
+                                </div>                              
+                            </div>  
+                          </div>
+                          <div class="form-group" style="text-align:center;">                                        
+                          <label for="exampleInputEmail1">Estado de Docuemntos</label><br/>
+                          <select name="estado" id="estado" class="selectpicker" data-live-search="true">
+                          <option data-tokens="todos">Todos</option>
+                          <option data-tokens="acuse">Acuse Recibo</option>
+                          <option data-tokens="pendientes">Pendientes</option>
+                          </select>                                          
+                         </div> 
+                        </div> 
+                      
+                        <div class="panel-footer" style="text-align:center;">
+                        <button type="submit" class="btn btn-primary">Buscar</button>&nbsp;&nbsp;
+                      </div>
+
+                        </div>  
                             <div class="panel panel-inverse">                       
                                 <div class="panel-heading">
                                       <h4 class="panel-title">Listado Facturas Proveedores
@@ -141,6 +201,8 @@
 
 <script>
 
+
+
     $(document).ready(function() {
 
     	$('.lnk_xml').click(function(){
@@ -206,5 +268,73 @@
                         },
                         lengthMenu: [[10, 50, 100, -1], [10, 50, 100, "All"]]                              
 
-        });    
+        }); 
+
+        $('#basicBootstrapForm').formValidation({
+        framework: 'bootstrap',
+        excluded: ':disabled',
+        icon: {
+            valid: 'glyphicon glyphicon-ok',
+            invalid: 'glyphicon glyphicon-remove',
+            validating: 'glyphicon glyphicon-refresh'
+        },
+        fields: {
+            rut: {
+                row: '.form-group',
+                validators: {
+                    notEmpty: {
+                        message: 'Rut Empresa es requerido'
+                    },
+                    stringLength: {
+                        min: 0,
+                        max: 12,
+                        message: 'El largo del Rut es Incorrecto'
+                    },
+                    validateRut: {
+                      message: 'Rut Incorrecto'
+                    }
+
+                }
+            },      
+
+            fecha_desde: {
+                row: '.form-group',
+                validators: {
+                    date: {
+                        format: 'DD/MM/YYYY',
+                        message: 'El valor no es una fecha v&aacute;lida'
+                    }                   
+                }
+            }, 
+            
+             fecha_hasta: {
+                row: '.form-group',
+                validators: {
+                    date: {
+                        format: 'DD/MM/YYYY',
+                        message: 'El valor no es una fecha v&aacute;lida'
+                    }                   
+                }
+            },     
+
+           
+
+
+
+        }
+
+        //$(".mask_date").inputmask("dd/mm/yyyy", {"placeholder": "dd/mm/yyyy"});  
+    });
+
+     
+        
+         
+</script>
+
+<script type="text/javascript">
+$("#fecha_desde").datetimepicker({
+    format: 'yyyy-mm-dd',
+    autoclose: true,
+    todayBtn: true
+});
 </script>

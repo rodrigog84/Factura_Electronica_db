@@ -48,7 +48,7 @@
 $active_group = 'default';
 $active_record = TRUE;
 
-$db['default']['hostname'] = '190.101.205.91';   // BD Remota
+$db['default']['hostname'] = '190.101.57.202';   // BD Remota
 $db['default']['port'] = 1433; 
 $db['default']['username'] = 'usuarios_remuneraciones'; 
 $db['default']['password'] = '1QAZxsw2';
