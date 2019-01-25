@@ -1,4 +1,4 @@
-<form id="formotros" action="<?php echo base_url();?>rrhh/submit_mut_caja" method="post" role="form" enctype="multipart/form-data">
+<form id="formotros" action="<?php echo base_url();?>facturaselectronicas/docto_venta" method="post" role="form" enctype="multipart/form-data">
 
     <div class="panel panel-inverse">                       
         <div class="panel-heading">
@@ -15,7 +15,7 @@
             <div class='col-md-6'>
                 <div class="form-group">
                     <label for="caja">Folio</label>    
-                      <input type="text" name="razon_social" class="form-control" id="razon_social" placeholder="Razón Social" value="">
+                      <input type="text" name="folio" class="form-control" id="folio" placeholder="Folio" value="">
                 </div>  
               </div>
             </div>
@@ -26,7 +26,7 @@
                                   <div class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
                                   </div>
-                                <input placeholder="Fecha desde" class="form-control mask_date" id="fec_resolucion" name="fec_resolucion"   size="30" type="text" value="" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
+                                <input placeholder="Fecha desde" class="form-control mask_date" id="fecha_desde" name="fecha_desde"   size="30" type="text" value="" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
                                 </div>                              
                             </div>  
                           </div>
@@ -38,7 +38,7 @@
                                   <div class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
                                   </div>
-                                <input placeholder="Fecha hasta" class="form-control mask_date" id="fec_resolucion" name="fec_resolucion"   size="30" type="text" value="" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
+                                <input placeholder="Fecha hasta" class="form-control mask_date" id="fecha_hasta" name="fecha_hasta"   size="30" type="text" value="" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
                                 </div>                              
                             </div>  
                           </div>

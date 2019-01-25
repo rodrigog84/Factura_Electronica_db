@@ -1120,10 +1120,26 @@ class Facturaselectronicas extends CI_Controller {
 
     public function docto_venta(){
 
+    $rut  = str_replace(".","",$this->input->post('rut'));
+    $arrayrut = explode("-",$rut);  
+    $folio  = $this->input->post('folio');    
+    $fechad = $this->input->post('fecha_desde');
+    $fechah = $this->input->post('fecha_hasta');
+
+    if(!$rut){
+        $rut = null;
+    }else{
+        $rut= $arrayrut[0].$arrayrut[1];
+    };
+    if(!$folio){
+        $folio = null;
+    };
+
+    //echo $rut;
+
+    //exit;
 
     $resultid = $this->session->flashdata('factura_proveedor_result');
-
-
 
         $content = array(
                     'menu' => 'Facturaci&oacute;n',
@@ -1133,7 +1149,7 @@ class Facturaselectronicas extends CI_Controller {
         
 
         $this->load->model('facturaelectronica');
-        $datos_factura = $this->facturaelectronica->facturas_venta();
+        $datos_factura = $this->facturaelectronica->facturas_venta($folio,$rut);
 
 
         //var_dump($datos_factura); exit;

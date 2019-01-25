@@ -685,7 +685,7 @@ class Facturaelectronica extends CI_Model
 
 
 
-	public function facturas_venta($idfactura = null){
+	public function facturas_venta($folio = null,$rut = null,$idfactura = null){
 
 	
 		/*$data_provee = $this->db->select("l.id, c.razon_social, l.path, l.filename, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.fecgeneraacuse,  l.created_at, l.procesado, l.content, l.proveenombre, l.proveemail, l.envios_recibos, l.path, l.arch_env_rec, l.arch_rec_dte, l.arch_res_dte",false)
@@ -717,6 +717,11 @@ class Facturaelectronica extends CI_Model
 
 		//$data_provee = !$limit ? $data_provee : $data_provee->limit($limit,$start);
 		$user_data = is_null($idfactura) ? $data_provee : $data_provee->where('f.id',$idfactura);  
+
+		$user_data = is_null($rut) ? $data_provee : $data_provee->where('c.rut',$rut);  
+		
+		$user_data = is_null($folio) ? $data_provee : $data_provee->where('f.num_factura',$folio);
+
 		$query = $this->db->get();
 		return is_null($idfactura) ? $query->result() :  $query->row();		
 	}
