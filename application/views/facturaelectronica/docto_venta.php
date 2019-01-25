@@ -4,6 +4,18 @@
         <div class="panel-heading">
               <h4 class="panel-title">Buscar Entre Documentos Emitidos</h4>
           </div>
+          <div class="form-group" style="text-align:center;">                             
+            <label for="">TIPOS DE DOCUMENTOS</label><br/>
+            <select name="tipodoc" id="tipodoc" class="selectpicker" data-live-search="true">
+            <option data-tokens="todos">TODOS LOS DOCUMENTOS</option>
+            <option data-tokens="101">FACTURA ELECTRONICA</option>
+            <option data-tokens="103">FACTURA EXCENTA ELECTRONICA</option>
+            <option data-tokens="102">FACTURA COMPRA ELECTRONICA</option>
+            <option data-tokens="104">NOTA DE CREDITO ELECTRONICA</option>
+            <option data-tokens="107">NOTA DE DEBITO ELECTRONICA</option>
+            <option data-tokens="105">GUIA DESPACHO ELECTRONICA</option>
+            </select>                                          
+           </div>                         
           <div class="panel-body">
             <div class='row'>
               <div class='col-md-6'>
@@ -39,15 +51,13 @@
                                     <span class="glyphicon glyphicon-calendar"></span>
                                   </div>
                                 <input placeholder="Fecha hasta" class="form-control mask_date" id="fecha_hasta" name="fecha_hasta"   size="30" type="text" value="" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
-                                </div>                              
-                            </div>  
-                          </div>
-                         
-                        </div>                      
+                                </div> 
+                              </div> 
+                          </div>                           
+                        </div>                                              
                         <div class="panel-footer" style="text-align:center;">
                         <button type="submit" class="btn btn-primary">Buscar</button>&nbsp;&nbsp;
                       </div>
-
                         </div>  
                             <div class="panel panel-inverse">                       
                                 <div class="panel-heading">
@@ -59,55 +69,48 @@
 																	<thead> 
 																		<tr>
 																			<th><small>Nro. Docto</small></th> 
-                                                                            <th><small>Tipo Docto</small></th> 
-                                                                            <th><small>Fecha Emisi&oacute;n</small></th> 
-                                                                            <th><small>Fecha Venc</small></th> 
-                                                                            <th><small>Rut</small></th> 
+                                      <th><small>Tipo Docto</small></th> 
+                                      <th><small>Fecha Emisi&oacute;n</small></th> 
+                                      <th><small>Fecha Venc</small></th> 
+                                      <th><small>Rut</small></th> 
 																			<th><small>Raz&oacute;n Social</small></th>
 																			<th><small>Total</small></th> 
 																			<th><small>Ver Documento</small></th> 
 																			<th><small>Ver XML</small></th> 
-                                                                            <th><small>Estado DTE</small></th> 
-																			
-
-																		</tr> 
+                                      <th><small>Estado DTE</small></th>																		</tr> 
 																	</thead> 
 																	<tbody> 
-												                    <?php $i = 1; ?>
-												                    <?php if(count($datos_factura) > 0){ ?>
-												                    <?php foreach ($datos_factura as $facturas) { ?>	
-												                    <?php //echo "<pre>"; print_r($facturas); exit; ?>
+									                    <?php $i = 1; ?>
+									                    <?php if(count($datos_factura) > 0){ ?>
+									                    <?php foreach ($datos_factura as $facturas) { ?>	
+									                    <?php //echo "<pre>"; print_r($facturas); exit; ?>
 																		<tr >
 																			<td><small><?php echo $facturas->num_factura;?></small></td>
 																			<td><small><?php echo $facturas->tipo_docto;?></small></td>
 																			<td><small><?php echo $facturas->fecha_factura;?></small></td>
 																			<td><small><?php echo $facturas->fecha_venc;?></small></td>
-                                                                            <td><small><?php echo substr($facturas->rut,0,strlen($facturas->rut)-1)."-".substr($facturas->rut,-1);?></small></td>
-                                                                            <td><small><?php echo $facturas->razon_social;?></small></td>
-                                                                            <td><small><?php echo number_format($facturas->totalfactura,0,".",".");?></small></td>
+                                      <td><small><?php echo substr($facturas->rut,0,strlen($facturas->rut)-1)."-".substr($facturas->rut,-1);?></small></td>
+                                      <td><small><?php echo $facturas->razon_social;?></small></td>
+                                      <td><small><?php echo number_format($facturas->totalfactura,0,".",".");?></small></td>
 																			<td><small><a href="<?php echo base_url();?>facturaselectronicas/exportPDF/<?php echo $facturas->id;?>" target="_blank"><i class="fa fa-file-pdf-o fa-2x" ></i></a></small></td>
 																			<td><small><a href="<?php echo base_url();?>facturaselectronicas/ver_dte/<?php echo $facturas->id;?>" target="_blank"><i class="fa fa-file-o fa-2x" ></i></a></small></td>
-                                                                            <td><small>
-                                                                                <a href="#" class="lnk_dte"  data-toggle="modal" data-idfact="<?php echo $facturas->id;?>" data-target="#show-estado_dte" >
-                                                                                <i class="fa fa-mail-reply-all fa-2x" ></i></a></small></td>
-																			
+                                      <td><small>
+                                      <a href="#" class="lnk_dte"  data-toggle="modal" data-idfact="<?php echo $facturas->id;?>" data-target="#show-estado_dte" >
+                                      <i class="fa fa-mail-reply-all fa-2x" ></i></a></small></td>																			
 																		</tr> 
-												                      <?php $i++; ?>
-												                    <?php } ?>													
-												                    <?php }else{ ?>
-												                    	<tr ><td colspan="9">No existen documentos disponibles </td></tr>
-
-												                    <?php } ?>	
+								                      <?php $i++; ?>
+								                      <?php } ?>													
+								                      <?php }else{ ?>
+								                    	<tr ><td colspan="9">No existen documentos disponibles </td></tr>
+												              <?php } ?>	
 																	</tbody> 
 																</table>                           
-                        </div>
-                        
+                        </div>                        
                       </div><!-- /.box-body -->
-
                  
                   </div> 
                   </div>
-    </form>                   
+    </form>               
                 
 
             

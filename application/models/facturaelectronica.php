@@ -681,11 +681,7 @@ class Facturaelectronica extends CI_Model
 		
 	}
 
-
-
-
-
-	public function facturas_venta($folio = null,$rut = null,$idfactura = null){
+	public function facturas_venta($tipodoc = null,$folio = null,$rut = null,$idfactura = null){
 
 	
 		/*$data_provee = $this->db->select("l.id, c.razon_social, l.path, l.filename, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.fecgeneraacuse,  l.created_at, l.procesado, l.content, l.proveenombre, l.proveemail, l.envios_recibos, l.path, l.arch_env_rec, l.arch_rec_dte, l.arch_res_dte",false)
@@ -707,7 +703,7 @@ class Facturaelectronica extends CI_Model
 										,convert(varchar,f.fecha_venc,103) as fecha_venc
 										,c.rut
 										,c.nombres as razon_social
-										,f.totalfactura",false)
+										,f.totalfactura, f.tipo_documento",false)
 								  ->from('factura_clientes f')
 								  ->join('clientes c','f.id_cliente = c.id','left')
 								  ->join('tipo_documento td','f.tipo_documento = td.id','left')
@@ -721,6 +717,8 @@ class Facturaelectronica extends CI_Model
 		$user_data = is_null($rut) ? $data_provee : $data_provee->where('c.rut',$rut);  
 		
 		$user_data = is_null($folio) ? $data_provee : $data_provee->where('f.num_factura',$folio);
+
+		$user_data = is_null($tipodoc) ? $data_provee : $data_provee->where('f.tipo_documento',$tipodoc);
 
 		$query = $this->db->get();
 		return is_null($idfactura) ? $query->result() :  $query->row();		

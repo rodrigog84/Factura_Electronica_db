@@ -1125,6 +1125,35 @@ class Facturaselectronicas extends CI_Controller {
     $folio  = $this->input->post('folio');    
     $fechad = $this->input->post('fecha_desde');
     $fechah = $this->input->post('fecha_hasta');
+    $tipodoc = $this->input->post('tipodoc');
+
+    if($tipodoc=="TODOS LOS DOCUMENTOS"){
+        $tipodoc= null;
+    };
+
+    if($tipodoc=="FACTURA ELECTRONICA"){
+        $tipodoc=101;
+    };
+
+    if($tipodoc=="FACTURA EXCENTA ELECTRONICA"){
+        $tipodoc=103;
+    };
+
+    if($tipodoc=="FACTURA COMPRA ELECTRONICA"){
+        $tipodoc=107;
+    };
+
+    if($tipodoc=="NOTA DE CREDITO ELECTRONICA"){
+        $tipodoc=102;
+    };
+
+    if($tipodoc=="NOTA DE DEBITO ELECTRONICA"){
+        $tipodoc=104;
+    };
+
+    if($tipodoc=="GUIA DESPACHO ELECTRONICA"){
+        $tipodoc=105;
+    };
 
     if(!$rut){
         $rut = null;
@@ -1135,7 +1164,7 @@ class Facturaselectronicas extends CI_Controller {
         $folio = null;
     };
 
-    //echo $rut;
+    //echo $tipodoc;
 
     //exit;
 
@@ -1149,7 +1178,7 @@ class Facturaselectronicas extends CI_Controller {
         
 
         $this->load->model('facturaelectronica');
-        $datos_factura = $this->facturaelectronica->facturas_venta($folio,$rut);
+        $datos_factura = $this->facturaelectronica->facturas_venta($tipodoc,$folio,$rut);
 
 
         //var_dump($datos_factura); exit;
