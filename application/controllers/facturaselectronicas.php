@@ -781,7 +781,8 @@ class Facturaselectronicas extends CI_Controller {
         $this->load->model('facturaelectronica');
         $datos_factura = $this->facturaelectronica->reporte_provee($idfactura);
         $resumen_dte = $this->facturaelectronica->lectura_dte_provee($idfactura);
-       // var_dump($datos_factura); exit;
+      //  echo "<pre>";
+      // var_dump($datos_factura); exit;
 
         $vars['icheck'] = true;
         

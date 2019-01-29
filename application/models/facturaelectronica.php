@@ -50,7 +50,7 @@ class Facturaelectronica extends CI_Model
 
 
         $existe = file_exists($this->facturaelectronica->ruta_certificado('p12',$idempresa)) ? true: false;
-
+        $file = '';
         if(!$existe){
             $existe = file_exists($this->facturaelectronica->ruta_certificado('pfx',$idempresa)) ? true: false;      
             if($existe){
@@ -652,7 +652,7 @@ class Facturaelectronica extends CI_Model
 
 
 
-	public function reporte_provee($estado = null, $folio = null, $rut = null,$idfactura = null){
+	public function reporte_provee($idfactura = null,$estado = null, $folio = null, $rut = null){
 
 	
 		$data_provee = $this->db->select("folio, caf.nombre as tipo_documento, l.id, c.razon_social, l.path, l.filename, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.fecgeneraacuse,  l.created_at, l.procesado, l.content, l.proveenombre, l.proveemail, l.envios_recibos, l.path, l.arch_env_rec, l.arch_rec_dte, l.arch_res_dte, monto_afecto, monto_exento, monto_neto, iva, monto_total, fecvenc as fec_pago_vencimiento",false)
@@ -727,6 +727,7 @@ class Facturaelectronica extends CI_Model
 	public function lectura_dte_provee($idfactura = null){
 
 		$datos_factura = $this->reporte_provee($idfactura);
+		//echo "<pre>";
 		//print_r($datos_factura); exit;
 		$xml_archivo = './facturacion_electronica/dte_provee_tmp/'.$datos_factura->path.'/'.$datos_factura->filename;
 
