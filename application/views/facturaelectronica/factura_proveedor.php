@@ -74,7 +74,8 @@
 																		<tr>
 																			
 																			<th><small>Proveedor</small></th> 
-																			<th><small>Rut</small></th> 
+																			<th><small>Rut</small></th>
+                                                                            <th><small>Folio</small></th> 
 																			<th><small>Email</small></th> 
 																			<th><small>Fecha Documento</small></th> 
 																			<th><small>Fecha Genera Acuse</small></th>
@@ -98,6 +99,7 @@
 																		<tr >
 																			<td><small><?php echo $facturas->proveenombre;?></small></td>
 																			<td><small><?php echo $facturas->rutemisor;?></small></td>
+                                                                            <td><small><?php echo $facturas->folio;?></small></td>
 																			<td><small><?php echo $facturas->proveemail;?></small></td>
 																			<td><small><?php echo $facturas->fecemision;?></small></td>
 																			<td><small><?php echo $facturas->fecgeneraacuse;?></small></td>

@@ -536,6 +536,7 @@ class Facturaselectronicas extends CI_Controller {
     $estado = $this->input->post('estado');
     $fechad = $this->input->post('fecha_desde');
     $fechah = $this->input->post('fecha_hasta');
+    $idfactura = $this->input->post('idfactura');
 
     //echo $folio;
 
@@ -548,6 +549,9 @@ class Facturaselectronicas extends CI_Controller {
     };
     if(!$folio){
         $folio = null;
+    };
+    if(!$idfactura){
+        $idfactura = null;        
     };
 
     //echo $rut;
@@ -581,7 +585,7 @@ class Facturaselectronicas extends CI_Controller {
         
 
         $this->load->model('facturaelectronica');
-        $datos_factura = $this->facturaelectronica->reporte_provee($estado,$folio,$rut);
+        $datos_factura = $this->facturaelectronica->reporte_provee($idfactura,$estado,$folio,$rut);
 
         //echo "<pre>";
         //var_dump($datos_factura); exit;
