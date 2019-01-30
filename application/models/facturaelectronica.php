@@ -652,10 +652,10 @@ class Facturaelectronica extends CI_Model
 
 
 
-	public function reporte_provee($idfactura = null,$estado = null, $folio = null, $rut = null){
+	public function reporte_provee($idfactura = null,$estado = null, $folio = null, $rut = null,$tipodoc = null){
 
 	
-		$data_provee = $this->db->select("folio, caf.nombre as tipo_documento, l.id, c.razon_social, l.path, l.filename, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.fecgeneraacuse,  l.created_at, l.procesado, l.content, l.proveenombre, l.proveemail, l.envios_recibos, l.path, l.arch_env_rec, l.arch_rec_dte, l.arch_res_dte, monto_afecto, monto_exento, monto_neto, iva, monto_total, fecvenc as fec_pago_vencimiento",false)
+		$data_provee = $this->db->select("folio, caf.nombre as tipo_documento, l.id, c.razon_social, l.path, l.filename, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.fecgeneraacuse, l.tipodoc,  l.created_at, l.procesado, l.content, l.proveenombre, l.proveemail, l.envios_recibos, l.path, l.arch_env_rec, l.arch_rec_dte, l.arch_res_dte, monto_afecto, monto_exento, monto_neto, iva, monto_total, fecvenc as fec_pago_vencimiento",false)
 		  ->from('lectura_dte_email l')
 		  ->join('contribuyentes_autorizados_1 c','l.rutemisor = c.rut','left')
 		  ->join('tipo_caf caf','l.tipodoc = caf.id','left')
@@ -668,6 +668,8 @@ class Facturaelectronica extends CI_Model
 		$user_data = is_null($rut) ? $data_provee : $data_provee->where('l.rutemisor',$rut);  
 		
 		$user_data = is_null($folio) ? $data_provee : $data_provee->where('l.folio',$folio);
+
+		$user_data = is_null($tipodoc) ? $data_provee : $data_provee->where('l.tipodoc',$tipodoc);
 		
 		
 		$query = $this->db->get();

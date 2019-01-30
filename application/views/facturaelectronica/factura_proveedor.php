@@ -4,6 +4,18 @@
         <div class="panel-heading">
               <h4 class="panel-title">Buscar Entre Documentos Recibidos</h4>
           </div>
+          <div class="form-group" style="text-align:center;">                             
+            <label for="">TIPOS DE DOCUMENTOS</label><br/>
+            <select name="tipodoc" id="tipodoc" class="selectpicker" data-live-search="true">
+            <option data-tokens="todos">TODOS LOS DOCUMENTOS</option>
+            <option data-tokens="101">FACTURA ELECTRONICA</option>
+            <option data-tokens="103">FACTURA EXCENTA ELECTRONICA</option>
+            <option data-tokens="102">FACTURA COMPRA ELECTRONICA</option>
+            <option data-tokens="104">NOTA DE CREDITO ELECTRONICA</option>
+            <option data-tokens="107">NOTA DE DEBITO ELECTRONICA</option>
+            <option data-tokens="105">GUIA DESPACHO ELECTRONICA</option>
+            </select>                                          
+           </div>       
           <div class="panel-body">
             <div class='row'>
               <div class='col-md-6'>
@@ -72,10 +84,11 @@
 										<table class="table" id="listadoFacturas"> 
 																	<thead> 
 																		<tr>
-																			
+
+                                                                            <th><small>Tip.Doc</small></th>	
+                                                                            <th><small>Folio</small></th>																		
 																			<th><small>Proveedor</small></th> 
-																			<th><small>Rut</small></th>
-                                                                            <th><small>Folio</small></th> 
+																			<th><small>Rut</small></th>                                                                            
 																			<th><small>Email</small></th> 
 																			<th><small>Fecha Documento</small></th> 
 																			<th><small>Fecha Genera Acuse</small></th>
@@ -97,10 +110,11 @@
 												                    <?php $mercaderias = $facturas->envios_recibos == 1 ? 1 : 0; ?>		
 												                    <?php //echo "<pre>"; print_r($facturas); exit; ?>
 																		<tr >
+                                                                            <td><small><?php echo $facturas->tipo_documento;?></small></td>
+                                                                            <td><small><?php echo $facturas->folio;?></small></td>
 																			<td><small><?php echo $facturas->proveenombre;?></small></td>
 																			<td><small><?php echo $facturas->rutemisor;?></small></td>
-                                                                            <td><small><?php echo $facturas->folio;?></small></td>
-																			<td><small><?php echo $facturas->proveemail;?></small></td>
+                                                                            <td><small><?php echo $facturas->proveemail;?></small></td>
 																			<td><small><?php echo $facturas->fecemision;?></small></td>
 																			<td><small><?php echo $facturas->fecgeneraacuse;?></small></td>
 																			<td><small><?php echo $facturas->fecenvio;?></small></td>
