@@ -21,7 +21,7 @@
               <div class='col-md-6'>
                 <div class="form-group">
                       <label for="caja">Rut Emisor</label>    
-                      <input type="text" name="rut" class="form-control" id="rut" placeholder="12262247-9" value="">
+                      <input type="text" name="rut" class="form-control" id="rut" placeholder="12345345-9" value="">
                 </div>  
               </div>
 
@@ -40,7 +40,7 @@
                                   <div class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
                                   </div>
-                                <input placeholder="Fecha desde" class="form-control mask_date" id="fecha_desde" name="fecha_desde"   size="30" type="text" value="" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
+                                <input placeholder="Fecha desde" class="form-control mask_date" id="fecha_desde" name="fecha_desde"   size="30" type="" value="<?php echo date("d-m-Y");?>" data-inputmask="" data-mask>
                                 </div>                              
                             </div>  
                           </div>
@@ -52,7 +52,7 @@
                                   <div class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
                                   </div>
-                                <input placeholder="Fecha hasta" class="form-control mask_date" id="fecha_hasta" name="fecha_hasta"   size="30" type="text" value="" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
+                                <input placeholder="Fecha hasta" class="form-control mask_date" id="fecha_hasta" name="fecha_hasta"   size="30" type="text" value="<?php echo date("d-m-Y");?>" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
                                 </div>                              
                             </div>  
                           </div>
@@ -313,7 +313,7 @@
                 }
             },      
 
-            fecha_desde: {
+            /*fecha_desde: {
                 row: '.form-group',
                 validators: {
                     date: {
@@ -321,9 +321,9 @@
                         message: 'El valor no es una fecha v&aacute;lida'
                     }                   
                 }
-            }, 
+            }, */
             
-             fecha_hasta: {
+            /* fecha_hasta: {
                 row: '.form-group',
                 validators: {
                     date: {
@@ -331,7 +331,7 @@
                         message: 'El valor no es una fecha v&aacute;lida'
                     }                   
                 }
-            },     
+            },*/     
 
            
 
@@ -347,10 +347,54 @@
          
 </script>
 
-<script type="text/javascript">
-$("#fecha_desde").datetimepicker({
-    format: 'yyyy-mm-dd',
-    autoclose: true,
-    todayBtn: true
+
+<script>
+ $.datepicker.regional['es'] = {
+ closeText: 'Cerrar',
+ prevText: '< Ant',
+ nextText: 'Sig >',
+ currentText: 'Hoy',
+ monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+ monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
+ dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+ dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
+ dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
+ weekHeader: 'Sm',
+ dateFormat: 'dd-mm-yy',
+ firstDay: 1,
+ isRTL: false,
+ showMonthAfterYear: false,
+ yearSuffix: ''
+ };
+ $.datepicker.setDefaults($.datepicker.regional['es']);
+$(function () {
+$("#fecha_desde").datepicker();
+
+});
+</script>
+
+
+<script>
+ $.datepicker.regional['es'] = {
+ closeText: 'Cerrar',
+ prevText: '< Ant',
+ nextText: 'Sig >',
+ currentText: 'Hoy',
+ monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+ monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
+ dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+ dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
+ dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
+ weekHeader: 'Sm',
+ dateFormat: 'dd-mm-yy',
+ firstDay: 1,
+ isRTL: false,
+ showMonthAfterYear: false,
+ yearSuffix: ''
+ };
+ $.datepicker.setDefaults($.datepicker.regional['es']);
+$(function () {
+$("#fecha_hasta").datepicker();
+
 });
 </script>

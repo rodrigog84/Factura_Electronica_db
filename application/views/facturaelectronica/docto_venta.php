@@ -21,7 +21,7 @@
               <div class='col-md-6'>
                 <div class="form-group">
                       <label for="caja">Rut Receptor</label>    
-                      <input type="text" name="rut" class="form-control" id="rut" placeholder="Rut" value="">
+                      <input type="text" name="rut" class="form-control" id="rut" placeholder="12345456-9" value="">
                 </div>  
               </div>
             <div class='col-md-6'>
@@ -38,7 +38,7 @@
                                   <div class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
                                   </div>
-                                <input placeholder="Fecha desde" class="form-control mask_date" id="fecha_desde" name="fecha_desde"   size="30" type="text" value="" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
+                                <input placeholder="Fecha desde" class="form-control mask_date" id="fecha_desde" name="fecha_desde"   size="30" type="text" value="<?php echo date("d-m-Y");?>" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
                                 </div>                              
                             </div>  
                           </div>
@@ -50,7 +50,7 @@
                                   <div class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
                                   </div>
-                                <input placeholder="Fecha hasta" class="form-control mask_date" id="fecha_hasta" name="fecha_hasta"   size="30" type="text" value="" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
+                                <input placeholder="Fecha hasta" class="form-control mask_date" id="fecha_hasta" name="fecha_hasta"   size="30" type="text" value="<?php echo date("d-m-Y");?>" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
                                 </div> 
                               </div> 
                           </div>                           
@@ -175,6 +175,8 @@
     </div>                
 <script>
 
+
+
     $(document).ready(function() {
 
     	$('.lnk_dte').click(function(){
@@ -288,4 +290,55 @@
                         lengthMenu: [[10, 50, 100, -1], [10, 50, 100, "All"]]                              
 
         });       
+</script>
+
+<script>
+ $.datepicker.regional['es'] = {
+ closeText: 'Cerrar',
+ prevText: '< Ant',
+ nextText: 'Sig >',
+ currentText: 'Hoy',
+ monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+ monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
+ dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+ dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
+ dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
+ weekHeader: 'Sm',
+ dateFormat: 'dd-mm-yy',
+ firstDay: 1,
+ isRTL: false,
+ showMonthAfterYear: false,
+ yearSuffix: ''
+ };
+ $.datepicker.setDefaults($.datepicker.regional['es']);
+$(function () {
+$("#fecha_desde").datepicker();
+
+});
+</script>
+
+
+<script>
+ $.datepicker.regional['es'] = {
+ closeText: 'Cerrar',
+ prevText: '< Ant',
+ nextText: 'Sig >',
+ currentText: 'Hoy',
+ monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+ monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
+ dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+ dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
+ dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
+ weekHeader: 'Sm',
+ dateFormat: 'dd-mm-yy',
+ firstDay: 1,
+ isRTL: false,
+ showMonthAfterYear: false,
+ yearSuffix: ''
+ };
+ $.datepicker.setDefaults($.datepicker.regional['es']);
+$(function () {
+$("#fecha_hasta").datepicker();
+
+});
 </script>

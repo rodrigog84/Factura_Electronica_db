@@ -539,6 +539,18 @@ class Facturaselectronicas extends CI_Controller {
     $idfactura = $this->input->post('idfactura');
     $tipodoc = $this->input->post('tipodoc');
 
+    $newDate = new DateTime($fechad);                
+    $fechad=$newDate->format('Y-m-d');
+
+    $newDate = new DateTime($fechah);                
+    $fechah=$newDate->format('Y-m-d');
+    
+
+    /*if ($fechad == $fechah){
+        $fechad = null;
+        $fechah = null;        
+    };*/
+
     if($tipodoc=="TODOS LOS DOCUMENTOS"){
         $tipodoc= null;
     };
@@ -568,10 +580,6 @@ class Facturaselectronicas extends CI_Controller {
     };
 
 
-    //echo $folio;
-
-    //var_dump($arrayrut);
-
     if(!$rut){
         $rut = null;
     }else{
@@ -583,16 +591,6 @@ class Facturaselectronicas extends CI_Controller {
     if(!$idfactura){
         $idfactura = null;        
     };
-
-    //echo $rut;
-
-     //exit;//va
-
-    //$rut //echo $estado;
-    //echo $folio;
-    //echo $rut;
-
-    //exit;
 
     $resultid = $this->session->flashdata('factura_proveedor_result');
     //echo $resultid; exit;
@@ -615,7 +613,9 @@ class Facturaselectronicas extends CI_Controller {
         
 
         $this->load->model('facturaelectronica');
-        $datos_factura = $this->facturaelectronica->reporte_provee($idfactura,$estado,$folio,$rut,$tipodoc);
+        $datos_factura = $this->facturaelectronica->reporte_provee($idfactura,$estado,$folio,$rut,$tipodoc,$fechad,$fechah);
+
+        
 
         //echo "<pre>";
         //var_dump($datos_factura); exit;
@@ -1158,9 +1158,26 @@ class Facturaselectronicas extends CI_Controller {
     $rut  = str_replace(".","",$this->input->post('rut'));
     $arrayrut = explode("-",$rut);  
     $folio  = $this->input->post('folio');    
-    $fechad = $this->input->post('fecha_desde');
-    $fechah = $this->input->post('fecha_hasta');
+    $fechad = $this->input->get('fecha_desde');
+    $fechah = $this->input->get('fecha_hasta');
     $tipodoc = $this->input->post('tipodoc');
+    
+    $newDate = new DateTime($fechad);                
+    $fechad=$newDate->format('Y-m-d');
+
+    $newDate = new DateTime($fechah);                
+    $fechah=$newDate->format('Y-m-d');
+    
+    //echo $fechad;
+    //echo $fechah;
+    //exit;
+
+    if ($fechad == $fechah){
+
+        $fechad = null;
+        $fechah = null;
+        
+    };
 
     if($tipodoc=="TODOS LOS DOCUMENTOS"){
         $tipodoc= null;
@@ -1213,7 +1230,7 @@ class Facturaselectronicas extends CI_Controller {
         
 
         $this->load->model('facturaelectronica');
-        $datos_factura = $this->facturaelectronica->facturas_venta($tipodoc,$folio,$rut);
+        $datos_factura = $this->facturaelectronica->facturas_venta($tipodoc,$folio,$rut,$fechad,$fechah);
 
 
         //var_dump($datos_factura); exit;
