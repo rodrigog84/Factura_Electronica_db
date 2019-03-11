@@ -937,6 +937,21 @@ class Facturaelectronica extends CI_Model
 
 			$this->db->where('id',$array_acuse['idfactura']);
 			$this->db->update('lectura_dte_email',$array_insert); 
+
+			/**** guarda en bd intermedia*****/
+
+			$int_db = $this->load->database('CONS_Integraciones',true);
+			$array_acuse = array('ESTATUS' => 0,
+								 'TRANSACCION' => '016',
+								 'XML' => iconv('','UTF-8//IGNORE',$xml_content),
+								 'Fecha_Insertado' => date('Ymd H:i:s'),
+								 'FuenteDatos' => 'Compras facturación electrónica',
+								 'estado' => 0,
+								 'detalle_estado' => 'Guardado OK'
+								)
+			$int_db->insert('HUB',$array_acuse);
+
+
 		}else{
 
 
