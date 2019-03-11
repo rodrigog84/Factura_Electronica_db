@@ -21,7 +21,7 @@
               <div class='col-md-6'>
                 <div class="form-group">
                       <label for="caja">Rut Receptor</label>    
-                      <input type="text" name="rut" class="form-control" id="rut" placeholder="12345456-9" value="">
+                      <input type="text" name="rut" class="form-control" id="rut" placeholder="12345456-9" value="<?php echo $rut == '' ? null : $rut;?>">
                 </div>  
               </div>
             <div class='col-md-6'>
