@@ -948,7 +948,7 @@ class Facturaelectronica extends CI_Model
 								 'FuenteDatos' => 'Compras facturación electrónica',
 								 'estado' => 0,
 								 'detalle_estado' => 'Guardado OK'
-								)
+								);
 			$int_db->insert('HUB',$array_acuse);
 
 
