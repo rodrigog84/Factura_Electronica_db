@@ -654,8 +654,10 @@ class Facturaelectronica extends CI_Model
 
 	public function reporte_provee($idfactura = null,$estado = null, $folio = null, $rut = null,$tipodoc = null,$fechad = null,$fechah = null){
 
-		/*echo $fechad;
-		echo $fechah;
+		/*echo $tipodoc; 
+		echo $estado;
+		echo $rut;
+		echo $folio;
 		exit;*/
 
 	    
@@ -666,6 +668,13 @@ class Facturaelectronica extends CI_Model
 		  ->where('idempresa',$this->session->userdata('empresaid'))
 		  ->order_by('l.id');
 
+		 if($estado == 'Acuse Recibo'){
+		 	$data_provee = $data_provee->where('l.fecgeneraacuse is not null');
+	 	
+		 }else if($estado == 'Pendientes'){
+		 	$data_provee = $data_provee->where('l.fecgeneraacuse is null');
+		 }
+
 		//$data_provee = !$limit ? $data_provee : $data_provee->limit($limit,$start);
 		$user_data = is_null($idfactura) ? $data_provee : $data_provee->where('l.id',$idfactura);  
 
@@ -675,7 +684,7 @@ class Facturaelectronica extends CI_Model
 
 		$user_data = is_null($tipodoc) ? $data_provee : $data_provee->where('l.tipodoc',$tipodoc);
 
-		//$user_data = is_null($fechad) ? $data_provee : $data_provee->where('l.fecemision', between $fechad and $fechah);
+		$user_data = is_null($fechad) ? $data_provee : $data_provee->where("l.fecemision  between '" . $fechad . "' and '" .$fechah . "'");
 
 
 		$query = $this->db->get();
@@ -728,6 +737,9 @@ class Facturaelectronica extends CI_Model
 		$user_data = is_null($folio) ? $data_provee : $data_provee->where('f.num_factura',$folio);
 
 		$user_data = is_null($tipodoc) ? $data_provee : $data_provee->where('f.tipo_documento',$tipodoc);
+
+		$user_data = is_null($fechad) ? $data_provee : $data_provee->where("f.fecha_factura  between '" . $fechad . "' and '" .$fechah . "'");
+
 
 
 		//$user_data = is_null($fechad) ? $data_provee : $data_provee->where('fecha_factura', between $fechad and $fechah);

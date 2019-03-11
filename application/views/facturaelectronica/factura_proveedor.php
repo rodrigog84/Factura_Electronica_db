@@ -7,13 +7,13 @@
           <div class="form-group" style="text-align:center;">                             
             <label for="">TIPOS DE DOCUMENTOS</label><br/>
             <select name="tipodoc" id="tipodoc" class="selectpicker" data-live-search="true">
-            <option data-tokens="todos">TODOS LOS DOCUMENTOS</option>
-            <option data-tokens="101">FACTURA ELECTRONICA</option>
-            <option data-tokens="103">FACTURA EXCENTA ELECTRONICA</option>
-            <option data-tokens="102">FACTURA COMPRA ELECTRONICA</option>
-            <option data-tokens="104">NOTA DE CREDITO ELECTRONICA</option>
-            <option data-tokens="107">NOTA DE DEBITO ELECTRONICA</option>
-            <option data-tokens="105">GUIA DESPACHO ELECTRONICA</option>
+            <option data-tokens="todos" <?php echo $tipdoc == 'TODOS LOS DOCUMENTOS' ? 'selected' : ''; ?> >TODOS LOS DOCUMENTOS</option>
+            <option data-tokens="101" <?php echo $tipdoc == 'FACTURA ELECTRONICA' ? 'selected' : ''; ?> >FACTURA ELECTRONICA</option>
+            <option data-tokens="103" <?php echo $tipdoc == 'FACTURA EXCENTA ELECTRONICA' ? 'selected' : ''; ?> >FACTURA EXCENTA ELECTRONICA</option>
+            <option data-tokens="102" <?php echo $tipdoc == 'FACTURA COMPRA ELECTRONICA' ? 'selected' : ''; ?> >FACTURA COMPRA ELECTRONICA</option>
+            <option data-tokens="104" <?php echo $tipdoc == 'NOTA DE CREDITO ELECTRONICA' ? 'selected' : ''; ?> >NOTA DE CREDITO ELECTRONICA</option>
+            <option data-tokens="107" <?php echo $tipdoc == 'NOTA DE DEBITO ELECTRONICA' ? 'selected' : ''; ?> >NOTA DE DEBITO ELECTRONICA</option>
+            <option data-tokens="105" <?php echo $tipdoc == 'GUIA DESPACHO ELECTRONICA' ? 'selected' : ''; ?> >GUIA DESPACHO ELECTRONICA</option>
             </select>                                          
            </div>       
           <div class="panel-body">
@@ -21,7 +21,7 @@
               <div class='col-md-6'>
                 <div class="form-group">
                       <label for="caja">Rut Emisor</label>    
-                      <input type="text" name="rut" class="form-control" id="rut" placeholder="12345345-9" value="">
+                      <input type="text" name="rut" class="form-control" id="rut" placeholder="12345345-9" value="<?php echo $rut == '' ? null : $rut;?>">
                 </div>  
               </div>
 
@@ -40,7 +40,7 @@
                                   <div class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
                                   </div>
-                                <input placeholder="Fecha desde" class="form-control mask_date" id="fecha_desde" name="fecha_desde"   size="30" type="" value="<?php echo date("d-m-Y");?>" data-inputmask="" data-mask>
+                                <input placeholder="Fecha desde" class="form-control mask_date" id="fecha_desde" name="fecha_desde"   size="30" type="" value="<?php echo $fecha_desde == '' ? date("d-m-Y") : $fecha_desde;?>" data-inputmask="" data-mask>
                                 </div>                              
                             </div>  
                           </div>
@@ -52,16 +52,16 @@
                                   <div class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
                                   </div>
-                                <input placeholder="Fecha hasta" class="form-control mask_date" id="fecha_hasta" name="fecha_hasta"   size="30" type="text" value="<?php echo date("d-m-Y");?>" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
+                                <input placeholder="Fecha hasta" class="form-control mask_date" id="fecha_hasta" name="fecha_hasta"   size="30" type="text" value="<?php echo $fecha_hasta == '' ? date("d-m-Y") : $fecha_hasta;?>"" data-inputmask="'alias': 'd/m/Y'" data-mask>
                                 </div>                              
                             </div>  
                           </div>
                           <div class="form-group" style="text-align:center;">                                        
                           <label for="exampleInputEmail1">Estado de Docuemntos</label><br/>
                           <select name="estado" id="estado" class="selectpicker" data-live-search="true">
-                          <option data-tokens="todos">Todos</option>
-                          <option data-tokens="acuse">Acuse Recibo</option>
-                          <option data-tokens="pendientes">Pendientes</option>
+                          <option data-tokens="todos" >Todos</option>
+                          <option data-tokens="acuse" <?php echo $estado == 'Acuse Recibo' ? 'selected' : ''; ?> >Acuse Recibo</option>
+                          <option data-tokens="pendientes"  <?php echo $estado == 'Pendientes' ? 'selected' : ''; ?>>Pendientes</option>
                           </select>                                          
                          </div> 
                         </div> 
