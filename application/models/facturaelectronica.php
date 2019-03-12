@@ -936,7 +936,7 @@ class Facturaelectronica extends CI_Model
 								 'estado' => 0,
 								 'detalle_estado' => 'Guardado OK'
 								);
-			$int_db->insert('HUB',$array_acuse);
+			$int_db->insert('HUB_FE',$array_acuse);
 
 
 		}else{
@@ -1423,7 +1423,7 @@ class Facturaelectronica extends CI_Model
 
 	   	//sólo los pendientes
         $int_db->select('ID, XML')
-        		->from('HUB')
+        		->from('HUB_FE')
         		->where('estado',0);
 
 
@@ -1607,7 +1607,7 @@ class Facturaelectronica extends CI_Model
 
 						);
 		$int_db->where('ID',$id);
-		$int_db->update('HUB',$array_result);
+		$int_db->update('HUB_FE',$array_result);
 
 
 

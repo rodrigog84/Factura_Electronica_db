@@ -223,7 +223,7 @@ public function lectura_mail($idempresa){
 		$this->load->model('facturaelectronica');
 		$email_data = $this->facturaelectronica->get_email($idempresa);
 		//echo "<pre>";
-		//var_dump($email_data); //exit;
+		var_dump($email_data); //exit;
 		if(strpos($email_data->host_contacto,'office365')){
 			$tipo_host = 'office';
 		}else{
@@ -240,6 +240,8 @@ public function lectura_mail($idempresa){
 				$imapPath = $tipo_host == 'office' ? '{outlook.office365.com:993/imap/ssl/novalidate-cert}INBOX' : '{imap.gmail.com:993/imap/ssl/novalidate-cert}INBOX';
 				$username = $email_data->email_contacto;
 				$password = $email_data->pass_contacto;
+				var_dump($username);
+				var_dump($password);
 				// try to connect 
 				$inbox = imap_open($imapPath,$username,$password) or die('Cannot connect to Outlook: ' . imap_last_error());
 
@@ -247,7 +249,9 @@ public function lectura_mail($idempresa){
 			   // $emails = imap_search($inbox,'SUBJECT "Envio de DTEs"  SINCE "01-08-2017" UNSEEN' );
 			    $date = date ( "j F Y", strToTime ( "-25 days" ) );
 			   // echo $date; exit;
-			     $emails = imap_search($inbox,'SUBJECT "Envio de DTEs" SINCE "' . $date . '" ' );
+			    // $emails = imap_search($inbox,'SUBJECT "Envio de DTEs" SINCE "' . $date . '" ' );
+
+			     $emails = imap_search($inbox,'SUBJECT "Envio" SINCE "' . $date . '" ' );
 			   //  $emails = imap_search($inbox,'ALL' );
 			     //var_dump($emails); exit;
 
@@ -256,6 +260,100 @@ public function lectura_mail($idempresa){
 				$num_dtes = 0;
 
 				 //	echo count($emails); exit;
+				foreach($emails as $mail) {
+				    
+				    $headerInfo = imap_headerinfo($inbox,$mail);
+				    //echo "<pre>";
+				    //print_r($headerInfo);
+				    $output .= $headerInfo->subject.'<br/>';
+				    $output .= $headerInfo->toaddress.'<br/>';
+				    $output .= $headerInfo->date.'<br/>';
+				    $output .= $headerInfo->fromaddress.'<br/>';
+				    $output .= $headerInfo->reply_toaddress.'<br/>';
+				    $proveedor_nombre = $headerInfo->from[0]->personal;
+				    $proveedor_mail = $headerInfo->from[0]->mailbox."@".$headerInfo->from[0]->host;
+				    //var_dump($proveedor_nombre);
+				    //var_dump($proveedor_mail); exit;
+				    
+				    $emailStructure = imap_fetchstructure($inbox,$mail);
+				    //print_r($emailStructure); 
+					if (isset($emailStructure->parts) && count($emailStructure->parts)) {
+						
+						// loop through all attachments
+							for ($i = 0; $i < count($emailStructure->parts); $i++) {
+
+								// set up an empty attachment
+								$attachments[$i] = array(
+									'is_attachment' => FALSE,
+									'filename'      => '',
+									'name'          => '',
+									'attachment'    => ''
+								);
+
+
+								if ($emailStructure->parts[$i]->ifdparameters) {
+									foreach ($emailStructure->parts[$i]->dparameters as $object) {
+										// if this attachment is a file, mark the attachment and filename
+										if (strtolower($object->attribute) == 'filename') {
+											$attachments[$i]['is_attachment'] = TRUE;
+											$attachments[$i]['filename']      = $object->value;
+										}
+									}
+								}
+
+
+								// if this attachment has ifparameters, then proceed as above
+								if ($emailStructure->parts[$i]->ifparameters) {
+									foreach ($emailStructure->parts[$i]->parameters as $object) {
+										if (strtolower($object->attribute) == 'name') {
+											$attachments[$i]['is_attachment'] = TRUE;
+											$attachments[$i]['name']          = $object->value;
+										}
+									}
+								}
+
+
+								// if we found a valid attachment for this 'part' of the email, process the attachment
+								if ($attachments[$i]['is_attachment']) {
+									// get the content of the attachment
+									$attachments[$i]['attachment'] = imap_fetchbody($inbox, $mail, $i+1);
+
+									// check if this is base64 encoding
+									if ($emailStructure->parts[$i]->encoding == 3) { // 3 = BASE64
+										$attachments[$i]['attachment'] = base64_decode($attachments[$i]['attachment']);
+									}
+									// otherwise, check if this is "quoted-printable" format
+									elseif ($emailStructure->parts[$i]->encoding == 4) { // 4 = QUOTED-PRINTABLE
+										$attachments[$i]['attachment'] = quoted_printable_decode($attachments[$i]['attachment']);
+									}
+								}
+
+
+								//print_r($attachments);
+								foreach ($attachments as $attachment) {
+									if($attachment['is_attachment'] == 1 && substr($attachment['filename'],-3) == 'xml'){
+										$array_dtes[$num_dtes]['filename'] = $attachment['filename'];
+										$array_dtes[$num_dtes]['content'] = $attachment['attachment'];
+										$array_dtes[$num_dtes]['proveedor_mail'] = $proveedor_mail;
+										$array_dtes[$num_dtes]['proveedor_nombre'] = $proveedor_nombre;
+										$num_dtes++;
+									}
+								}
+
+
+
+								//	echo "<br><br>";
+
+							}
+
+					}
+
+				}
+
+
+				$emails = imap_search($inbox,'SUBJECT "EnvioDTE" SINCE "' . $date . '" ' );
+
+
 				foreach($emails as $mail) {
 				    
 				    $headerInfo = imap_headerinfo($inbox,$mail);
