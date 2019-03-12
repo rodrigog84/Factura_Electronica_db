@@ -529,7 +529,7 @@ class Facturaselectronicas extends CI_Controller {
 
     public function factura_proveedor(){
 
-
+    $rut1 = $this->input->post('rut');
     $rut  = str_replace(".","",$this->input->post('rut'));
     $arrayrut = explode("-",$rut);  
     $folio  = $this->input->post('folio');    
@@ -538,6 +538,7 @@ class Facturaselectronicas extends CI_Controller {
     $fechah = $this->input->post('fecha_hasta');
     $idfactura = $this->input->post('idfactura');
     $tipodoc = $this->input->post('tipodoc');
+    $tipodoc1 = $this->input->post('tipodoc');
 
     $newDate = new DateTime($fechad);                
     $fechad=$newDate->format('Y-m-d');
@@ -546,10 +547,10 @@ class Facturaselectronicas extends CI_Controller {
     $fechah=$newDate->format('Y-m-d');
     
 
-    /*if ($fechad == $fechah){
+    if ($fechad == $fechah){
         $fechad = null;
         $fechah = null;        
-    };*/
+    };
 
     if($tipodoc=="TODOS LOS DOCUMENTOS"){
         $tipodoc= null;
@@ -615,17 +616,32 @@ class Facturaselectronicas extends CI_Controller {
         $this->load->model('facturaelectronica');
         $datos_factura = $this->facturaelectronica->reporte_provee($idfactura,$estado,$folio,$rut,$tipodoc,$fechad,$fechah);
 
-        
+
 
         //echo "<pre>";
         //var_dump($datos_factura); exit;
+        $newDate = new DateTime($fechad);                
+        $fechad=$newDate->format('d-m-Y');
+
+        $newDate = new DateTime($fechah);                
+        $fechah=$newDate->format('d-m-Y');
+    
 
         $template = "template";
         $vars['content_menu'] = $content;   
         $vars['datatable'] = true;
         $vars['content_view'] = 'facturaelectronica/factura_proveedor';
         $vars['gritter'] = true;
-        $vars['datos_factura'] = $datos_factura;   
+        $vars['datos_factura'] = $datos_factura; 
+        $vars['estado'] = $estado;
+        $vars['fecha_desde'] = $fechad;
+        $vars['fecha_hasta'] = $fechah;
+        $vars['fecha_hasta'] = $fechah;
+        $vars['tipdoc'] = $tipodoc1;
+        $vars['rut'] = $rut1;
+        $vars['folio'] = $folio;
+        
+        
 
         $this->load->view($template,$vars); 
     }   
@@ -1158,19 +1174,18 @@ class Facturaselectronicas extends CI_Controller {
     $rut  = str_replace(".","",$this->input->post('rut'));
     $arrayrut = explode("-",$rut);  
     $folio  = $this->input->post('folio');    
-    $fechad = $this->input->get('fecha_desde');
-    $fechah = $this->input->get('fecha_hasta');
+    $fechad = $this->input->post('fecha_desde');
+    $fechah = $this->input->post('fecha_hasta');
     $tipodoc = $this->input->post('tipodoc');
+    $rut1 = $this->input->post('rut');
+    $tipodoc1 = $this->input->post('tipodoc');
+    $idfactura = $this->input->post('idfactura');
     
     $newDate = new DateTime($fechad);                
-    $fechad=$newDate->format('Y-m-d');
+    $fechad=$newDate->format('d-m-Y');
 
     $newDate = new DateTime($fechah);                
-    $fechah=$newDate->format('Y-m-d');
-    
-    //echo $fechad;
-    //echo $fechah;
-    //exit;
+    $fechah=$newDate->format('d-m-Y');
 
     if ($fechad == $fechah){
 
@@ -1178,6 +1193,9 @@ class Facturaselectronicas extends CI_Controller {
         $fechah = null;
         
     };
+    
+        
+    
 
     if($tipodoc=="TODOS LOS DOCUMENTOS"){
         $tipodoc= null;
@@ -1216,10 +1234,7 @@ class Facturaselectronicas extends CI_Controller {
         $folio = null;
     };
 
-    //echo $tipodoc;
-
-    //exit;
-
+   
     $resultid = $this->session->flashdata('factura_proveedor_result');
 
         $content = array(
@@ -1227,20 +1242,32 @@ class Facturaselectronicas extends CI_Controller {
                     'title' => 'Facturaci&oacute;n',
                     'subtitle' => 'Documentos Ventas');
 
+       
+
         
 
         $this->load->model('facturaelectronica');
-        $datos_factura = $this->facturaelectronica->facturas_venta($tipodoc,$folio,$rut,$fechad,$fechah);
+        $datos_factura = $this->facturaelectronica->facturas_venta($idfactura,$tipodoc,$folio,$rut,$fechad,$fechah);
 
+        $newDate = new DateTime($fechad);                
+        $fechad=$newDate->format('d-m-Y');
 
-        //var_dump($datos_factura); exit;
+        $newDate = new DateTime($fechah);                
+        $fechah=$newDate->format('d-m-Y');
+    
+    //var_dump($datos_factura); exit;
 
         $template = "template";
         $vars['content_menu'] = $content;   
         $vars['content_view'] = 'facturaelectronica/docto_venta';
         $vars['gritter'] = true;
         $vars['datatable'] = true;
-        $vars['datos_factura'] = $datos_factura;   
+        $vars['datos_factura'] = $datos_factura;
+        $vars['fecha_desde'] = $fechad;
+        $vars['fecha_hasta'] = $fechah;
+        $vars['tipdoc'] = $tipodoc1;
+        $vars['rut'] = $rut1;
+        $vars['folio'] = $folio;  
 
         $this->load->view($template,$vars); 
     }   
