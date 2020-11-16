@@ -930,6 +930,7 @@ class Facturaelectronica extends CI_Model
 			$int_db = $this->load->database('CONS_Integraciones',true);
 			$array_acuse = array('ESTATUS' => 0,
 								 'TRANSACCION' => '016',
+								 'RUT' => $RutEmisor_esperado,
 								 'XML' => iconv('','UTF-8//IGNORE',$xml_content),
 								 'Fecha_Insertado' => date('Ymd H:i:s'),
 								 'FuenteDatos' => 'Compras facturación electrónica',
@@ -2290,6 +2291,11 @@ public function crea_archivo_dte($xml,$idfactura,$tipo_caf,$tipo_dte){
 
 	 }	 
 
+
+  public function prueba_api($texto){
+   			$this->db->insert('prueba_api',$texto);
+
+     }
 
 
 }

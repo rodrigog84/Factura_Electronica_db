@@ -1272,6 +1272,7 @@ class Facturaselectronicas extends CI_Controller {
         $this->load->view($template,$vars); 
     }   
 
+   
 
 
 }
