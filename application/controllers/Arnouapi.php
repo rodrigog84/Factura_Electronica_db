@@ -60,7 +60,7 @@ class Arnouapi extends RestController {
     }
 
 
-	public function dte_get()
+	/*public function dte_get()
     {
         // Users from a data store e.g. database
         $users = [
@@ -101,7 +101,7 @@ class Arnouapi extends RestController {
                 ], 404 );
             }
         }
-    }
+    }*/
 
 
 public function dte_post()
