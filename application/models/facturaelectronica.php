@@ -201,7 +201,7 @@ class Facturaelectronica extends CI_Model
 
 	//	$tabla_contribuyentes = $this->busca_parametro_fe('tabla_contribuyentes',$this->session->userdata('empresaid'));
 
-		$this->db->select('c.nombres as nombre_cliente, c.rut as rut_cliente, c.direccion, m.nombre as nombre_comuna, s.nombre as nombre_ciudad, c.fono, e.nombre as giro, isnull(ca.mail,c.e_mail) as e_mail',false)
+		$this->db->select('isnull(c.nombres,acc.raz_soc_cliente) as nombre_cliente, isnull(c.rut,cast(acc.rut_cliente as varchar)+acc.dv_cliente) as rut_cliente, isnull(c.direccion,acc.dir_cliente) as direccion, isnull(m.nombre,acc.com_cliente) as nombre_comuna, isnull(s.nombre,acc.ciu_cliente) as nombre_ciudad, c.fono, isnull(e.nombre,acc.giro_cliente) as giro, isnull(ca.mail, c.e_mail) as e_mail',false)
 		  ->from('factura_clientes acc')
 		  ->join('clientes c','acc.id_cliente = c.id','left')
 		  ->join('cod_activ_econ e','c.id_giro = e.id','left')
@@ -212,8 +212,8 @@ class Facturaelectronica extends CI_Model
 		  ->where('acc.id',$id_factura)
 		  ->limit(1);
 		$query = $this->db->get();
-		echo $this->db->last_query();
-		print_r( $query->row());
+		//echo $this->db->last_query();
+		//print_r( $query->row());
 		return $query->row();
 	 }	 
 
@@ -262,6 +262,7 @@ class Facturaelectronica extends CI_Model
 		  ->where('f.idfactura',$idfactura)
 		  ->limit(1);
 		$query = $this->db->get();
+		//echo $this->db->last_query();
 		return $query->row();
 	}	
 
@@ -370,7 +371,8 @@ class Facturaelectronica extends CI_Model
 			        die('No se pudieron obtener los datos del DTE');
 			    $pdf = new \sasco\LibreDTE\Sii\PDF\Dte(false); // =false hoja carta, =true papel contínuo (false por defecto si no se pasa)
 			    $pdf->setFooterText();
-			    $pdf->setLogo('./facturacion_electronica/images/logo_empresa.png'); // debe ser PNG!
+			   //  base_url() . "facturacion_electronica/images/" . $empresa->logo;
+			    $pdf->setLogo('./facturacion_electronica/images/' . $empresa->logo); // debe ser PNG!
 			    $pdf->setGiroCliente($factura->giro); 
 			    $pdf->setGiroEmisor($empresa->giro); 
 			    $pdf->setResolucion(['FchResol'=>$Caratula['FchResol'], 'NroResol'=>$Caratula['NroResol']]);
@@ -2292,8 +2294,129 @@ public function crea_archivo_dte($xml,$idfactura,$tipo_caf,$tipo_dte){
 	 }	 
 
 
-  public function prueba_api($texto){
-   			$this->db->insert('prueba_api',$texto);
+
+public function folio_documento_electronico($tipo_caf,$idempresa){
+
+            //$tipo_caf = 0;
+            $valida="NO";
+            $red="NO";
+            $id_folio=0;
+            $nuevo_folio=0;
+
+            $fecha_hoy=date('Y-m-d');
+         
+
+            $nuevo_folio = 0;
+            //buscar primero si existe algún folio ocupado hace más de 4 horas.
+            $this->db->select('fc.id, fc.folio, c.fecha_vencimiento ')
+              ->from('folios_caf fc')
+              ->join('caf c','fc.idcaf = c.id')
+              ->where('c.tipo_caf',$tipo_caf)
+              ->where('c.idempresa',$idempresa)
+              ->where('fc.estado','T')
+              ->where('fc.updated_at <= DATEADD(HH,-4,GETDATE())')
+              ->order_by('fc.folio')
+              ->limit(1);
+             
+            $query = $this->db->get();
+           //  echo $this->db->last_query(); exit;
+            $folios_caf = $query->row();  
+            //echo "encontrados: ". count($folios_caf);
+            if(count($folios_caf) > 0){
+                  $nuevo_folio = $folios_caf->folio;
+                  $red="no";
+                  $id_folio = $folios_caf->id;
+                  $fecha_venc = $folios_caf->fecha_vencimiento;
+                  if(!$fecha_venc){
+                            $fecha_venc=$fecha_hoy;
+                        };
+                   if($fecha_venc < $fecha_hoy){
+                    $valida="SI";
+                  };
+            }else{ // buscar folios pendientes
+                  $this->db->select('fc.id, fc.folio, c.fecha_vencimiento ')
+                    ->from('folios_caf fc')
+                    ->join('caf c','fc.idcaf = c.id')
+                    ->where('c.tipo_caf',$tipo_caf)
+                    ->where('c.idempresa',$idempresa)
+                    ->where('fc.estado','P')
+                    ->order_by('fc.folio')
+                    ->limit(1);
+                  $query = $this->db->get();
+                 // echo $this->db->last_query(); 
+                  $folios_caf = $query->row();  
+                  if(count($folios_caf) > 0){
+                        $nuevo_folio = $folios_caf->folio;
+                        $id_folio = $folios_caf->id;
+                        $fecha_venc = $folios_caf->fecha_vencimiento;
+                        $red="si";
+                        if(!$fecha_venc){
+                            $fecha_venc=$fecha_hoy;
+                        };
+                        if($fecha_venc < $fecha_hoy){
+                            $valida="SI";
+                        };
+                  }else{
+                     $fecha_venc=$fecha_hoy;
+                      
+                  }
+            }
+
+            if($nuevo_folio != 0){
+                  $this->db->where('id', $id_folio);
+                  $this->db->update('folios_caf',array(
+                  'estado' => 'T',
+                  'updated_at' => date('Ymd H:i:s'))); 
+            }
+
+            $resp['folio'] = $nuevo_folio;
+            $resp['idfolio'] = $id_folio;
+            $resp['paso'] = $red;
+            $resp['fecha_venc'] = $fecha_venc;
+            $resp['valida'] = $valida;
+            return $nuevo_folio;
+       }
+
+
+
+public function valida_empresa($rut_empresa,$codigo_empresa){
+			$array_rut = explode("-",$rut_empresa);
+
+			$this->db->select('id_empresa')
+		  			->from('fe_empresa f')
+		  			->where('rut',$array_rut[0])
+		  			->where('cod_empresa',$codigo_empresa);
+			$query = $this->db->get();
+			$datos = $query->row();
+			if(count($datos) > 0){
+				return $datos->id_empresa;
+			}else{
+				return false;
+			}
+
+			//return true;
+
+
+}
+
+  public function genera_documento_electronico($array_dte){
+
+  			//$config = $this->genera_config($idempresa);
+			//include $this->ruta_libredte();
+  	//echo "122";  exit;
+  	var_dump($array_dte); exit;
+  			//print_r($array_dte); exit;
+  			 $dte_array = json_decode($result['dte']);
+
+		  	$response = array(
+		  						'url_pdf' => 'http://www.arnou.cl/Infosys_web/core/facturacion_electronica/pdf/202011/dte_96516320-4_T33F35349.pdf',
+		  						'url_xml' => 'http://www.arnou.cl/Infosys_web/core/facturacion_electronica/dte/202011/18363_52_1492_SII_100205.xml',
+		  						//'status' => 'success'
+		  				);
+
+		  	$response = $array_dte;
+
+		  	return $response;
 
      }
 

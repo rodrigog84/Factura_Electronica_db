@@ -19,6 +19,7 @@
 																	<thead> 
 																		<tr> 
 																			<th>Facturas Electrónicas</th> 
+																			<th>Boletas Electrónicas</th> 
 																			<th>Facturas no Afectas</th> 
 																			<th>Facturas de Compra</th> 
 																			<th>Nota de Débito </th> 
@@ -30,6 +31,7 @@
 																		<tr class="active"> 
 																			<td ><p class="<?php echo $datos_folios[33]['style'];?>"><?php echo $datos_folios[33]['message'];?></p></td> 
 																			<td><p class="<?php echo $datos_folios[34]['style'];?>"><?php echo $datos_folios[34]['message'];?></p></td> 
+																			<td ><p class="<?php echo $datos_folios[39]['style'];?>"><?php echo $datos_folios[39]['message'];?></p></td> 
 																			<td><p class="<?php echo $datos_folios[46]['style'];?>"><?php echo $datos_folios[46]['message'];?></p></td>
 																			<td><p class="<?php echo $datos_folios[56]['style'];?>"><?php echo $datos_folios[56]['message'];?></p></td> 
 																			<td><p class="<?php echo $datos_folios[61]['style'];?>"><?php echo $datos_folios[61]['message'];?></p></td> 
@@ -62,6 +64,7 @@
 					<option value="">Seleccione tipo CAF.</option>
 					<option value="33">(33) Factura Electr&oacute;nica</option>
 					<option value="34">(34) Factura No Afecta Electr&oacute;nica</option>
+					<option value="39">(39) Boleta Electr&oacute;nica</option>
 					<option value="46">(46) Factura de Compra</option>
 					<option value="56">(56) Nota de Débito Electr&oacute;nica</option>
 					<option value="61">(61) Nota de Crédito Electr&oacute;nica</option>

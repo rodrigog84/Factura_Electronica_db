@@ -147,9 +147,12 @@ class Facturaselectronicas extends CI_Controller {
     					'logo' => 'logo_empresa_'.$this->session->userdata('empresaid').'.png',
                         'idempresa' => $this->session->userdata('empresaid')
     			);
+            //print_r($data_empresa); exit;
         	if(count($empresa) > 0){ //actualizar
-        		$this->db->where('id',1);
+        		$this->db->where('idempresa',$this->session->userdata('empresaid'));
         		$this->db->update('empresa',$data_empresa);
+
+              //  echo $this->db->last_query(); exit;
 
         	}else{ //insertar
 
@@ -316,6 +319,7 @@ class Facturaselectronicas extends CI_Controller {
 
 
         $cant_33 = $this->facturaelectronica->estado_tipo_documento(33);
+        $cant_39 = $this->facturaelectronica->estado_tipo_documento(39);
         $cant_34 = $this->facturaelectronica->estado_tipo_documento(34);
         $cant_46 = $this->facturaelectronica->estado_tipo_documento(46);
         $cant_56 = $this->facturaelectronica->estado_tipo_documento(56);
@@ -323,12 +327,14 @@ class Facturaselectronicas extends CI_Controller {
 
 
         $array_folios[33]['message'] = $cant_33 > 0 ? $cant_33.$message_si : $message_no;
+        $array_folios[39]['message'] = $cant_39 > 0 ? $cant_39.$message_si : $message_no;
         $array_folios[34]['message'] = $cant_34 > 0 ? $cant_34.$message_si : $message_no;
         $array_folios[46]['message'] = $cant_46 > 0 ? $cant_46.$message_si : $message_no;
         $array_folios[56]['message'] = $cant_56 > 0 ? $cant_56.$message_si : $message_no;
         $array_folios[61]['message'] = $cant_61 > 0 ? $cant_61.$message_si : $message_no;
 
         $array_folios[33]['style'] = $cant_33 > 0 ? 'text-success' : 'text-warning';
+        $array_folios[39]['style'] = $cant_39 > 0 ? 'text-success' : 'text-warning';
         $array_folios[34]['style'] = $cant_34 > 0 ? 'text-success' : 'text-warning';
         $array_folios[46]['style'] = $cant_46 > 0 ? 'text-success' : 'text-warning';
         $array_folios[56]['style'] = $cant_56 > 0 ? 'text-success' : 'text-warning';
@@ -358,6 +364,7 @@ class Facturaselectronicas extends CI_Controller {
         $ruta = $tipo == 'cliente' ? 'dte_cliente' : 'dte';
         $this->load->model('facturaelectronica');
         $dte = $this->facturaelectronica->datos_dte($idfactura);
+       
         if(empty($dte)){
         //if($dte->path_dte == ''){
             $dte = $this->facturaelectronica->crea_dte($idfactura,$tipo);

@@ -965,11 +965,30 @@ if (!function_exists('caftotd'))
         $tipodocumento = 105;
       }else if($caf == 46){
         $tipodocumento = 107;
+      }else if($caf == 39){
+        $tipodocumento = 120;
       }
     return $tipodocumento;
   }
 
 }
+
+if (!function_exists('permite_alfanumerico'))
+{
+
+  function permite_alfanumerico($string)
+  {
+
+
+    $conservar = '0-9a-z#, '; // juego de caracteres a conservar
+    $regex = sprintf('~[^%s]++~i', $conservar); // case insensitive
+    $string = preg_replace($regex, '', $string);
+ 
+    return $string;
+
+    
+  }
+}  
 
 
 
