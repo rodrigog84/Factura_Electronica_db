@@ -30,8 +30,8 @@
 																	<tbody> 
 																		<tr class="active"> 
 																			<td ><p class="<?php echo $datos_folios[33]['style'];?>"><?php echo $datos_folios[33]['message'];?></p></td> 
-																			<td><p class="<?php echo $datos_folios[34]['style'];?>"><?php echo $datos_folios[34]['message'];?></p></td> 
 																			<td ><p class="<?php echo $datos_folios[39]['style'];?>"><?php echo $datos_folios[39]['message'];?></p></td> 
+																			<td><p class="<?php echo $datos_folios[34]['style'];?>"><?php echo $datos_folios[34]['message'];?></p></td> 																		
 																			<td><p class="<?php echo $datos_folios[46]['style'];?>"><?php echo $datos_folios[46]['message'];?></p></td>
 																			<td><p class="<?php echo $datos_folios[56]['style'];?>"><?php echo $datos_folios[56]['message'];?></p></td> 
 																			<td><p class="<?php echo $datos_folios[61]['style'];?>"><?php echo $datos_folios[61]['message'];?></p></td> 
