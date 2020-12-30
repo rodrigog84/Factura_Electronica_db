@@ -360,7 +360,7 @@
                 <ul class="nav navbar-nav navbar-left">
                     <li class="dropdown">
                         <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" style="margin-top: -10px;">
-                            <img src="<?php echo base_url().'images/logos/logo-ecomac-1.png';?>" alt="" style="width: 100px; "  />
+                            <img src="<?php echo base_url().'images/logos/logo_arnou.png';?>" alt="" style="width: 100px; "  />
                             <span class="hidden-xs"></span> 
                         </a>
                     </li>
