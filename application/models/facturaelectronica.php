@@ -2399,6 +2399,20 @@ public function valida_empresa($rut_empresa,$codigo_empresa){
 
 }
 
+	public function guarda_json_api($dte){
+
+			
+
+		$array_insert = array(
+					'texto_llamada' => $dte
+					);
+
+		$this->db->insert('fe_api_llamadas',$array_insert); 
+		return true;
+
+
+	}
+
   public function genera_documento_electronico($array_dte){
 
   			//$config = $this->genera_config($idempresa);

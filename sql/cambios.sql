@@ -109,3 +109,13 @@ alter table folios_caf add dte_cliente varchar(max)
 alter table folios_caf add archivo_dte_cliente varchar(50)
 
 insert into tipo_caf(id,nombre) values (39,'Boleta Electrónica')
+
+
+/*******************************************************/
+
+CREATE TABLE fe_api_llamadas (
+ID INT identity,
+TEXTO_LLAMADA VARCHAR(MAX),
+FECHA_LLAMADA DATETIME DEFAULT GETDATE(),
+USER_LLAMADA VARCHAR(100) DEFAULT SUSER_NAME()
+)
