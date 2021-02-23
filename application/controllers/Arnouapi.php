@@ -113,11 +113,12 @@ public function dte_post()
             'dte' => $this->input->post('dte'),
         );
 
+       $envio = implode(",",$_POST);
        //echo $result['dte'];
 
        $this->load->model('facturaelectronica');
-
        $this->facturaelectronica->guarda_json_api($result['dte']);    
+       $this->facturaelectronica->guarda_json_api_2($envio);    
        // http://jsonviewer.stack.hu/    -- pagina para ver formato
        $dte_array = json_decode($result['dte']);
 
