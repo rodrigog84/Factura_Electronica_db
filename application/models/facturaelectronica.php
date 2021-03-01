@@ -2379,6 +2379,50 @@ public function folio_documento_electronico($tipo_caf,$idempresa){
 
 
 
+
+	public function valida_folio_documento_electronico($tipo_caf,$idempresa,$folio){
+
+            //buscar primero si existe algún folio ocupado hace más de 4 horas.
+            $this->db->select('fc.id ')
+              ->from('folios_caf fc')
+              ->join('caf c','fc.idcaf = c.id')
+              ->where('c.tipo_caf',$tipo_caf)
+              ->where('c.idempresa',$idempresa)
+              ->where('fc.folio',$folio)
+              ->where_in('fc.estado',array('P','T'))
+              ->limit(1);
+             
+            $query = $this->db->get();
+           //  echo $this->db->last_query(); exit;
+            $folios_caf = $query->row();  
+            //echo "encontrados: ". count($folios_caf);
+            if(count($folios_caf) > 0){
+            	return 1;
+            }else{ // buscar folios pendientes
+                 $this->db->select('fc.id ')
+		              ->from('folios_caf fc')
+		              ->join('caf c','fc.idcaf = c.id')
+		              ->where('c.tipo_caf',$tipo_caf)
+		              ->where('c.idempresa',$idempresa)
+		              ->where('fc.folio',$folio)
+		              ->where('fc.estado','O')
+		              ->limit(1);
+                  $query = $this->db->get();
+                 // echo $this->db->last_query(); 
+                  $folios_caf = $query->row();  
+                  if(count($folios_caf) > 0){
+                        return 2;
+                  }else{
+                     	return -1;
+                      
+                  }
+            }
+
+      }
+
+
+
+
 public function valida_empresa($rut_empresa,$codigo_empresa){
 			$array_rut = explode("-",$rut_empresa);
 

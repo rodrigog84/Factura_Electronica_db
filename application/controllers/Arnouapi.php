@@ -129,6 +129,7 @@ public function dte_post()
        if(!isset($dte_array->Datos_Emisor->Codigo_Empresa)){
             $response = array(
                  'result' => 'Error - No se encuentra código Empresa',
+                  'code' => '101',
                   'status' => 'failure'
 
             );   
@@ -140,6 +141,7 @@ public function dte_post()
        if(!isset($dte_array->Datos_Emisor->Rut_Empresa)){
             $response = array(
                  'result' => 'Error - No se encuentra Rut Empresa',
+                  'code' => '102',
                   'status' => 'failure'
 
             );   
@@ -163,6 +165,7 @@ public function dte_post()
 
                 $response = array(
                                              'result' => 'Error al Validar Empresa',
+                                              'code' => '103',
                                               'status' => 'failure'
 
                                         );
@@ -178,6 +181,7 @@ public function dte_post()
                         if(!isset($dte_array->Datos_Factura->Iddoc->TipoDTE)){
                             $response = array(
                                  'result' => 'Error - No se encuentra Tipo DTE',
+                                  'code' => '104',
                                   'status' => 'failure'
 
                             );   
@@ -188,51 +192,68 @@ public function dte_post()
 
 
                             $tipo_caf = $dte_array->Datos_Factura->Iddoc->TipoDTE;
+                            $folio = $dte_array->Datos_Factura->Iddoc->Folio;
                            // echo $tipo_caf."  ".$id_empresa;
                            // print_r($this->facturaelectronica->folio_documento_electronico($tipo_caf,$id_empresa)); exit;
-                            $folio = $this->facturaelectronica->folio_documento_electronico($tipo_caf,$id_empresa);  // ir a buscar folio
+                            $result_folio = $this->facturaelectronica->valida_folio_documento_electronico($tipo_caf,$id_empresa,$folio);  // ir a buscar folio
 
-                            if($folio == 0){
+                            if($result_folio == 2){
                                             $response = array(
-                                                 'result' => 'Error al crear documento.  No existen folios disponibles',
+                                                 'result' => 'Error al crear documento.  Folio ya ocupado',
+                                                 'code' => '105',
                                                   'status' => 'failure'
 
                                             );
 
+                            }else if($result_folio == -1){
+
+                                            $response = array(
+                                                 'result' => 'Error al crear documento.  Folio no se encuentra disponible',
+                                                 'code' => '106',
+                                                  'status' => 'failure'
+
+                                            );
                             }else{
 
                                         if(!isset($dte_array->Datos_Factura->Iddoc->Fecha_Emision)){
                                             $result_dte = 'Error - No se encuentra Fecha Emision';
+                                            $cod_error = 107; 
                                             $error = true;         
                                         }
 
                                         if(!isset($dte_array->Datos_Factura->Receptor->Rut_Receptor)){
                                             $result_dte = 'Error - No se encuentra Rut Receptor';
+                                            $cod_error = 108; 
                                             $error = true;         
                                         }
 
                                         if(!isset($dte_array->Datos_Factura->Receptor->Razon_Social)){
                                             $result_dte = 'Error - No se encuentra Razón Social Receptor';
+                                            $cod_error = 109; 
                                             $error = true;         
                                         }
 
                                         if(!isset($dte_array->Datos_Factura->Receptor->Giro)){
                                             $result_dte = 'Error - No se encuentra Giro Receptor';
+                                            $cod_error = 110; 
                                             $error = true;         
                                         }
 
                                         if(!isset($dte_array->Datos_Factura->Receptor->Direccion)){
                                             $result_dte = 'Error - No se encuentra Dirección Receptor';
+                                            $cod_error = 111; 
                                             $error = true;         
                                         }
 
                                         if(!isset($dte_array->Datos_Factura->Receptor->Comuna)){
                                             $result_dte = 'Error - No se encuentra Comuna Receptor';
+                                            $cod_error = 112; 
                                             $error = true;         
                                         }
 
                                         if(!isset($dte_array->Datos_Factura->Receptor->Ciudad)){
                                             $result_dte = 'Error - No se encuentra Ciudad Receptor';
+                                            $cod_error = 113; 
                                             $error = true;         
                                         }
 
@@ -241,6 +262,7 @@ public function dte_post()
 
                                             $response = array(
                                                  'result' => $result_dte,
+                                                 'code' => $cod_error,
                                                   'status' => 'failure'
 
                                             );                                        
