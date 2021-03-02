@@ -577,8 +577,9 @@ public function dte_post()
                                                                       'url_pdf' => base_url().'facturaselectronicas/exportPDF/' . $idfactura,
                                                                       'url_xml' => base_url().'facturaselectronicas/ver_dte/' . $idfactura,
                                                                       'result' => 'Documento creado correctamente',
-                                                                      'status' => 'success'
-                                                                      ,'tipo_caf' => $tipo_caf
+                                                                      'status' => 'success',
+                                                                      'code' => 100,
+                                                                      'tipo_caf' => $tipo_caf
                                                                      /* ,'folio' => $folio
                                                                       ,'iva' => $iva
                                                                       ,'total' => $total
