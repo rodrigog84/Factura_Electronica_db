@@ -570,12 +570,15 @@ public function dte_post()
 
                                                   }
 
+                                                $url_pdf = $this->facturaelectronica->generaFePDF($idfactura,'id',$id_empresa);
+                                                $url_xml = URL_DESCARGA_DTE . $dte['path'] . $dte['nombre_dte'];
+
 
                                                 $response = array(
                                                                     // 'url_pdf' => 'http://www.arnou.cl/Infosys_web/core/facturacion_electronica/pdf/202011/dte_96516320-4_T33F35349.pdf',
                                                                       //'url_xml' => 'http://www.arnou.cl/Infosys_web/core/facturacion_electronica/dte/202011/18363_52_1492_SII_100205.xml',
-                                                                      'url_pdf' => base_url().'facturaselectronicas/exportPDF/' . $idfactura,
-                                                                      'url_xml' => base_url().'facturaselectronicas/ver_dte/' . $idfactura,
+                                                                      'url_pdf' => $url_pdf,
+                                                                      'url_xml' => $url_xml,
                                                                       'result' => 'Documento creado correctamente',
                                                                       'status' => 'success',
                                                                       'code' => 100,

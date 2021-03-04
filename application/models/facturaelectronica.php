@@ -417,6 +417,94 @@ class Facturaelectronica extends CI_Model
 	 
 
 
+
+	public function generaFePDF($idfactura,$tipo_consulta,$idempresa,$cedible = null){
+
+	 	include $this->ruta_libredte();
+	 	if($tipo_consulta == 'id'){
+	 		$factura = $this->datos_dte($idfactura);
+	 	}else if($tipo_consulta == 'trackid'){
+	 		$factura = $this->datos_dte_by_trackid($idfactura);
+	 	}
+
+	 	$nombre_pdf = is_null($cedible) ? $factura->pdf : $factura->pdf_cedible;
+
+	 	//file_exists 
+	 	$crea_archivo = true;
+	 	if($nombre_pdf != ''){
+			$base_path = __DIR__;
+			$base_path = str_replace("\\", "/", $base_path);
+			$file = $base_path . "/../../facturacion_electronica/pdf/".$factura->path_dte.$nombre_pdf;	
+	 		if(file_exists($file)){
+	 			$crea_archivo = false;
+	 		}
+	 	}
+
+		// sin límite de tiempo para generar documentos
+		set_time_limit(0);
+	 	// archivo XML de EnvioDTE que se generará
+	 	$archivo = "./facturacion_electronica/dte/".$factura->path_dte.$factura->archivo_dte;
+	 	if(file_exists($archivo)){
+	 		$content_xml = file_get_contents($archivo);
+	 	}else{
+	 		$content_xml = $factura->dte;
+	 	}
+
+	 	// Cargar EnvioDTE y extraer arreglo con datos de carátula y DTEs
+	 	$EnvioDte = new \sasco\LibreDTE\Sii\EnvioDte();
+	 	$EnvioDte->loadXML($content_xml);
+		$Caratula = $EnvioDte->getCaratula();
+		$Documentos = $EnvioDte->getDocumentos();	 	
+
+		if(!file_exists('./facturacion_electronica/pdf/'.$factura->path_dte)){
+			mkdir('./facturacion_electronica/pdf/'.$factura->path_dte,0777,true);
+		}		
+
+		$base_path = __DIR__;
+		$base_path = str_replace("\\", "/", $base_path);
+		$path_pdf = $base_path . "/../../facturacion_electronica/pdf/".$factura->path_dte;				
+
+
+		$empresa = $this->get_empresa($idempresa);
+		//print_r($empresa);
+		foreach ($Documentos as $DTE) {
+		    if (!$DTE->getDatos())
+		        die('No se pudieron obtener los datos del DTE');
+		    $pdf = new \sasco\LibreDTE\Sii\PDF\Dte(false); // =false hoja carta, =true papel contínuo (false por defecto si no se pasa)
+		    $pdf->setFooterText();
+		   //echo   base_url() . "facturacion_electronica/images/" . $empresa->logo;
+		    $pdf->setLogo('./facturacion_electronica/images/' . $empresa->logo); // debe ser PNG!
+		    $pdf->setGiroCliente($factura->giro); 
+		    $pdf->setGiroEmisor($empresa->giro); 
+		    $pdf->setResolucion(['FchResol'=>$Caratula['FchResol'], 'NroResol'=>$Caratula['NroResol']]);
+		    /*if(!is_null($cedible)){
+		    	$pdf->setCedible(true);
+		    }*/
+		    $pdf->agregar($DTE->getDatos(), $DTE->getTED());
+		    if($factura->tipo_caf == 33 || $factura->tipo_caf == 34 ||  $factura->tipo_caf == 46 || $factura->tipo_caf == 52){
+			    $pdf->setCedible(true);
+			    $pdf->agregar($DTE->getDatos(), $DTE->getTED());			    	
+		    }
+
+
+		    //$pdf->Output('facturacion_electronica/pdf/'.$factura->path_dte.'dte_'.$Caratula['RutEmisor'].'_'.$DTE->getID().'.pdf', 'FI');
+		    $archivo = 'dte_'.$Caratula['RutEmisor'].'_'.$DTE->getID();
+		    $nombre_archivo = $archivo.".pdf";
+		    //$tipo_generacion = is_null($cedible) ? 'FI' : 'F';
+		    $tipo_generacion = 'F';
+		    $pdf->Output($path_pdf.$nombre_archivo, $tipo_generacion);
+		    $nombre_campo = is_null($cedible) ? 'pdf' : 'pdf_cedible';
+
+		    $this->db->where('idfactura', $idfactura);
+			$this->db->update('folios_caf',array($nombre_campo => $nombre_archivo)); 		
+			//echo URL_DESCARGA_PDF . $factura->path_dte . $nombre_archivo;
+			return     URL_DESCARGA_PDF . $factura->path_dte . $nombre_archivo;
+
+		}		
+
+
+	}
+
 	public function get_contribuyentes(){
 
 		
@@ -1641,6 +1729,7 @@ class Facturaelectronica extends CI_Model
 
        	return $query->result();
 	 }
+
 
 
 	public function crea_dte($idfactura,$tipo = 'sii'){

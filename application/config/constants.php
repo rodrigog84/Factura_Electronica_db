@@ -38,6 +38,11 @@ define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
 define('SALT',  '#*1nf0-*%');
 define('PATH_APP',  'http://localhost/Factura_Electronica_db/core/application/');
 define('NOMBRE_EMPRESA',		'ECOMAC');
+define('URL_DESCARGA_PDF',		'http://104.214.106.79/Factura_Electronica_db/core/facturacion_electronica/pdf/');
+define('URL_DESCARGA_DTE',		'http://104.214.106.79/Factura_Electronica_db/facturacion_electronica/dte/');
+//define('URL_DESCARGA_PDF',		'http://localhost/Factura_Electronica_db/facturacion_electronica/pdf/');
+//define('URL_DESCARGA_DTE',		'http://localhost/Factura_Electronica_db/facturacion_electronica/dte/');
+https://www.arnou.cl/Infosys_web/core/facturacion_electronica/pdf
 
 
 /* End of file constants.php */
