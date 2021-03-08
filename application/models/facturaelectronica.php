@@ -2532,12 +2532,13 @@ public function valida_empresa($rut_empresa,$codigo_empresa){
 
 }
 
-	public function guarda_json_api($dte){
+	public function guarda_json_api($dte,$tipollamada = 'DTE'){
 
 			
 
 		$array_insert = array(
 					'texto_llamada' => $dte
+					,'tipo_llamada' => $tipollamada
 					);
 
 		$this->db->insert('fe_api_llamadas',$array_insert); 

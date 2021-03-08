@@ -105,6 +105,104 @@ class Arnouapi extends RestController {
     }*/
 
 
+
+public function folio_post()
+{
+
+        //print_r($_POST); 
+           $result =  array(
+            'folio' => $this->input->post('folio'),
+            );
+
+            $this->load->model('facturaelectronica');
+            $this->facturaelectronica->guarda_json_api($result['folio'],'FOLIO'); 
+
+
+            //var_dump($result['folio']);
+
+            $dte_array = json_decode($result['folio']);
+            $error = false;
+            //echo "paso 1";
+           // var_dump($dte_array);
+           if(!isset($dte_array->Datos_Solicitante->Codigo_Empresa)){
+                $response = array(
+                     'result' => 'Error - No se encuentra código Empresa',
+                      'code' => '101',
+                      'status' => 'failure'
+
+                );   
+
+                $error = true;         
+           }
+
+
+            if(!isset($dte_array->Datos_Solicitante->Rut_Empresa)){
+                $response = array(
+                     'result' => 'Error - No se encuentra Rut Empresa',
+                      'code' => '102',
+                      'status' => 'failure'
+
+                );   
+
+                $error = true;         
+             }
+
+
+             //var_dump($dte_array); exit;
+                if(!isset($dte_array->TipoFolio)){
+                $response = array(
+                     'result' => 'Error - No se indica tipo de folio a consultar',
+                      'code' => '103',
+                      'status' => 'failure'
+
+                );   
+
+                $error = true;         
+             }
+
+
+            if(!$error){
+
+
+               $cod_empresa = $dte_array->Datos_Solicitante->Codigo_Empresa;
+               $rut_empresa = $dte_array->Datos_Solicitante->Rut_Empresa;
+               $tipo_caf = $dte_array->TipoFolio;
+
+               
+                $valida_empresa = $this->facturaelectronica->valida_empresa($rut_empresa,$cod_empresa);
+                if(!$valida_empresa){
+
+                $response = array(
+                                             'result' => 'Error al Validar Empresa',
+                                              'code' => '104',
+                                              'status' => 'failure'
+
+                                        );
+
+
+                }else{
+
+                            $id_empresa = $valida_empresa;
+                           $folio = $this->facturaelectronica->folio_documento_electronico($tipo_caf,$id_empresa);
+
+                            $response = array(
+
+                                                                      'folio' => $folio,
+                                                                      'result' => 'Folio consultado correctamente',
+                                                                      'status' => 'success',
+                                                                      'code' => 100,
+                                                                     
+                                                                );                           
+                }
+
+
+            }
+
+     $this->response($response);
+        exit;
+}
+
+
 public function dte_post()
     {
         // Users from a data store e.g. database
@@ -124,7 +222,6 @@ public function dte_post()
 
       
 
-      // var_dump($dte_array);
        $error = false;
        if(!isset($dte_array->Datos_Emisor->Codigo_Empresa)){
             $response = array(
