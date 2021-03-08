@@ -274,6 +274,7 @@ public function dte_post()
                         $id_empresa = $valida_empresa;
 
                         $empresa = $this->facturaelectronica->get_empresa($id_empresa);
+                        //print_r($empresa);
 
                         if(!isset($dte_array->Datos_Factura->Iddoc->TipoDTE)){
                             $response = array(
@@ -597,7 +598,7 @@ public function dte_post()
                                                   ];  
 
 
-                                                                                
+                                                            
                                                   //exit;
                                                   // Objetos de Firma y Folios
                                                   $Firma = new sasco\LibreDTE\FirmaElectronica($config['firma']); //lectura de certificado digital            

@@ -119,3 +119,27 @@ TEXTO_LLAMADA VARCHAR(MAX),
 FECHA_LLAMADA DATETIME DEFAULT GETDATE(),
 USER_LLAMADA VARCHAR(100) DEFAULT SUSER_NAME()
 )
+
+
+
+/**************************************************************/
+
+ALTER TABLE fe_api_llamadas ADD TIPO_LLAMADA VARCHAR(30)
+
+
+
+
+/********** RESETEAR FOLIOS **************/
+
+
+
+update    f
+set     estado = 'P'
+      ,dte = ''
+      ,path_dte = ''
+      ,archivo_dte = ''
+      ,dte_cliente  = ''
+      ,archivo_dte_cliente = ''
+--select    *
+from    folios_caf f
+where   idcaf = 1012

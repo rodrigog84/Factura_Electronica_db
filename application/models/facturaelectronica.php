@@ -138,8 +138,9 @@ class Facturaelectronica extends CI_Model
 	public function get_empresa($idempresa = null){
 
 		$idempresa = is_null($idempresa) ? $this->session->userdata('empresaid') : $idempresa;
-		$this->db->select('rut, dv, razon_social, giro, cod_actividad, dir_origen, comuna_origen, fec_resolucion, nro_resolucion, logo, idregion, idcomuna, telefono, mail ')
-		  ->from('empresa')
+		$this->db->select('e.rut, e.dv, e.razon_social, e.giro, e.cod_actividad, e.dir_origen,  e.fec_resolucion, e.nro_resolucion, e.logo, e.idregion, e.idcomuna, e.telefono, e.mail, c.nombre as comuna_origen ')
+		  ->from('empresa e')
+		  ->join('fe_comuna c','e.idcomuna = c.idcomuna','LEFT')
 		  ->where('idempresa',$idempresa)
 		  ->limit(1);
 		$query = $this->db->get();
@@ -420,7 +421,7 @@ class Facturaelectronica extends CI_Model
 
 	public function generaFePDF($idfactura,$tipo_consulta,$idempresa,$cedible = null){
 
-	 	include $this->ruta_libredte();
+	 	//include $this->ruta_libredte();
 	 	if($tipo_consulta == 'id'){
 	 		$factura = $this->datos_dte($idfactura);
 	 	}else if($tipo_consulta == 'trackid'){
