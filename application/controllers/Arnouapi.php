@@ -185,14 +185,27 @@ public function folio_post()
                             $id_empresa = $valida_empresa;
                            $folio = $this->facturaelectronica->folio_documento_electronico($tipo_caf,$id_empresa);
 
-                            $response = array(
+                           if($folio == 0){
+                                        $response = array(
+                                             'result' => 'No existen folios disponibles',
+                                              'code' => '105',
+                                              'status' => 'failure'
+
+                                        );
+
+                           }else{
+
+                                                        $response = array(
 
                                                                       'folio' => $folio,
                                                                       'result' => 'Folio consultado correctamente',
                                                                       'status' => 'success',
                                                                       'code' => 100,
                                                                      
-                                                                );                           
+                                                                );                                                       
+                           }
+
+                            
                 }
 
 
