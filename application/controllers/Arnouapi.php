@@ -233,7 +233,7 @@ public function dte_post()
        // http://jsonviewer.stack.hu/    -- pagina para ver formato
        $dte_array = json_decode($result['dte']);
 
-      
+      //var_dump($dte_array); 
 
        $error = false;
        if(!isset($dte_array->Datos_Emisor->Codigo_Empresa)){
@@ -249,6 +249,7 @@ public function dte_post()
 
 
        if(!isset($dte_array->Datos_Emisor->Rut_Empresa)){
+          //var_dump($dte_array->Datos_Emisor->Rut_Empresa);
             $response = array(
                  'result' => 'Error - No se encuentra Rut Empresa',
                   'code' => '102',
@@ -368,6 +369,25 @@ public function dte_post()
                                             $error = true;         
                                         }
 
+                                        if(!isset($dte_array->Datos_Factura->Totales->MntNeto)){
+                                            $result_dte = 'Error - No se encuentra Monto Neto del documento';
+                                            $cod_error = 114; 
+                                            $error = true;         
+                                        }
+
+                                        if(!isset($dte_array->Datos_Factura->Totales->Iva)){
+                                            $result_dte = 'Error - No se encuentra Iva del documento';
+                                            $cod_error = 115; 
+                                            $error = true;         
+                                        }
+
+                                        if(!isset($dte_array->Datos_Factura->Totales->MntTotal)){
+                                            $result_dte = 'Error - No se encuentra Monto Total del documento';
+                                            $cod_error = 116; 
+                                            $error = true;         
+                                        }
+
+
 
                                         if($error){
 
@@ -402,314 +422,427 @@ public function dte_post()
                                                 $iva = $dte_array->Datos_Factura->Totales->Iva;
                                                 $total = $dte_array->Datos_Factura->Totales->MntTotal;
 
+                                                    $factura_cliente = array(
+                                                      'tipo_documento' => caftotd($tipo_caf),
+                                                      'id_cliente' => 0,
+                                                      'rut_cliente' => $array_rut_cliente[0],
+                                                      'dv_cliente' => $array_rut_cliente[1],
+                                                      'raz_soc_cliente' => $raz_soc_cliente,
+                                                      'giro_cliente' => $giro_cliente,
+                                                      'cod_act_econ_cli' => $cod_act_econ_cli,
+                                                      'dir_cliente' => $dir_cliente,
+                                                      'com_cliente' => $com_cliente,
+                                                      'ciu_cliente' => $ciu_cliente,
+                                                      'num_factura' => $folio,
+                                                      'id_vendedor' => 1,
+                                                      'sub_total' => $neto,
+                                                      'neto' => $neto,
+                                                      'iva' => $iva,
+                                                      'totalfactura' => $total,
+                                                      'fecha_factura' => $fecha_emision,
+                                                      'fecha_venc' => $fecha_emision,
+                                                      'id_factura' => $referencia,
+                                                      'id_sucursal' => 0,
+                                                      'id_cond_venta' => 0,
+                                                      'descuento' => 0,
+                                                      'id_factura' => 0,
+                                                      'observacion' => '',
+                                                      'id_observa' => 0,
+                                                      'id_despacho' => 0,
+                                                      'estado' => 0,
+                                                      'forma' => 1,
+                                                      'idempresa' => $id_empresa,
+                                                      'vendedor' => $vendedor,
+                                                      'condicion_pago' => $cond_pago
+                                                  );
 
-                                                $factura_cliente = array(
-                                                    'tipo_documento' => caftotd($tipo_caf),
-                                                    'id_cliente' => 0,
-                                                    'rut_cliente' => $array_rut_cliente[0],
-                                                    'dv_cliente' => $array_rut_cliente[1],
-                                                    'raz_soc_cliente' => $raz_soc_cliente,
-                                                    'giro_cliente' => $giro_cliente,
-                                                    'cod_act_econ_cli' => $cod_act_econ_cli,
-                                                    'dir_cliente' => $dir_cliente,
-                                                    'com_cliente' => $com_cliente,
-                                                    'ciu_cliente' => $ciu_cliente,
-                                                    'num_factura' => $folio,
-                                                    'id_vendedor' => 1,
-                                                    'sub_total' => $neto,
-                                                    'neto' => $neto,
-                                                    'iva' => $iva,
-                                                    'totalfactura' => $total,
-                                                    'fecha_factura' => $fecha_emision,
-                                                    'fecha_venc' => $fecha_emision,
-                                                    'id_factura' => $referencia,
-                                                    'id_sucursal' => 0,
-                                                    'id_cond_venta' => 0,
-                                                    'descuento' => 0,
-                                                    'id_factura' => 0,
-                                                    'observacion' => '',
-                                                    'id_observa' => 0,
-                                                    'id_despacho' => 0,
-                                                    'estado' => 0,
-                                                    'forma' => 1,
-                                                    'idempresa' => $id_empresa,
-                                                    'vendedor' => $vendedor,
-                                                    'condicion_pago' => $cond_pago
-                                                );
+                                                  $this->db->insert('factura_clientes', $factura_cliente); 
+                                                  $idfactura = $this->db->insert_id();                                                
 
-                                                $this->db->insert('factura_clientes', $factura_cliente); 
-                                                $idfactura = $this->db->insert_id();                
-                                               // echo $idfactura;
-
-                                               
-                                               // $neto = 0;
-                                               // $iva = 0;
-                                               // $total = 0;
                                                  $i = 0;
-                                                foreach ($dte_array->Datos_Factura->Detalle as $detalle) {
-                                                   // print_r($detalle);
-                                                   $codigo = $detalle->Codigo;
-                                                    $cantidad = $detalle->Cantidad;
-                                                    $nombre = $detalle->Nombre;
-                                                    $unidad = $detalle->Unidad;
-                                                    $precioUnitario = $detalle->Precio_Unitario;
-                                                    $neto = $detalle->Neto;
-                                                    $iva = $detalle->Iva;
-                                                    $total = $detalle->Total;
+                                                if(isset($dte_array->Datos_Factura->Detalle)){
+                                                  foreach ($dte_array->Datos_Factura->Detalle as $detalle) {
+                                                     // print_r($detalle);
+                                                     $fila = $i + 1;
+ 
+                                                      if(!isset($detalle->Codigo)){
+                                                          $result_dte = 'Error - No se encuentra Código de Producto '. $fila;
+                                                          $cod_error = 118; 
+                                                          $error = true;         
+                                                      }else{
+                                                        $codigo = $detalle->Codigo;
+                                                      }
 
 
-                                                    $detalle_factura_cliente = array(
-                                                                                    'id_factura' => $idfactura,
-                                                                                    'num_factura' => $folio,
-                                                                                    'id_producto' => 0,
-                                                                                    'fecha' => $fecha_emision,
-                                                                                    'codigo' => $codigo,
-                                                                                    'cantidad' => $cantidad,
-                                                                                    'nombre_producto' => $nombre,
-                                                                                    'unidad' => $unidad,
-                                                                                    'precio' => $precioUnitario,
-                                                                                    'neto' => $neto,
-                                                                                    'iva' => $iva,
-                                                                                    'descuento' => 0,
-                                                                                    'id_despacho' => 0,
-                                                                                    'totalproducto' => $total
-                                                                                );
-                                                    $this->db->insert('detalle_factura_cliente', $detalle_factura_cliente);
+                                                      if(!isset($detalle->Cantidad)){
+                                                          $result_dte = 'Error - No se encuentra Cantidad de Producto '. $fila;
+                                                          $cod_error = 119; 
+                                                          $error = true;         
+                                                      }else{
+                                                          $cantidad = $detalle->Cantidad;
+                                                      }
 
-                                                    $lista_detalle[$i]['NmbItem'] = $nombre;
-                                                    $lista_detalle[$i]['QtyItem'] = $cantidad;
-                                                    $lista_detalle[$i]['CdgItem'] = $codigo;
-                                                    $lista_detalle[$i]['UnmdItem'] = $unidad;
-                                                        //$lista_detalle[$i]['PrcItem'] = $detalle->precio;
-                                                        //$lista_detalle[$i]['PrcItem'] = round((($detalle->precio*$detalle->cantidad)/1.19)/$detalle->cantidad,0);
-                                                        //$total = $detalle->precio*$detalle->cantidad;
-                                                        //$neto = round($total/1.19,2);
-                                                    $lista_detalle[$i]['PrcItem'] = $precioUnitario;                     
-                                                    $i++;
+                                                      if(!isset($detalle->Nombre)){
+                                                          $result_dte = 'Error - No se encuentra Nombre de Producto '. $fila;
+                                                          $cod_error = 120; 
+                                                          $error = true;         
+                                                      }else{
+                                                          $nombre = $detalle->Nombre;
+                                                      }
 
+                                                      if(!isset($detalle->Unidad)){
+                                                          $result_dte = 'Error - No se encuentra Tipo de Unidad de Producto '. $fila;
+                                                          $cod_error = 121; 
+                                                          $error = true;         
+                                                      }else{
+                                                          $unidad = $detalle->Unidad;
+                                                      }
 
-
-                                                }
-
+                                                      if(!isset($detalle->Precio_Unitario)){
+                                                          $result_dte = 'Error - No se encuentra precio unitario de Producto '. $fila;
+                                                          $cod_error = 122; 
+                                                          $error = true;         
+                                                      }else{
+                                                           $precioUnitario = $detalle->Precio_Unitario;
+                                                      }
 
 
-                                                foreach ($dte_array->Datos_Factura->Referencia as $referencia) {
-                                                   // print_r($detalle);
-                                                   $nrolinref = $referencia->NroLinRef;
-                                                    $tpodocref = $referencia->TpoDocRef;
-                                                    $folioref = $referencia->FolioRef;
-                                                    
+                                                      if(!isset($detalle->Neto)){
+                                                          $result_dte = 'Error - No se encuentra valor neto de Producto '. $fila;
+                                                          $cod_error = 123; 
+                                                          $error = true;         
+                                                      }else{
+                                                          $neto = $detalle->Neto;
+                                                      }
 
 
-                                                    $detalle_referencias = array(
-                                                                                    'idfactura' => $idfactura,
-                                                                                    'nrolinref' => $nrolinref,
-                                                                                    'tpodocref' => $tpodocref,
-                                                                                    'folioref' => $folioref
-                                                                                );
-
-                                                    $this->db->insert('referencias', $detalle_referencias);
-
-                                                }
+                                                      if(!isset($detalle->Iva)){
+                                                          $result_dte = 'Error - No se encuentra Iva de Producto '. $fila;
+                                                          $cod_error = 124; 
+                                                          $error = true;         
+                                                      }else{
+                                                        $iva = $detalle->Iva;
+                                                      }
 
 
+                                                      if(!isset($detalle->Total)){
+                                                          $result_dte = 'Error - No se encuentra Total de Producto '. $fila;
+                                                          $cod_error = 125; 
+                                                          $error = true;         
+                                                      }else{
+                                                        $total = $detalle->Total;
+                                                      }
 
 
-                                                header('Content-type: text/plain; charset=ISO-8859-1');
-                                                $config = $this->facturaelectronica->genera_config($id_empresa);
-                                                include $this->facturaelectronica->ruta_libredte();
+                                                      if($error){
+                                                        break;
 
+                                                      }else{
+                                                        $detalle_factura_cliente = array(
+                                                                                        'id_factura' => $idfactura,
+                                                                                        'num_factura' => $folio,
+                                                                                        'id_producto' => 0,
+                                                                                        'fecha' => $fecha_emision,
+                                                                                        'codigo' => $codigo,
+                                                                                        'cantidad' => $cantidad,
+                                                                                        'nombre_producto' => $nombre,
+                                                                                        'unidad' => $unidad,
+                                                                                        'precio' => $precioUnitario,
+                                                                                        'neto' => $neto,
+                                                                                        'iva' => $iva,
+                                                                                        'descuento' => 0,
+                                                                                        'id_despacho' => 0,
+                                                                                        'totalproducto' => $total
+                                                                                    );
+                                                        $this->db->insert('detalle_factura_cliente', $detalle_factura_cliente);
 
-                                                if($tipo_caf == 39){
-                                                          $factura = [
-                                                            // CASO 1
-                                                                'Encabezado' => [
-                                                                    'IdDoc' => [
-                                                                       'TipoDTE' => $tipo_caf,
-                                                                        'Folio' => $folio,
-                                                                        'FchEmis' => substr($fecha_emision,0,10),
-                                                                    ],
-                                                                     'Emisor' => [
-                                                                          'RUTEmisor' => $empresa->rut.'-'.$empresa->dv,
-                                                                          'RznSoc' => substr(permite_alfanumerico($empresa->razon_social),0,100), //LARGO DE RAZON SOCIAL NO PUEDE SER SUPERIOR A 100 CARACTERES,
-                                                                          'GiroEmis' => substr(permite_alfanumerico($empresa->giro),0,80), //LARGO DE GIRO DEL EMISOR NO PUEDE SER SUPERIOR A 80 CARACTERES
-                                                                          'Acteco' => $empresa->cod_actividad,
-                                                                          'DirOrigen' =>  substr(permite_alfanumerico($empresa->dir_origen),0,70), //LARGO DE DIRECCION DE ORIGEN NO PUEDE SER SUPERIOR A 70 CARACTERES
-                                                                          'CmnaOrigen' => substr(permite_alfanumerico($empresa->comuna_origen),0,20), //LARGO DE COMUNA DE ORIGEN NO PUEDE SER SUPERIOR A 20 CARACTERES
-                                                                      ],
-                                                                   'Receptor' => [
-                                                                            'RUTRecep' => $rut_cliente,
-                                                                            'RznSocRecep' =>  substr(permite_alfanumerico($raz_soc_cliente),0,100), //LARGO DE RAZON SOCIAL NO PUEDE SER SUPERIOR A 100 CARACTERES
-                                                                            'GiroRecep' => substr(permite_alfanumerico($giro_cliente),0,40),  //LARGO DEL GIRO NO PUEDE SER SUPERIOR A 40 CARACTERES
-                                                                            'DirRecep' => substr($dir_cliente,0,70), //LARGO DE DIRECCION NO PUEDE SER SUPERIOR A 70 CARACTERES
-                                                                            'CmnaRecep' => substr($com_cliente,0,20), //LARGO DE COMUNA NO PUEDE SER SUPERIOR A 20 CARACTERES
-                                                                        ],
-                                                                ],
-                                                                'Detalle' => $lista_detalle,
-                                                        ];
+                                                        $lista_detalle[$i]['NmbItem'] = $nombre;
+                                                        $lista_detalle[$i]['QtyItem'] = $cantidad;
+                                                        $lista_detalle[$i]['CdgItem'] = $codigo;
+                                                        $lista_detalle[$i]['UnmdItem'] = $unidad;
+                                                            //$lista_detalle[$i]['PrcItem'] = $detalle->precio;
+                                                            //$lista_detalle[$i]['PrcItem'] = round((($detalle->precio*$detalle->cantidad)/1.19)/$detalle->cantidad,0);
+                                                            //$total = $detalle->precio*$detalle->cantidad;
+                                                            //$neto = round($total/1.19,2);
+                                                        $lista_detalle[$i]['PrcItem'] = $precioUnitario; 
 
-
-
-                                                }else{
-
-                                                        $factura = [
-                                                                'Encabezado' => [
-                                                                    'IdDoc' => [
-                                                                        'TipoDTE' => $tipo_caf,
-                                                                        'Folio' => $folio,
-                                                                        'FchEmis' => substr($fechafactura,0,10)
-                                                                        // 'TpoTranVenta' => 4
-                                                                    ],
-                                                                    'Emisor' => [
-                                                                        'RUTEmisor' => $empresa->rut.'-'.$empresa->dv,
-                                                                        'RznSoc' => substr(permite_alfanumerico($empresa->razon_social),0,100), //LARGO DE RAZON SOCIAL NO PUEDE SER SUPERIOR A 100 CARACTERES,
-                                                                        'GiroEmis' => substr(permite_alfanumerico($empresa->giro),0,80), //LARGO DE GIRO DEL EMISOR NO PUEDE SER SUPERIOR A 80 CARACTERES
-                                                                        'Acteco' => $empresa->cod_actividad,
-                                                                        'DirOrigen' =>  substr(permite_alfanumerico($empresa->dir_origen),0,70), //LARGO DE DIRECCION DE ORIGEN NO PUEDE SER SUPERIOR A 70 CARACTERES
-                                                                        'CmnaOrigen' => substr(permite_alfanumerico($empresa->comuna_origen),0,20), //LARGO DE COMUNA DE ORIGEN NO PUEDE SER SUPERIOR A 20 CARACTERES
-                                                                    ],
-                                                                    'Receptor' => [
-                                                                        'RUTRecep' => $rutCliente,
-                                                                        'RznSocRecep' =>  substr(permite_alfanumerico($datos_empresa_factura->nombre_cliente),0,100), //LARGO DE RAZON SOCIAL NO PUEDE SER SUPERIOR A 100 CARACTERES
-                                                                        'GiroRecep' => substr(permite_alfanumerico($datos_empresa_factura->giro),0,40),  //LARGO DEL GIRO NO PUEDE SER SUPERIOR A 40 CARACTERES
-                                                                        'DirRecep' => substr($dir_cliente,0,70), //LARGO DE DIRECCION NO PUEDE SER SUPERIOR A 70 CARACTERES
-                                                                        'CmnaRecep' => substr($nombre_comuna,0,20), //LARGO DE COMUNA NO PUEDE SER SUPERIOR A 20 CARACTERES
-                                                                    ],
-                                                                  'Totales' => [
-                                                                      // estos valores serán calculados automáticamente
-                                                                      'MntNeto' => isset($datos_factura->neto) ? $datos_factura->neto : 0,
-                                                                      //'TasaIVA' => \sasco\LibreDTE\Sii::getIVA(),
-                                                                      'IVA' => isset($datos_factura->iva) ? $datos_factura->iva : 0,
-                                                                      'MntTotal' => isset($datos_factura->totalfactura) ? $datos_factura->totalfactura : 0,
-                                                                  ],                        
-                                                                ],
-                                                                  'Detalle' => $lista_detalle,
-                                                                  'Referencia' => $referencia
-                                                            ];
-
-
-                                                }
-
-
-
-
-
-                                                $caratula = [
-                                                      //'RutEnvia' => '11222333-4', // se obtiene de la firma
-                                                      'RutReceptor' => '60803000-K',
-                                                      'FchResol' => $empresa->fec_resolucion,
-                                                      'NroResol' => $empresa->nro_resolucion
-                                                  ];
-
-                                                //  print_r($caratula); 
-
-                                                  $caratula_cliente = [
-                                                      //'RutEnvia' => '11222333-4', // se obtiene de la firma
-                                                      'RutReceptor' => $rut_cliente,
-                                                      'FchResol' => $empresa->fec_resolucion,
-                                                      'NroResol' => $empresa->nro_resolucion
-                                                  ];  
-
-
-                                                            
-                                                  //exit;
-                                                  // Objetos de Firma y Folios
-                                                  $Firma = new sasco\LibreDTE\FirmaElectronica($config['firma']); //lectura de certificado digital            
-
-                                                  $caf = $this->facturaelectronica->get_content_caf_folio($folio,$tipo_caf,$id_empresa);
-                                                  $Folios = new sasco\LibreDTE\Sii\Folios($caf->caf_content);
-
-
-                                               
-
-                                                  $DTE = new \sasco\LibreDTE\Sii\Dte($factura);
-
-                                                  $DTE->timbrar($Folios);
-                                                  $DTE->firmar($Firma);         
-
-
-                                                  // generar sobre con el envío del DTE y enviar al SII
-                                                  $EnvioDTE = new \sasco\LibreDTE\Sii\EnvioDte();
-                                                  $EnvioDTE->agregar($DTE);
-                                                  $EnvioDTE->setFirma($Firma);
-                                                  $EnvioDTE->setCaratula($caratula);
-                                                  $xml_dte = $EnvioDTE->generar();
-                                               //  echo $xml_dte;
-                                             //    var_dump($EnvioDTE->schemaValidate());  exit;
-                                /*
-                                  foreach (sasco\LibreDTE\Log::readAll() as $error)
-                                          echo $error,"\n";                  
-                                                  
-
-                                                  exit;*/
-
-
-                                                 if ($EnvioDTE->schemaValidate()) { // REVISAR PORQUÉ SE CAE CON ESTA VALIDACION
-                                                        
-                                                    $track_id = 0;
-                                                    $xml_dte = $EnvioDTE->generar();
-
-                                                    #GENERACIÓN DTE CLIENTE
-                                                    $EnvioDTE_CLI = new \sasco\LibreDTE\Sii\EnvioDte();
-                                                    $EnvioDTE_CLI->agregar($DTE);
-                                                    $EnvioDTE_CLI->setFirma($Firma);
-                                                    $EnvioDTE_CLI->setCaratula($caratula_cliente);
-                                                    $xml_dte_cliente = $EnvioDTE_CLI->generar();                      
-                                                      //$track_id = $EnvioDTE->enviar();
-                                                      //$tipo_envio = $this->facturaelectronica->busca_parametro_fe('envio_sii'); //ver si está configurado para envío manual o automático
-                                                    $tipo_envio = 'manual';
-
-                                                    $dte = $this->facturaelectronica->crea_archivo_dte($xml_dte,$idfactura,$tipo_caf,'sii');
-                                                    $dte_cliente = $this->facturaelectronica->crea_archivo_dte($xml_dte_cliente,$idfactura,$tipo_caf,'cliente');
-
-                                                    $sql_update_folio = "update     f
-                                                                        set         dte = '" . $dte['xml_dte'] . "'
-                                                                                    ,dte_cliente = '" . $dte_cliente['xml_dte'] . "'
-                                                                                    ,estado = 'O'
-                                                                                    ,idfactura = " . $idfactura . "
-                                                                                    ,path_dte = '" . $dte['path'] . "'
-                                                                                    ,archivo_dte = '" . $dte['nombre_dte'] . "'
-                                                                                    ,archivo_dte_cliente = '" . $dte['nombre_dte'] . "'
-                                                                                    ,trackid = " . $track_id . "
-                                                                         from       folios_caf f
-                                                                         inner join caf c on f.idcaf = c.id
-                                                                         where      f.folio = ". $folio . "
-                                                                         and        c.tipo_caf = " . $tipo_caf;
-                                                             $this->db->query($sql_update_folio);
+                                                      }
+                                                                         
+                                                      $i++;
 
 
 
                                                   }
 
-                                                $url_pdf = $this->facturaelectronica->generaFePDF($idfactura,'id',$id_empresa);
-                                                $url_xml = URL_DESCARGA_DTE . $dte['path'] . $dte['nombre_dte'];
+                                                }else{
+
+                                                     $result_dte = 'Error - No se encuentra Detalle de Productos';
+                                                      $cod_error = 117; 
+                                                      $error = true;  
+
+                                                }
+                                               
 
 
-                                                $response = array(
-                                                                    // 'url_pdf' => 'http://www.arnou.cl/Infosys_web/core/facturacion_electronica/pdf/202011/dte_96516320-4_T33F35349.pdf',
-                                                                      //'url_xml' => 'http://www.arnou.cl/Infosys_web/core/facturacion_electronica/dte/202011/18363_52_1492_SII_100205.xml',
-                                                                      'url_pdf' => $url_pdf,
-                                                                      'url_xml' => $url_xml,
-                                                                      'result' => 'Documento creado correctamente',
-                                                                      'status' => 'success',
-                                                                      'code' => 100,
-                                                                      'tipo_caf' => $tipo_caf
-                                                                     /* ,'folio' => $folio
-                                                                      ,'iva' => $iva
-                                                                      ,'total' => $total
-                                                                      ,'id_empresa' => $id_empresa
-                                                                      ,'idfactura' => $idfactura*/
+                                                if(!$error){
+                                                   if(isset($dte_array->Datos_Factura->Referencia)){
+                                                      foreach ($dte_array->Datos_Factura->Referencia as $referencia) {
+                                                         // print_r($detalle);
 
-                                                                );
+                                                        if(!isset($referencia->NroLinRef)){
+                                                                $result_dte = 'Error - No se encuentra Linea Referencia';
+                                                                $cod_error = 126; 
+                                                                $error = true;         
+                                                        }else{
+                                                              $nrolinref = $referencia->NroLinRef;
+                                                        }
+
+                                                        if(!isset($referencia->TpoDocRef)){
+                                                                $result_dte = 'Error - No se encuentra Tipo Documento Referencia';
+                                                                $cod_error = 127; 
+                                                                $error = true;         
+                                                        }else{
+                                                              $tpodocref = $referencia->TpoDocRef;
+                                                        }
 
 
+                                                        if(!isset($referencia->FolioRef)){
+                                                                $result_dte = 'Error - No se encuentra Folio Referencia';
+                                                                $cod_error = 128; 
+                                                                $error = true;         
+                                                        }else{
+                                                              $folioref = $referencia->FolioRef;
+                                                        }
+
+
+                                                         
+                                                          
+                                                          
+                                                          if($error){
+                                                              break;
+
+                                                          }else{
+
+
+                                                              $detalle_referencias = array(
+                                                                                              'idfactura' => $idfactura,
+                                                                                              'nrolinref' => $nrolinref,
+                                                                                              'tpodocref' => $tpodocref,
+                                                                                              'folioref' => $folioref
+                                                                                          );
+
+                                                              $this->db->insert('referencias', $detalle_referencias);
+                                                          }
+
+                                                      }   
+                                                    }                                          
+                                                }
+                                               
+
+
+
+                                                if($error){
+
+                                                    $response = array(
+                                                         'result' => $result_dte,
+                                                         'code' => $cod_error,
+                                                          'status' => 'failure'
+
+                                                    );                                        
+                                                }else{
+
+
+
+
+                                                                                                       
+                                                    // generar factura
+
+                                                  header('Content-type: text/plain; charset=ISO-8859-1');
+                                                  $config = $this->facturaelectronica->genera_config($id_empresa);
+                                                  include $this->facturaelectronica->ruta_libredte();
+
+
+                                                      if($tipo_caf == 39){
+                                                              $factura = [
+                                                                // CASO 1
+                                                                    'Encabezado' => [
+                                                                        'IdDoc' => [
+                                                                           'TipoDTE' => $tipo_caf,
+                                                                            'Folio' => $folio,
+                                                                            'FchEmis' => substr($fecha_emision,0,10),
+                                                                        ],
+                                                                         'Emisor' => [
+                                                                              'RUTEmisor' => $empresa->rut.'-'.$empresa->dv,
+                                                                              'RznSoc' => substr(permite_alfanumerico($empresa->razon_social),0,100), //LARGO DE RAZON SOCIAL NO PUEDE SER SUPERIOR A 100 CARACTERES,
+                                                                              'GiroEmis' => substr(permite_alfanumerico($empresa->giro),0,80), //LARGO DE GIRO DEL EMISOR NO PUEDE SER SUPERIOR A 80 CARACTERES
+                                                                              'Acteco' => $empresa->cod_actividad,
+                                                                              'DirOrigen' =>  substr(permite_alfanumerico($empresa->dir_origen),0,70), //LARGO DE DIRECCION DE ORIGEN NO PUEDE SER SUPERIOR A 70 CARACTERES
+                                                                              'CmnaOrigen' => substr(permite_alfanumerico($empresa->comuna_origen),0,20), //LARGO DE COMUNA DE ORIGEN NO PUEDE SER SUPERIOR A 20 CARACTERES
+                                                                          ],
+                                                                       'Receptor' => [
+                                                                                'RUTRecep' => $rut_cliente,
+                                                                                'RznSocRecep' =>  substr(permite_alfanumerico($raz_soc_cliente),0,100), //LARGO DE RAZON SOCIAL NO PUEDE SER SUPERIOR A 100 CARACTERES
+                                                                                'GiroRecep' => substr(permite_alfanumerico($giro_cliente),0,40),  //LARGO DEL GIRO NO PUEDE SER SUPERIOR A 40 CARACTERES
+                                                                                'DirRecep' => substr($dir_cliente,0,70), //LARGO DE DIRECCION NO PUEDE SER SUPERIOR A 70 CARACTERES
+                                                                                'CmnaRecep' => substr($com_cliente,0,20), //LARGO DE COMUNA NO PUEDE SER SUPERIOR A 20 CARACTERES
+                                                                            ],
+                                                                    ],
+                                                                    'Detalle' => $lista_detalle,
+                                                            ];
+
+
+
+                                                    }else{
+
+                                                            $factura = [
+                                                                    'Encabezado' => [
+                                                                        'IdDoc' => [
+                                                                            'TipoDTE' => $tipo_caf,
+                                                                            'Folio' => $folio,
+                                                                            'FchEmis' => substr($fechafactura,0,10)
+                                                                            // 'TpoTranVenta' => 4
+                                                                        ],
+                                                                        'Emisor' => [
+                                                                            'RUTEmisor' => $empresa->rut.'-'.$empresa->dv,
+                                                                            'RznSoc' => substr(permite_alfanumerico($empresa->razon_social),0,100), //LARGO DE RAZON SOCIAL NO PUEDE SER SUPERIOR A 100 CARACTERES,
+                                                                            'GiroEmis' => substr(permite_alfanumerico($empresa->giro),0,80), //LARGO DE GIRO DEL EMISOR NO PUEDE SER SUPERIOR A 80 CARACTERES
+                                                                            'Acteco' => $empresa->cod_actividad,
+                                                                            'DirOrigen' =>  substr(permite_alfanumerico($empresa->dir_origen),0,70), //LARGO DE DIRECCION DE ORIGEN NO PUEDE SER SUPERIOR A 70 CARACTERES
+                                                                            'CmnaOrigen' => substr(permite_alfanumerico($empresa->comuna_origen),0,20), //LARGO DE COMUNA DE ORIGEN NO PUEDE SER SUPERIOR A 20 CARACTERES
+                                                                        ],
+                                                                        'Receptor' => [
+                                                                            'RUTRecep' => $rutCliente,
+                                                                            'RznSocRecep' =>  substr(permite_alfanumerico($datos_empresa_factura->nombre_cliente),0,100), //LARGO DE RAZON SOCIAL NO PUEDE SER SUPERIOR A 100 CARACTERES
+                                                                            'GiroRecep' => substr(permite_alfanumerico($datos_empresa_factura->giro),0,40),  //LARGO DEL GIRO NO PUEDE SER SUPERIOR A 40 CARACTERES
+                                                                            'DirRecep' => substr($dir_cliente,0,70), //LARGO DE DIRECCION NO PUEDE SER SUPERIOR A 70 CARACTERES
+                                                                            'CmnaRecep' => substr($nombre_comuna,0,20), //LARGO DE COMUNA NO PUEDE SER SUPERIOR A 20 CARACTERES
+                                                                        ],
+                                                                      'Totales' => [
+                                                                          // estos valores serán calculados automáticamente
+                                                                          'MntNeto' => isset($datos_factura->neto) ? $datos_factura->neto : 0,
+                                                                          //'TasaIVA' => \sasco\LibreDTE\Sii::getIVA(),
+                                                                          'IVA' => isset($datos_factura->iva) ? $datos_factura->iva : 0,
+                                                                          'MntTotal' => isset($datos_factura->totalfactura) ? $datos_factura->totalfactura : 0,
+                                                                      ],                        
+                                                                    ],
+                                                                      'Detalle' => $lista_detalle,
+                                                                      'Referencia' => $referencia
+                                                                ];
+
+
+                                                    }                                                  
+
+
+                                                      $caratula = [
+                                                          //'RutEnvia' => '11222333-4', // se obtiene de la firma
+                                                          'RutReceptor' => '60803000-K',
+                                                          'FchResol' => $empresa->fec_resolucion,
+                                                          'NroResol' => $empresa->nro_resolucion
+                                                      ];
+
+                                                    //  print_r($caratula); 
+
+                                                      $caratula_cliente = [
+                                                          //'RutEnvia' => '11222333-4', // se obtiene de la firma
+                                                          'RutReceptor' => $rut_cliente,
+                                                          'FchResol' => $empresa->fec_resolucion,
+                                                          'NroResol' => $empresa->nro_resolucion
+                                                      ];  
+
+
+                                                                
+                                                      //exit;
+                                                      // Objetos de Firma y Folios
+                                                      $Firma = new sasco\LibreDTE\FirmaElectronica($config['firma']); //lectura de certificado digital            
+
+                                                      $caf = $this->facturaelectronica->get_content_caf_folio($folio,$tipo_caf,$id_empresa);
+                                                      $Folios = new sasco\LibreDTE\Sii\Folios($caf->caf_content);
+
+
+                                                   
+
+                                                      $DTE = new \sasco\LibreDTE\Sii\Dte($factura);
+
+                                                      $DTE->timbrar($Folios);
+                                                      $DTE->firmar($Firma);         
+
+
+                                                      // generar sobre con el envío del DTE y enviar al SII
+                                                      $EnvioDTE = new \sasco\LibreDTE\Sii\EnvioDte();
+                                                      $EnvioDTE->agregar($DTE);
+                                                      $EnvioDTE->setFirma($Firma);
+                                                      $EnvioDTE->setCaratula($caratula);
+                                                      $xml_dte = $EnvioDTE->generar();
+                                                   //  echo $xml_dte;
+                                                 //    var_dump($EnvioDTE->schemaValidate());  exit;
+                                    /*
+                                      foreach (sasco\LibreDTE\Log::readAll() as $error)
+                                              echo $error,"\n";                  
+                                                      
+
+                                                      exit;*/
+
+                                                      if ($EnvioDTE->schemaValidate()) { // REVISAR PORQUÉ SE CAE CON ESTA VALIDACION
+                                                            
+                                                        $track_id = 0;
+                                                        $xml_dte = $EnvioDTE->generar();
+
+                                                        #GENERACIÓN DTE CLIENTE
+                                                        $EnvioDTE_CLI = new \sasco\LibreDTE\Sii\EnvioDte();
+                                                        $EnvioDTE_CLI->agregar($DTE);
+                                                        $EnvioDTE_CLI->setFirma($Firma);
+                                                        $EnvioDTE_CLI->setCaratula($caratula_cliente);
+                                                        $xml_dte_cliente = $EnvioDTE_CLI->generar();                      
+                                                          //$track_id = $EnvioDTE->enviar();
+                                                          //$tipo_envio = $this->facturaelectronica->busca_parametro_fe('envio_sii'); //ver si está configurado para envío manual o automático
+                                                        $tipo_envio = 'manual';
+
+                                                        $dte = $this->facturaelectronica->crea_archivo_dte($xml_dte,$idfactura,$tipo_caf,'sii');
+                                                        $dte_cliente = $this->facturaelectronica->crea_archivo_dte($xml_dte_cliente,$idfactura,$tipo_caf,'cliente');
+
+                                                        $sql_update_folio = "update     f
+                                                                            set         dte = '" . $dte['xml_dte'] . "'
+                                                                                        ,dte_cliente = '" . $dte_cliente['xml_dte'] . "'
+                                                                                        ,estado = 'O'
+                                                                                        ,idfactura = " . $idfactura . "
+                                                                                        ,path_dte = '" . $dte['path'] . "'
+                                                                                        ,archivo_dte = '" . $dte['nombre_dte'] . "'
+                                                                                        ,archivo_dte_cliente = '" . $dte['nombre_dte'] . "'
+                                                                                        ,trackid = " . $track_id . "
+                                                                             from       folios_caf f
+                                                                             inner join caf c on f.idcaf = c.id
+                                                                             where      f.folio = ". $folio . "
+                                                                             and        c.tipo_caf = " . $tipo_caf;
+                                                                 $this->db->query($sql_update_folio);
+
+
+
+                                                      }
+
+                                                    $url_pdf = $this->facturaelectronica->generaFePDF($idfactura,'id',$id_empresa);
+                                                    $url_xml = URL_DESCARGA_DTE . $dte['path'] . $dte['nombre_dte'];
+
+
+                                                    $response = array(
+                                                                        // 'url_pdf' => 'http://www.arnou.cl/Infosys_web/core/facturacion_electronica/pdf/202011/dte_96516320-4_T33F35349.pdf',
+                                                                          //'url_xml' => 'http://www.arnou.cl/Infosys_web/core/facturacion_electronica/dte/202011/18363_52_1492_SII_100205.xml',
+                                                                          'url_pdf' => $url_pdf,
+                                                                          'url_xml' => $url_xml,
+                                                                          'result' => 'Documento creado correctamente',
+                                                                          'status' => 'success',
+                                                                          'code' => 100,
+                                                                          'tipo_caf' => $tipo_caf
+                                                                         /* ,'folio' => $folio
+                                                                          ,'iva' => $iva
+                                                                          ,'total' => $total
+                                                                          ,'id_empresa' => $id_empresa
+                                                                          ,'idfactura' => $idfactura*/
+
+                                                                    );                                                      
+
+                                                } // fin else
 
                                         }
-
-
-                                        
-                                        
-
 
 
 
